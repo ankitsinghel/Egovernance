@@ -1,17 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { cn } from "../../lib/utils";
 import Link from "next/link";
 import { Menu, Home, Users, Settings, Shield } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { context } from "../../context/context";
 
 export function SuperAdminDrawer() {
-    const { superAdminDrawerOpen, setSuperAdminDrawerOpen } = context();
+  const { superAdminDrawerOpen, setSuperAdminDrawerOpen } = context();
 
   const pathname = usePathname();
 
@@ -23,7 +23,11 @@ export function SuperAdminDrawer() {
   ];
 
   return (
-    <Drawer direction="left" open={superAdminDrawerOpen} onOpenChange={setSuperAdminDrawerOpen}>
+    <Drawer
+      direction="left"
+      open={superAdminDrawerOpen}
+      onOpenChange={setSuperAdminDrawerOpen}
+    >
       {/* Trigger button */}
       <DrawerTrigger asChild>
         <Button variant="ghost" size="icon">
@@ -87,3 +91,6 @@ export function SuperAdminDrawer() {
     </Drawer>
   );
 }
+
+// Backwards-compatible alias: some layouts import AdminDrawer
+export const AdminDrawer = SuperAdminDrawer;
