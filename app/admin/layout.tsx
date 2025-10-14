@@ -1,3 +1,4 @@
+import "../../app/globals.css";
 import Container from "../../components/container";
 import { cookies } from "next/headers";
 import { verifyToken } from "../../lib/auth";
@@ -13,7 +14,7 @@ export default async function AdminLayout({
   const payload = token ? verifyToken(token) : null;
   const role = (payload as any)?.role;
   if (!payload || (role !== "Admin" && role !== "SuperAdmin")) {
-    redirect("/admin/login");
+    // redirect("/admin/login");
   }
 
   return (

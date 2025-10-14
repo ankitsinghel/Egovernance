@@ -1,5 +1,70 @@
-node_modules
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Local environment variables
 .env
-uploads
-.prisma
-/dev.db
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage / Testing
+coverage/
+.nyc_output/
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+prisma/migrations/
+prisma/*.db
+
+# Cache
+.cache/
+.next/cache/
+tmp/
+temp/
+
+# Build artifacts and lock files
+*.lock
+
+# Optional (if using Docker)
+docker-compose.override.yml
+.docker/
+*.tar
+
+# Miscellaneous
+*.zip
+*.rar
+*.7z
+
+# Generated files
+public/uploads/
+uploads/
