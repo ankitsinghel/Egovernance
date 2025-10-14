@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Organization {
+  id     Int      @id @default(autoincrement())
+  name   String   @unique
+  admins Admin[]
+  reports UserReport[]
+}
+
+model City {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  password     String
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  city         String?
+  role         String
+  superiorId   Int?
+  superior     Admin?   @relation("Superior", fields: [superiorId], references: [id])
+  subordinates Admin[]  @relation("Superior")
+  assignedReports UserReport[] @relation("AssignedReports")
+  actions ActionLog[]
+}
+
+model UserReport {
+  id            Int      @id @default(autoincrement())
+  trackingId    String   @unique
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  designation   String?
+  accusedName   String?
+  city          String?
+  priority      String   @default("normal")
+  description   String
+  files         String?
+  status        String   @default("pending")
+  assignedToId  Int?
+  assignedTo    Admin?   @relation("AssignedReports", fields: [assignedToId], references: [id])
+  createdAt     DateTime @default(now())
+  actions       ActionLog[]
+}
+
+model ActionLog {
+  id          Int      @id @default(autoincrement())
+  report      UserReport @relation(fields: [reportId], references: [id])
+  reportId    Int
+  admin       Admin?    @relation(fields: [adminId], references: [id])
+  adminId     Int?
+  statusChange String
+  note        String?
+  proofFile   String?
+  createdAt   DateTime @default(now())
+}
+
+model Otp {
+  id         Int      @id @default(autoincrement())
+  email      String
+  tokenHash  String
+  purpose    String
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  used       Boolean  @default(false)
+  attempts   Int      @default(0)
+  meta       String?
+}
+
+model SuperAdmin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
