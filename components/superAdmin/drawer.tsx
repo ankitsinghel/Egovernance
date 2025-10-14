@@ -29,11 +29,11 @@ export function SuperAdminDrawer() {
       onOpenChange={setSuperAdminDrawerOpen}
     >
       {/* Trigger button */}
-      <DrawerTrigger asChild>
+      {/* <DrawerTrigger asChild>
         <Button variant="ghost" size="icon">
           <Menu className="h-5 w-5" />
         </Button>
-      </DrawerTrigger>
+      </DrawerTrigger> */}
 
       {/* Drawer panel */}
       <DrawerContent
