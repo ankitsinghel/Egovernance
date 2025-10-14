@@ -1,8 +1,5 @@
 {
-  "/api/report/route": "app/api/report/route.js",
-  "/report/page": "app/report/page.js",
-  "/track/page": "app/track/page.js",
+  "/api/admin/login/route": "app/api/admin/login/route.js",
   "/(main)/page": "app/(main)/page.js",
-  "/(super-admin)/super-admin/login/page": "app/(super-admin)/super-admin/login/page.js",
   "/admin/login/page": "app/admin/login/page.js"
 }

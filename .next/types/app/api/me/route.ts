@@ -1,4 +1,4 @@
-// File: C:\Users\jaiku\OneDrive\Desktop\Egovern\Egovernance\app\api\me\route.ts
+// File: D:\Codes\hackathon\app\api\me\route.ts
 import * as entry from '../../../../../app/api/me/route.js'
 import type { NextRequest } from 'next/server.js'
 

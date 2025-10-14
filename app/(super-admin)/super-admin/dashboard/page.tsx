@@ -2,25 +2,23 @@
 import { useEffect, useState } from "react";
 import { Card } from "../../../../components/ui/card";
 import { Button } from "../../../../components/ui/button";
-import { 
-  Building, 
-  MapPin, 
-  Users, 
-  Plus, 
-  Trash2, 
-  Edit, 
+import {
+  Building,
+  MapPin,
+  Users,
+  Plus,
+  Trash2,
   Search,
   Loader2,
   Shield,
   BarChart3,
-  Download
-} from 'lucide-react';
+  Download,
+} from "lucide-react";
 
-export default function SuperDashboard() {
+export default function SuperAdminDashboardPage() {
   const [orgs, setOrgs] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
 
   async function load() {
@@ -107,10 +105,10 @@ export default function SuperDashboard() {
     }
   }
 
-  const filteredOrgs = orgs.filter(org => 
+  const filteredOrgs = orgs.filter((org) =>
     org.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const filteredCities = cities.filter(city => 
+  const filteredCities = cities.filter((city) =>
     city.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -120,9 +118,13 @@ export default function SuperDashboard() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <Shield className="w-8 h-8 text-blue-600" />
-          <h1 className="text-3xl font-bold text-slate-900">Super Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-slate-900">
+            Super Admin Dashboard
+          </h1>
         </div>
-        <p className="text-slate-600">Manage organizations, cities, and administrator accounts</p>
+        <p className="text-slate-600">
+          Manage organizations, cities, and administrator accounts
+        </p>
       </div>
 
       {/* Stats Overview */}
@@ -130,7 +132,9 @@ export default function SuperDashboard() {
         <Card className="p-6 bg-white border-l-4 border-l-blue-500 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-600">Organizations</p>
+              <p className="text-sm font-medium text-slate-600">
+                Organizations
+              </p>
               <p className="text-2xl font-bold text-slate-900">{orgs.length}</p>
             </div>
             <Building className="w-8 h-8 text-blue-500" />
@@ -141,7 +145,9 @@ export default function SuperDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-600">Cities</p>
-              <p className="text-2xl font-bold text-slate-900">{cities.length}</p>
+              <p className="text-2xl font-bold text-slate-900">
+                {cities.length}
+              </p>
             </div>
             <MapPin className="w-8 h-8 text-green-500" />
           </div>
@@ -150,8 +156,12 @@ export default function SuperDashboard() {
         <Card className="p-6 bg-white border-l-4 border-l-purple-500 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-600">Total Coverage</p>
-              <p className="text-2xl font-bold text-slate-900">{orgs.length + cities.length}</p>
+              <p className="text-sm font-medium text-slate-600">
+                Total Coverage
+              </p>
+              <p className="text-2xl font-bold text-slate-900">
+                {orgs.length + cities.length}
+              </p>
             </div>
             <BarChart3 className="w-8 h-8 text-purple-500" />
           </div>
@@ -170,8 +180,8 @@ export default function SuperDashboard() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           {searchTerm && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => setSearchTerm("")}
             >
@@ -187,7 +197,9 @@ export default function SuperDashboard() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <Building className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-slate-900">Organizations</h2>
+              <h2 className="text-xl font-bold text-slate-900">
+                Organizations
+              </h2>
             </div>
             <span className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
               {orgs.length} total
@@ -221,7 +233,9 @@ export default function SuperDashboard() {
               ))}
               {filteredOrgs.length === 0 && (
                 <div className="text-center py-8 text-slate-500">
-                  {searchTerm ? "No organizations match your search" : "No organizations yet"}
+                  {searchTerm
+                    ? "No organizations match your search"
+                    : "No organizations yet"}
                 </div>
               )}
             </div>
@@ -308,7 +322,10 @@ export default function SuperDashboard() {
           <h2 className="text-xl font-bold text-slate-900">Create New Admin</h2>
         </div>
 
-        <form onSubmit={createAdmin} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form
+          onSubmit={createAdmin}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -321,7 +338,7 @@ export default function SuperDashboard() {
                 required
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Email Address
@@ -354,8 +371,8 @@ export default function SuperDashboard() {
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Assign Organization
               </label>
-              <select 
-                name="organizationId" 
+              <select
+                name="organizationId"
                 className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 required
               >

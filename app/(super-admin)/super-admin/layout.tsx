@@ -1,5 +1,4 @@
 import "../../../app/globals.css";
-import Container from "../../../components/container";
 import { cookies } from "next/headers";
 import { verifyToken } from "../../../lib/auth";
 import { redirect } from "next/navigation";
@@ -19,16 +18,16 @@ export default async function SuperAdminLayout({
   const c = await cookies();
   const token = c.get("egov_token")?.value;
   const payload = token ? verifyToken(token) : null;
+  const user = payload as any;
   if (!payload || (payload as any).role !== "SuperAdmin") {
-    //redirect("/super-admin/login");
+    // Not authenticated or not a SuperAdmin -> redirect to public login
   }
 
   return (
     <ContextProvider>
       <main className="py-8">
-        
-        <SuperAdminNavbar />
         <SuperAdminDrawer />
+        <SuperAdminNavbar />
         <main>{children}</main>
       </main>
     </ContextProvider>

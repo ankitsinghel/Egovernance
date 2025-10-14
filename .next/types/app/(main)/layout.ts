@@ -1,4 +1,4 @@
-// File: C:\Users\jaiku\OneDrive\Desktop\Egovern\Egovernance\app\(main)\layout.tsx
+// File: D:\Codes\hackathon\app\(main)\layout.tsx
 import * as entry from '../../../../app/(main)/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

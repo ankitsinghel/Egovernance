@@ -21,16 +21,16 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/me/route.js"
     ],
-    "/report/page": [
+    "/(super-admin)/super-admin/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/report/page.js"
+      "static/css/app/(super-admin)/super-admin/layout.css",
+      "static/chunks/app/(super-admin)/super-admin/layout.js"
     ],
-    "/report/layout": [
+    "/(super-admin)/super-admin/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/report/layout.css",
-      "static/chunks/app/report/layout.js"
+      "static/chunks/app/(super-admin)/super-admin/login/page.js"
     ],
     "/admin/layout": [
       "static/chunks/webpack.js",
@@ -43,77 +43,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/admin/login/page.js"
     ],
-    "/(super-admin)/super-admin/layout": [
+    "/api/admin/login/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/(super-admin)/super-admin/layout.css",
-      "static/chunks/app/(super-admin)/super-admin/layout.js"
-    ],
-    "/(super-admin)/super-admin/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(super-admin)/super-admin/login/page.js"
-    ],
-    "/track/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/track/page.js"
-    ],
-    "/track/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/track/layout.css",
-      "static/chunks/app/track/layout.js"
-    ],
-    "/(super-admin)/super-admin/dashboard/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(super-admin)/super-admin/dashboard/layout.js"
-    ],
-    "/(super-admin)/super-admin/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(super-admin)/super-admin/dashboard/page.js"
-    ],
-    "/(super-admin)/super-admin/signup/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(super-admin)/super-admin/signup/page.js"
-    ],
-    "/api/super-admin/signup/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/super-admin/signup/route.js"
-    ],
-    "/api/organizations/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/organizations/route.js"
-    ],
-    "/api/cities/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/cities/route.js"
-    ],
-    "/admin/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/dashboard/page.js"
-    ],
-    "/api/admin/reports/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/admin/reports/route.js"
-    ],
-    "/admin/signup/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/signup/page.js"
-    ],
-    "/api/report/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/report/route.js"
+      "static/chunks/app/api/admin/login/route.js"
     ]
   }
 }
