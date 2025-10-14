@@ -6,19 +6,23 @@ import { useForm } from "react-hook-form";
 import { LoginSchema, LoginForm } from "../../../../lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { 
-  Shield, 
-  Eye, 
-  EyeOff, 
-  Lock, 
-  Mail, 
+import {
+  Shield,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
   ArrowRight,
   AlertCircle,
-  CheckCircle2
-} from 'lucide-react';
+  CheckCircle2,
+} from "lucide-react";
 
 export default function SuperLogin() {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginForm>({
     resolver: zodResolver(LoginSchema),
   });
   const [loading, setLoading] = useState(false);
@@ -29,7 +33,7 @@ export default function SuperLogin() {
     setLoading(true);
     setLoginError("");
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch("/api/super-admin/login", {
         method: "POST",
         body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" },
@@ -69,9 +73,7 @@ export default function SuperLogin() {
           <h1 className="text-3xl font-bold text-slate-900 mb-2">
             Super Admin Access
           </h1>
-          <p className="text-slate-600">
-            Secure access to platform management
-          </p>
+          <p className="text-slate-600">Secure access to platform management</p>
         </div>
 
         {/* Login Card */}
@@ -96,7 +98,9 @@ export default function SuperLogin() {
                   {...register("email")}
                   placeholder="superadmin@portal.gov"
                   className={`w-full p-4 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                    errors.email ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"
+                    errors.email
+                      ? "border-red-300 ring-2 ring-red-100"
+                      : "border-slate-300"
                   }`}
                   required
                 />
@@ -126,7 +130,9 @@ export default function SuperLogin() {
                   placeholder="Enter your secure password"
                   type={showPassword ? "text" : "password"}
                   className={`w-full p-4 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                    errors.password ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"
+                    errors.password
+                      ? "border-red-300 ring-2 ring-red-100"
+                      : "border-slate-300"
                   }`}
                   required
                 />
@@ -135,7 +141,11 @@ export default function SuperLogin() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
               {errors.password && (
@@ -176,7 +186,9 @@ export default function SuperLogin() {
             {/* Divider */}
             <div className="relative flex items-center py-4">
               <div className="flex-grow border-t border-slate-300"></div>
-              <span className="flex-shrink mx-4 text-slate-500 text-sm">or</span>
+              <span className="flex-shrink mx-4 text-slate-500 text-sm">
+                or
+              </span>
               <div className="flex-grow border-t border-slate-300"></div>
             </div>
 
@@ -194,7 +206,9 @@ export default function SuperLogin() {
 
           {/* Security Features */}
           <div className="mt-8 pt-6 border-t border-slate-200">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Security Features</h3>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">
+              Security Features
+            </h3>
             <div className="grid grid-cols-2 gap-3 text-xs text-slate-600">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -222,11 +236,17 @@ export default function SuperLogin() {
             For security reasons, please log out after each session
           </p>
           <div className="flex justify-center gap-4 mt-4">
-            <Link href="/" className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
+            <Link
+              href="/"
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+            >
               Back to Home
             </Link>
             <span className="text-slate-300">•</span>
-            <Link href="/admin/login" className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
+            <Link
+              href="/admin/login"
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+            >
               Admin Login
             </Link>
           </div>

@@ -24,12 +24,16 @@ export default async function SuperAdminLayout({
   }
 
   return (
-    <ContextProvider>
-      <main className="py-8">
-        <SuperAdminDrawer />
-        <SuperAdminNavbar />
-        <main>{children}</main>
-      </main>
-    </ContextProvider>
+    <html lang="en">
+      <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
+        <ContextProvider>
+          <main className="">
+            <SuperAdminDrawer />
+            <SuperAdminNavbar />
+            <main>{children}</main>
+          </main>
+        </ContextProvider>
+      </body>
+    </html>
   );
 }
