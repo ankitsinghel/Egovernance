@@ -4,7 +4,7 @@
 type AppRoutes = "/" | "/admin/dashboard" | "/admin/login" | "/admin/signup" | "/report" | "/super-admin/dashboard" | "/super-admin/login" | "/super-admin/signup" | "/track"
 type AppRouteHandlerRoutes = "/api/admin/action" | "/api/admin/create" | "/api/admin/exists" | "/api/admin/login" | "/api/admin/reports" | "/api/cities" | "/api/cities/[id]" | "/api/debug/cookies" | "/api/logout" | "/api/me" | "/api/organizations" | "/api/organizations/[id]" | "/api/otp/request" | "/api/otp/verify" | "/api/report" | "/api/report/[trackingId]" | "/api/super-admin/login" | "/api/super-admin/signup" | "/api/super-admin/verify"
 type PageRoutes = never
-type LayoutRoutes = "/" | "/admin" | "/super-admin" | "/super-admin/dashboard"
+type LayoutRoutes = "/" | "/admin" | "/report" | "/super-admin" | "/super-admin/dashboard" | "/track"
 type RedirectRoutes = never
 type RewriteRoutes = never
 type Routes = AppRoutes | PageRoutes | LayoutRoutes | RedirectRoutes | RewriteRoutes | AppRouteHandlerRoutes
@@ -49,8 +49,10 @@ export type ParamsOf<Route extends Routes> = ParamMap[Route]
 interface LayoutSlotMap {
   "/": never
   "/admin": never
+  "/report": never
   "/super-admin": never
   "/super-admin/dashboard": never
+  "/track": never
 }
 
 

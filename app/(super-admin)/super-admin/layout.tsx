@@ -20,14 +20,15 @@ export default async function SuperAdminLayout({
   const token = c.get("egov_token")?.value;
   const payload = token ? verifyToken(token) : null;
   if (!payload || (payload as any).role !== "SuperAdmin") {
-    redirect("/super-admin/login");
+    //redirect("/super-admin/login");
   }
 
   return (
     <ContextProvider>
       <main className="py-8">
-        <SuperAdminDrawer />
+        
         <SuperAdminNavbar />
+        <SuperAdminDrawer />
         <main>{children}</main>
       </main>
     </ContextProvider>

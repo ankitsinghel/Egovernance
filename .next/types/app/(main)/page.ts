@@ -1,4 +1,4 @@
-// File: D:\Codes\hackathon\app\(main)\page.tsx
+// File: C:\Users\jaiku\OneDrive\Desktop\Egovern\Egovernance\app\(main)\page.tsx
 import * as entry from '../../../../app/(main)/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
