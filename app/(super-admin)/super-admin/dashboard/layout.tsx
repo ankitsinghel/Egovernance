@@ -21,7 +21,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
-        <main className="py-8">{children}</main>
+        <main className="">{children}</main>
       </body>
     </html>
   );

@@ -12,7 +12,7 @@ const globalCOntext = createContext<LoadingContextType | undefined>(undefined);
 
 export function contextProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
-  const [superAdminDrawerOpen, setSuperAdminDrawerOpen] = useState(false);
+  const [superAdminDrawerOpen, setSuperAdminDrawerOpen] = useState(true);
   return (
     <globalCOntext.Provider
       value={{

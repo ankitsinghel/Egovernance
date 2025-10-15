@@ -24,18 +24,12 @@ export function SuperAdminDrawer() {
 
   return (
     <Drawer
+      
       direction="left"
       open={superAdminDrawerOpen}
       onOpenChange={setSuperAdminDrawerOpen}
     >
-      {/* Trigger button */}
-      {/* <DrawerTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Menu className="h-5 w-5" />
-        </Button>
-      </DrawerTrigger> */}
 
-      {/* Drawer panel */}
       <DrawerContent
         className={cn(
           "fixed top-0 left-0 h-full bg-white shadow-lg z-50 overflow-y-auto transition-all",

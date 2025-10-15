@@ -18,22 +18,22 @@ export default async function SuperAdminLayout({
   const c = await cookies();
   const token = c.get("egov_token")?.value;
   const payload = token ? verifyToken(token) : null;
-  const user = (payload as any);
+  const user = payload as any;
   if (!payload || (payload as any).role !== "SuperAdmin") {
-    // redirect("/super-admin/login");
+    // Not authenticated or not a SuperAdmin -> redirect to public login
   }
 
   return (
-    <ContextProvider>
-      <main className="py-8">
-        {user && (
-          <>
+    <html lang="en">
+      <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
+        <ContextProvider>
+          <main className="">
             <SuperAdminDrawer />
             <SuperAdminNavbar />
-          </>
-        )}
-        <main>{children}</main>
-      </main>
-    </ContextProvider>
+            <main>{children}</main>
+          </main>
+        </ContextProvider>
+      </body>
+    </html>
   );
 }
