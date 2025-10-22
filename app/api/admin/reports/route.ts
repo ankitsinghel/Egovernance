@@ -11,7 +11,7 @@ export async function GET(req: Request) {
   const role = (payload as any).role
   const adminId = (payload as any).id
 
-  // Admin sees org/city assigned reports
+  // Admin sees dept/city assigned reports
   if (role === 'SuperAdmin') {
     const reports = await prisma.userReport.findMany({ orderBy: { createdAt: 'desc' } })
     return NextResponse.json({ ok: true, reports })
@@ -19,6 +19,6 @@ export async function GET(req: Request) {
 
   const admin = await prisma.admin.findUnique({ where: { id: Number(adminId) } })
   if (!admin) return NextResponse.json({ ok: false }, { status: 401 })
-  const reports = await prisma.userReport.findMany({ where: { organizationId: admin.organizationId }, orderBy: { createdAt: 'desc' } })
+  const reports = await prisma.userReport.findMany({ where: { departmentId: admin.departmentId }, orderBy: { createdAt: 'desc' } })
   return NextResponse.json({ ok: true, reports })
 }

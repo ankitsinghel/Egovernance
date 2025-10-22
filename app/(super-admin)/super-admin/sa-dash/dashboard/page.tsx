@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Card } from "../../../../components/ui/card";
-import { Button } from "../../../../components/ui/button";
+import { Card } from "../../../../../components/ui/card";
+import { Button } from "../../../../../components/ui/button";
 import {
   Building,
   MapPin,
@@ -25,10 +25,10 @@ export default function SuperAdminDashboardPage() {
     setLoading(true);
     try {
       const [o, c] = await Promise.all([
-        fetch("/api/organizations").then((r) => r.json()),
+        fetch("/api/departments").then((r) => r.json()),
         fetch("/api/cities").then((r) => r.json()),
       ]);
-      setOrgs(o.orgs || []);
+      setOrgs(o.departments || []);
       setCities(c.list || []);
     } catch (e) {
       console.error(e);
@@ -44,7 +44,7 @@ export default function SuperAdminDashboardPage() {
   async function createOrg(e: any) {
     e.preventDefault();
     const name = e.target.name.value;
-    await fetch("/api/organizations", {
+    await fetch("/api/departments", {
       method: "POST",
       body: JSON.stringify({ name }),
       headers: { "Content-Type": "application/json" },
@@ -70,14 +70,14 @@ export default function SuperAdminDashboardPage() {
     const email = e.target.email.value;
     const password = e.target.password.value;
     const name = e.target.name.value;
-    const organizationId = Number(e.target.organizationId.value);
+    const departmentId = Number(e.target.departmentId.value);
     const res = await fetch("/api/admin/create", {
       method: "POST",
       body: JSON.stringify({
         name,
         email,
         password,
-        organizationId,
+        departmentId,
         role: "Admin",
       }),
       headers: { "Content-Type": "application/json" },
@@ -92,8 +92,8 @@ export default function SuperAdminDashboardPage() {
   }
 
   async function deleteOrg(id: number) {
-    if (confirm("Are you sure you want to delete this organization?")) {
-      await fetch(`/api/organizations/${id}`, { method: "DELETE" });
+    if (confirm("Are you sure you want to delete this department?")) {
+      await fetch(`/api/departments/${id}`, { method: "DELETE" });
       load();
     }
   }
@@ -372,7 +372,7 @@ export default function SuperAdminDashboardPage() {
                 Assign Organization
               </label>
               <select
-                name="organizationId"
+                name="departmentId"
                 className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 required
               >

@@ -21,16 +21,16 @@ export async function POST(req: Request) {
   const adminCount = await prisma.superAdmin.count();
   if (adminCount > 0) return NextResponse.json({ ok: false, error: "super_exists" }, { status: 403 });
 
-  // Admin requires an organization. Use an existing organization if present,
-  // otherwise create a root organization for the SuperAdmin.
-  let organizationId: number;
-  const orgCount = await prisma.organization.count();
-  if (orgCount === 0) {
-    const org = await prisma.organization.create({ data: { name: 'Root Organization' } });
-    organizationId = org.id;
+  // Admin requires a department. Use an existing department if present,
+  // otherwise create a root department for the SuperAdmin.
+  let departmentId: number;
+  const deptCount = await prisma.department.count();
+  if (deptCount === 0) {
+    const dept = await prisma.department.create({ data: { name: 'Root Department' } });
+    departmentId = dept.id;
   } else {
-    const org = await prisma.organization.findFirst();
-    organizationId = org!.id;
+    const dept = await prisma.department.findFirst();
+    departmentId = dept!.id;
   }
 
   const superAdmin = await prisma.superAdmin.create({ data: { name: meta.name, email: meta.email, password: meta.passwordHash } });

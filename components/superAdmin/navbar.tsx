@@ -4,29 +4,24 @@ import { LogOut, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { context } from "../../context/context";
 import { Button } from "../ui/button";
+import { startTransition } from "react";
 
 export function SuperAdminNavbar() {
-  const { setSuperAdminDrawerOpen, loading, setLoading } = context();
+
+  const { setSuperAdminDrawerOpen, loading, setLoading, setUser, superAdminDrawerOpen } =
+    context();
   const router = useRouter();
 
   async function handleLogout() {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      const j = await res.json();
-      if (j.ok) {
-        router.push("/super-admin/login");
-      } else {
-        alert("Logout failed");
+    startTransition(async () => {
+      try {
+        await fetch("/api/logout", { method: "POST", credentials: "include" });
+      } catch (e) {
+        console.error("logout failed", e);
       }
-    } catch (e) {
-      alert("Network error");
-    } finally {
-      setLoading(false);
-    }
+      setUser(null);
+      router.push("/super-admin/login"); //
+    });
   }
 
   return (
@@ -36,7 +31,7 @@ export function SuperAdminNavbar() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => setSuperAdminDrawerOpen(true)}
+          onClick={() => setSuperAdminDrawerOpen(!superAdminDrawerOpen)}
         >
           <Menu className="h-5 w-5" />
         </Button>

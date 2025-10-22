@@ -1,90 +1,129 @@
 "use client";
-
-import * as React from "react";
-import { Drawer, DrawerContent, DrawerTrigger } from "../ui/drawer";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
-import { cn } from "../../lib/utils";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { context } from "@/context/context";
+import * as Collapsible from "@radix-ui/react-collapsible";
+import {
+  Boxes,
+  ChevronLeft,
+  Menu,
+  Users,
+  Settings,
+  MapPin,
+} from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
-import { Menu, Home, Users, Settings, Shield } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { context } from "../../context/context";
+import { ReactNode } from "react";
 
-export function SuperAdminDrawer() {
+type RouteItem = { name: string; href: string; icon: ReactNode };
+
+const routes: RouteItem[] = [
+  {
+    name: "Departments",
+    href: "/super-admin/sa-dash/departments",
+    icon: <Boxes className="mr-2 size-3" />,
+  },
+  {
+    name: "States",
+    href: "/super-admin/sa-dash/states",
+    icon: <MapPin className="mr-2 size-3" />,
+  },
+  {
+    name: "Admins",
+    href: "/super-admin/sa-dash/admins",
+    icon: <Users className="mr-2 size-3" />,
+  },
+  {
+    name: "Settings",
+    href: "/super-admin/sa-dash/settings",
+    icon: <Settings className="mr-2 size-3" />,
+  },
+];
+
+const SuperAdminDashboard = ({ children }: { children: ReactNode }) => {
   const { superAdminDrawerOpen, setSuperAdminDrawerOpen } = context();
-
-  const pathname = usePathname();
-
-  const routes = [
-    { name: "Dashboard", icon: Home, route: "/super-admin/dashboard" },
-    { name: "Manage Admins", icon: Users, route: "/super-admin/admins" },
-    { name: "Departments", icon: Shield, route: "/super-admin/departments" },
-    { name: "Settings", icon: Settings, route: "/super-admin/settings" },
-  ];
-
   return (
-    <Drawer
-      
-      direction="left"
-      open={superAdminDrawerOpen}
-      onOpenChange={setSuperAdminDrawerOpen}
-    >
-
-      <DrawerContent
-        className={cn(
-          "fixed top-0 left-0 h-full bg-white shadow-lg z-50 overflow-y-auto transition-all",
-          "w-full sm:w-1/4" // full on mobile, 1/4 on larger screens
-        )}
+    <div className="flex">
+      {/* <Collapsible.Root
+        open={superAdminDrawerOpen}
+        onOpenChange={setSuperAdminDrawerOpen}
       >
-        <div className="p-6 space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Super Admin</h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSuperAdminDrawerOpen(false)}
-              aria-label="Close drawer"
-            >
-              ✕
-            </Button>
-          </div>
+        <Collapsible.Trigger asChild>
+          <Button size="icon" className="cursor-pointer" variant="outline">
+            <Menu></Menu>
+          </Button>
+        </Collapsible.Trigger>
+      </Collapsible.Root> */}
 
-          <Separator />
-
-          {/* Navigation */}
-          <nav className="space-y-1">
-            {routes.map((item) => {
-              const isActive = pathname === item.route;
-
-              return (
-                <Link
-                  key={item.route}
-                  href={item.route}
-                  onClick={() => setSuperAdminDrawerOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
-                    isActive
-                      ? "bg-gray-100 font-medium text-gray-900"
-                      : "text-gray-700 hover:bg-gray-50"
-                  )}
+      <Collapsible.Root
+        className="fixed top-0 left-0 z-20 h-dvh"
+        open={superAdminDrawerOpen}
+        onOpenChange={setSuperAdminDrawerOpen}
+      >
+        <Collapsible.Content forceMount>
+          <div
+            className={`fixed top-0 left-0 z-50 h-full w-80 bg-gray-50 p-4 shadow-lg transition-transform duration-300 ease-in-out sm:w-64 ${
+              superAdminDrawerOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
+          >
+            <div className="mb-4 flex items-center justify-center">
+              <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+              <Collapsible.Trigger asChild>
+                <Button
+                  size="icon"
+                  variant="link"
+                  className="ml-auto cursor-pointer bg-transparent text-black hover:scale-110"
                 >
-                  <item.icon
-                    className={cn(
-                      "h-5 w-5",
-                      isActive ? "text-gray-900" : "text-gray-500"
-                    )}
-                  />
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      </DrawerContent>
-    </Drawer>
+                  <ChevronLeft></ChevronLeft>
+                </Button>
+              </Collapsible.Trigger>
+            </div>
+            <Separator className="my-2 h-1 bg-gray-400" />
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={
+                superAdminDrawerOpen
+                  ? { height: "auto", opacity: 1 }
+                  : { height: 0, opacity: 0 }
+              }
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className={`flex flex-col gap-2 ${
+                !superAdminDrawerOpen ? "pointer-events-none" : ""
+              }`}
+            >
+              {routes.map((r) => (
+                <Button
+                  key={r.href}
+                  className="w-full justify-start font-normal"
+                  variant={usePathname() === r.href ? "default" : "ghost"}
+                  asChild
+                >
+                  <Link
+                    className={`flex items-center rounded-md px-5 py-1 transition-all ${
+                      usePathname() === r.href
+                        ? "bg-gray-300 font-medium"
+                        : "hover:bg-gray-100"
+                    }`}
+                    href={r.href}
+                  >
+                    {r.icon} <span className="text-sm">{r.name}</span>
+                  </Link>
+                </Button>
+              ))}
+            </motion.div>
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Root>
+      <main
+        className={`mt-13 h-dvh w-full  transition-all duration-300 ease-in-out ${
+          superAdminDrawerOpen ? "blur-xs sm:ml-60" : ""
+        } `}
+      >
+        {children}
+      </main>
+    </div>
   );
-}
+};
 
-// Backwards-compatible alias: some layouts import AdminDrawer
-export const AdminDrawer = SuperAdminDrawer;
+export { SuperAdminDashboard };

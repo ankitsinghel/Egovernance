@@ -1,10 +1,6 @@
 import "../../../app/globals.css";
-import { cookies } from "next/headers";
-import { verifyToken } from "../../../lib/auth";
-import { redirect } from "next/navigation";
-import { SuperAdminDrawer } from "../../../components/superAdmin/drawer";
-import { SuperAdminNavbar } from "../../../components/superAdmin/navbar";
 import { contextProvider as ContextProvider } from "../../../context/context";
+import Spinner from "@/components/loader";
 
 export const metadata = {
   title: "Super Admin Dashboard",
@@ -15,23 +11,12 @@ export default async function SuperAdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const c = await cookies();
-  const token = c.get("egov_token")?.value;
-  const payload = token ? verifyToken(token) : null;
-  const user = payload as any;
-  if (!payload || (payload as any).role !== "SuperAdmin") {
-    // Not authenticated or not a SuperAdmin -> redirect to public login
-  }
-
   return (
     <html lang="en">
       <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
         <ContextProvider>
-          <main className="">
-            <SuperAdminDrawer />
-            <SuperAdminNavbar />
-            <main>{children}</main>
-          </main>
+          <Spinner />
+          <main>{children}</main>
         </ContextProvider>
       </body>
     </html>

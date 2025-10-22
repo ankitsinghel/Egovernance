@@ -9,7 +9,7 @@ export const runtime = 'edge'
 export async function POST(req: Request) {
   // parse multipart form
   const { fields, files } = await parseForm(req as any)
-  const org = fields.organization || 'Unknown'
+  const dept = fields.department || 'Unknown'
   const designation = fields.designation
   const accusedName = fields.accusedName
   const city = fields.city
@@ -42,20 +42,20 @@ export async function POST(req: Request) {
 
   // find matching admin
   let assignedAdmin = null
-  if (org) {
-    // try exact city match first
-    // find organization by name
-    const orgRec = await prisma.organization.findUnique({ where: { name: org } })
-    if (orgRec) {
-      assignedAdmin = await prisma.admin.findFirst({ where: { organizationId: orgRec.id, city: city || undefined } })
+  if (dept) {
+  // try exact city match first
+  // find department by name
+    const deptRec = await prisma.department.findUnique({ where: { name: dept } })
+    if (deptRec) {
+      assignedAdmin = await prisma.admin.findFirst({ where: { departmentId: deptRec.id, city: city || undefined } })
       if (!assignedAdmin) {
-        assignedAdmin = await prisma.admin.findFirst({ where: { organizationId: orgRec.id } })
+        assignedAdmin = await prisma.admin.findFirst({ where: { departmentId: deptRec.id } })
       }
     }
   }
 
-  if (assignedAdmin && assignedAdmin.organization === org && assignedAdmin.city === city) {
-    // same office reported against their own org -> escalate
+  if (assignedAdmin && assignedAdmin.department === dept && assignedAdmin.city === city) {
+    // same office reported against their own dept -> escalate
     priority = 'critical'
     // route to superior if exists
     if (assignedAdmin.superiorId) {
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
   const report = await prisma.userReport.create({
     data: {
       trackingId,
-      organizationId: org ? (await prisma.organization.findUnique({ where: { name: org } }))?.id || null : null,
+  departmentId: dept ? (await prisma.department.findUnique({ where: { name: dept } }))?.id || null : null,
       designation,
       accusedName,
       city,
@@ -83,8 +83,8 @@ export async function POST(req: Request) {
   })
 
   // notify assigned admin
-  if (assignedAdmin && assignedAdmin.email) {
-    await sendNewReportNotification(assignedAdmin.email, trackingId, org, city)
+    if (assignedAdmin && assignedAdmin.email) {
+    await sendNewReportNotification(assignedAdmin.email, trackingId, dept, city)
   }
 
   return NextResponse.json({ ok: true, trackingId })

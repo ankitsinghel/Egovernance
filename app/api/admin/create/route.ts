@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json()
-  const { name, email, password, organizationId, city, role = 'SuperAdmin', superiorId } = body
+  const { name, email, password, departmentId, city, role = 'SuperAdmin', superiorId } = body
 
   // For initial creation, force role to SuperAdmin; if a SuperAdmin already exists, disallow creating another SuperAdmin
   let finalRole = role
@@ -31,16 +31,16 @@ export async function POST(req: Request) {
     }
   }
 
-  // Prevent creating a duplicate admin for the same organizationId+city
+  // Prevent creating a duplicate admin for the same departmentId+city
   // Normalize city: treat empty string as null
   const normalizedCity = city === '' ? null : city
-  const existing = await prisma.admin.findFirst({ where: { organizationId: organizationId, city: normalizedCity } })
+  const existing = await prisma.admin.findFirst({ where: { departmentId: departmentId, city: normalizedCity } })
   if (existing) {
-    return NextResponse.json({ ok: false, error: 'An admin for this organization and city already exists' }, { status: 409 })
+    return NextResponse.json({ ok: false, error: 'An admin for this department and city already exists' }, { status: 409 })
   }
 
   const hashed = await hashPassword(password)
-  const admin = await prisma.admin.create({ data: { name, email, password: hashed, organizationId: organizationId, city, role: finalRole, superiorId } })
+  const admin = await prisma.admin.create({ data: { name, email, password: hashed, departmentId: departmentId, city, role: finalRole, superiorId } })
 
   // Auto-login: sign JWT and set httpOnly cookie for the created admin
   const jwtToken = signToken({ id: admin.id, role: admin.role })

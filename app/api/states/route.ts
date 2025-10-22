@@ -3,12 +3,11 @@ import { prisma } from '../../../lib/db'
 import { verifyToken } from '../../../lib/auth'
 
 export async function GET() {
-  const orgs = await prisma.organization.findMany()
-  return NextResponse.json({ ok: true, orgs })
+  const list = await prisma.state.findMany()
+  return NextResponse.json({ ok: true, list })
 }
 
 export async function POST(req: Request) {
-  // Only SuperAdmin allowed - token in cookie
   const cookie = req.headers.get('cookie') || ''
   const match = cookie.match(/egov_token=([^;]+)/)
   const token = match?.[1]
@@ -17,6 +16,6 @@ export async function POST(req: Request) {
 
   const body = await req.json()
   const { name } = body
-  const org = await prisma.organization.create({ data: { name } })
-  return NextResponse.json({ ok: true, org })
+  const city = await prisma.state.create({ data: { name } })
+  return NextResponse.json({ ok: true, city })
 }

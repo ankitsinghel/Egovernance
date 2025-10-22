@@ -16,8 +16,10 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
+import { context } from "@/context/context";
 
 export default function SuperLogin() {
+  const { user, setUser } = context();
   const {
     register,
     handleSubmit,
@@ -41,9 +43,10 @@ export default function SuperLogin() {
       });
       const j = await res.json();
       if (j.ok) {
+        setUser(j.user);
         // Show success state briefly before redirect
         setTimeout(() => {
-          window.location.href = "/super-admin/dashboard";
+          window.location.href = "/super-admin/sa-dash/dashboard";
         }, 1000);
       } else {
         setLoginError("Invalid credentials. Please try again.");

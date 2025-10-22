@@ -25,3 +25,29 @@ export const ReportSchema = z.object({
 })
 
 export type ReportForm = z.infer<typeof ReportSchema>
+
+export const DepartmentSchema = z.object({
+  name: z.string().min(2, "Minimum 2 characters").max(100, "Maximum 100 characters"),
+})
+export type DepartmentForm = z.infer<typeof DepartmentSchema>
+
+export const StateSchema = z.object({
+  name: z.string().min(2, "Minimum 2 characters").max(100, "Maximum 100 characters"),
+})
+export type StateForm = z.infer<typeof StateSchema>
+
+export const AdminCreateSchema = z.object({
+  name: z.string().min(2, "Minimum 2 characters"),
+  email: z.string().email("Please provide a valid email"),
+  password: z.string().min(6, "Minimum 6 characters"),
+  departmentId: z.number().min(1, "Please select a department"),
+})
+export type AdminCreateForm = z.infer<typeof AdminCreateSchema>
+
+export const AdminUpdateSchema = z.object({
+  name: z.string().min(2, "Minimum 2 characters"),
+  email: z.string().email("Please provide a valid email"),
+  password: z.string().min(6, "Minimum 6 characters").optional(),
+  departmentId: z.number().min(1, "Please select a department"),
+})
+export type AdminUpdateForm = z.infer<typeof AdminUpdateSchema>

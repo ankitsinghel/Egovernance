@@ -7,14 +7,14 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model Organization {
+model Department {
   id     Int      @id @default(autoincrement())
   name   String   @unique
   admins Admin[]
   reports UserReport[]
 }
 
-model City {
+model State {
   id   Int    @id @default(autoincrement())
   name String @unique
 }
@@ -24,8 +24,8 @@ model Admin {
   name         String
   email        String   @unique
   password     String
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
   city         String?
   role         String
   superiorId   Int?
@@ -38,8 +38,8 @@ model Admin {
 model UserReport {
   id            Int      @id @default(autoincrement())
   trackingId    String   @unique
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
+  departmentId  Int
+  department    Department @relation(fields: [departmentId], references: [id])
   designation   String?
   accusedName   String?
   city          String?
