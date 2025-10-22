@@ -1,0 +1,9 @@
+{
+  "/api/departments/[id]/route": "app/api/departments/[id]/route.js",
+  "/api/departments/route": "app/api/departments/route.js",
+  "/(main)/page": "app/(main)/page.js",
+  "/(super-admin)/super-admin/sa-dash/departments/page": "app/(super-admin)/super-admin/sa-dash/departments/page.js",
+  "/(super-admin)/super-admin/sa-dash/states/page": "app/(super-admin)/super-admin/sa-dash/states/page.js",
+  "/(super-admin)/super-admin/sa-dash/admins/page": "app/(super-admin)/super-admin/sa-dash/admins/page.js",
+  "/(super-admin)/super-admin/sa-dash/dashboard/page": "app/(super-admin)/super-admin/sa-dash/dashboard/page.js"
+}
