@@ -25,5 +25,6 @@ export async function DELETE(req: Request, { params }: any) {
 
   const id = Number(params.id)
   await prisma.state.delete({ where: { id } })
+
   return NextResponse.json({ ok: true })
 }
