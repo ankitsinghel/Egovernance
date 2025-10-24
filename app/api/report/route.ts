@@ -1,91 +1,114 @@
-import { NextResponse } from 'next/server'
-import { parseForm, moveAndEncryptFile } from '../../../lib/upload'
-import { prisma } from '../../../lib/db'
-import { generateTrackingId } from '../../../lib/hash'
-import { sendNewReportNotification } from '../../../lib/email'
+import { NextResponse } from "next/server";
+import { parseForm, moveAndEncryptFile } from "../../../lib/upload";
+import { prisma } from "../../../lib/db";
+import { generateTrackingId } from "../../../lib/hash";
+import { sendNewReportNotification } from "../../../lib/email";
 
-export const runtime = 'edge'
+
 
 export async function POST(req: Request) {
-  // parse multipart form
-  const { fields, files } = await parseForm(req as any)
-  const dept = fields.department || 'Unknown'
-  const designation = fields.designation
-  const accusedName = fields.accusedName
-  const city = fields.city
-  const description = fields.description || ''
+  try {
+    
+    const { fields, files } = await parseForm(req as any);
 
-  const trackingId = generateTrackingId()
 
-  // handle files
-  const savedFiles: string[] = []
-  if (files && Object.keys(files).length) {
-    const fileEntries = Array.isArray(files.file) ? files.file : [files.file]
-    for (const f of fileEntries) {
-      if (!f) continue
-      try {
-        const dest = moveAndEncryptFile(f)
-        savedFiles.push(dest)
-      } catch (e) {
-        console.error('file save error', e)
+    const deptId = Number(fields.department) || null;
+    const designation = fields.designation || null;
+    const accusedName = fields.accusedName || null;
+    const stateIdRaw = Number(fields.state);
+    const description = fields.description || "";
+
+    const trackingId = await generateTrackingId();
+
+    const savedFiles: string[] = [];
+    if (files && Object.keys(files).length) {
+      const fileEntries = Array.isArray(files.file) ? files.file : [files.file];
+      for (const f of fileEntries) {
+        if (!f) continue;
+        try {
+          const dest = moveAndEncryptFile(f);
+          savedFiles.push(dest);
+        } catch (e) {
+          console.error("file save error", e);
+        }
       }
     }
-  }
 
-  // determine priority and assignment
-  let priority = 'normal'
-  // simple heuristic: if description contains words like 'bribe', escalate
-  const descLower = description.toLowerCase()
-  if (descLower.includes('bribe') || descLower.includes('assault') || descLower.includes('fraud')) {
-    priority = 'high'
-  }
+    let priority = "normal";
+    const descLower = String(description).toLowerCase();
+    if (
+      descLower.includes("bribe") ||
+      descLower.includes("assault") ||
+      descLower.includes("fraud")
+    ) {
+      priority = "high";
+    }
 
-  // find matching admin
-  let assignedAdmin = null
-  if (dept) {
-  // try exact city match first
-  // find department by name
-    const deptRec = await prisma.department.findUnique({ where: { name: dept } })
-    if (deptRec) {
-      assignedAdmin = await prisma.admin.findFirst({ where: { departmentId: deptRec.id, city: city || undefined } })
+    const dept = await prisma.department.findUnique({
+      where: { id: deptId },
+    });
+    const stateRec = stateIdRaw
+      ? await prisma.state.findUnique({ where: { id: Number(stateIdRaw) } })
+      : null;
+
+    let assignedAdmin = null;
+    if (dept) {
+      if (stateRec) {
+        assignedAdmin = await prisma.admin.findFirst({
+          where: { departmentId: dept.id, stateId: stateRec.id },
+        });
+      }
       if (!assignedAdmin) {
-        assignedAdmin = await prisma.admin.findFirst({ where: { departmentId: deptRec.id } })
+        assignedAdmin = await prisma.admin.findFirst({
+          where: { departmentId: dept.id },
+        });
       }
     }
-  }
-
-  if (assignedAdmin && assignedAdmin.department === dept && assignedAdmin.city === city) {
-    // same office reported against their own dept -> escalate
-    priority = 'critical'
-    // route to superior if exists
-    if (assignedAdmin.superiorId) {
-      assignedAdmin = await prisma.admin.findUnique({ where: { id: assignedAdmin.superiorId } })
+    if (
+      assignedAdmin &&
+      dept &&
+      assignedAdmin.departmentId === dept.id &&
+      assignedAdmin.stateId === (stateRec ? stateRec.id : undefined)
+    ) {
+      if (assignedAdmin.superiorId) {
+        assignedAdmin = await prisma.admin.findUnique({
+          where: { id: assignedAdmin.superiorId },
+        });
+      }
     }
-  }
 
-  if (!assignedAdmin) {
-    // fallback to SuperAdmin
-    assignedAdmin = await prisma.admin.findFirst({ where: { role: 'SuperAdmin' } })
-  }
+    if (!assignedAdmin) {
+      assignedAdmin = await prisma.superAdmin.findFirst();
+    }
+  
+    const report = await prisma.userReport.create({
+      data: {
+        trackingId,
+        departmentId: dept ? dept.id : null,
+        designation,
+        accusedName,
+        stateId: stateRec ? stateRec.id : null,
+        description,
+        files: savedFiles.length ? JSON.stringify(savedFiles) : null,
+        assignedToId: assignedAdmin?.id || null,
+      },
+    });
 
-  const report = await prisma.userReport.create({
-    data: {
-      trackingId,
-  departmentId: dept ? (await prisma.department.findUnique({ where: { name: dept } }))?.id || null : null,
-      designation,
-      accusedName,
-      city,
-      description,
-      files: savedFiles.length ? JSON.stringify(savedFiles) : null,
-      priority,
-      assignedToId: assignedAdmin?.id || null,
-    },
-  })
-
-  // notify assigned admin
     if (assignedAdmin && assignedAdmin.email) {
-    await sendNewReportNotification(assignedAdmin.email, trackingId, dept, city)
-  }
+      await sendNewReportNotification(
+        assignedAdmin.email,
+        trackingId,
+        dept.name,
+        stateRec ? stateRec.name : undefined
+      );
+    }
 
-  return NextResponse.json({ ok: true, trackingId })
+    return NextResponse.json({ ok: true, trackingId });
+  } catch (err) {
+    console.error("report POST error", err);
+    return NextResponse.json(
+      { ok: false, error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
 }

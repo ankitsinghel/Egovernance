@@ -1,4 +1,11 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  // keep default config; App Router is enabled in Next 15 by default
+  // Add webpack rule to handle .html imports (some native deps include HTML files)
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.html$/i,
+      type: 'asset/source',
+    });
+    return config;
+  },
 }

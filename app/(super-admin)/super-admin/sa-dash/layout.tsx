@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { context } from "../../../../context/context";
 import { Button } from "../../../../components/ui/button";
-import { SuperAdminDashboard } from "@/components/superAdmin/drawer";
-import { SuperAdminNavbar } from "@/components/superAdmin/navbar";
+import { SuperAdminDashboard } from "@/components/AdminDrawer";
+import { SuperAdminNavbar } from "@/components/AdminNavbar";
+import { Boxes, MapPin, Settings, Users } from "lucide-react";
 
 export default function MastersLayout({
   children,
@@ -17,18 +18,34 @@ export default function MastersLayout({
     fetchMasters();
   }, []);
 
+  type RouteItem = { name: string; href: string; icon: ReactNode };
+
+  const routes: RouteItem[] = [
+    {
+      name: "Departments",
+      href: "/super-admin/sa-dash/departments",
+      icon: <Boxes className="mr-2 size-3" />,
+    },
+    {
+      name: "States",
+      href: "/super-admin/sa-dash/states",
+      icon: <MapPin className="mr-2 size-3" />,
+    },
+    {
+      name: "Admins",
+      href: "/super-admin/sa-dash/admins",
+      icon: <Users className="mr-2 size-3" />,
+    },
+    {
+      name: "Settings",
+      href: "/super-admin/sa-dash/settings",
+      icon: <Settings className="mr-2 size-3" />,
+    },
+  ];
   return (
-      <SuperAdminDashboard>
-        <SuperAdminNavbar />
-        {/* <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">Masters</h1>
-          <div>
-            <Button onClick={() => fetchMasters()} disabled={loading}>
-              {loading ? "Refreshing..." : "Refresh All Masters"}
-            </Button>
-          </div>
-        </div> */}
-        <main>{children}</main>
-      </SuperAdminDashboard>
+    <SuperAdminDashboard routes={routes}>
+      <SuperAdminNavbar />
+      <main>{children}</main>
+    </SuperAdminDashboard>
   );
 }

@@ -1,19 +1,25 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import { 
-  Search, 
-  Eye, 
-  Shield, 
-  FileText, 
+import {
+  Search,
+  Eye,
+  Shield,
+  FileText,
   Clock,
   CheckCircle2,
   AlertTriangle,
   MapPin,
   Building,
-  ArrowRight
-} from 'lucide-react';
+  ArrowRight,
+} from "lucide-react";
 
 export default function TrackPage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
@@ -47,7 +53,17 @@ export default function TrackPage() {
             </span>
           </div>
 
-          <form action="/api/report/track" method="get" className="space-y-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.currentTarget as HTMLFormElement;
+              const fd = new FormData(form);
+              const trackingId = (fd.get("trackingId") || "").toString().trim();
+              if (!trackingId) return;
+              router.push(`/report/${encodeURIComponent(trackingId)}`);
+            }}
+            className="space-y-6"
+          >
             {/* Tracking ID Input */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
@@ -91,13 +107,15 @@ export default function TrackPage() {
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full flex-shrink-0"></div>
                 <div>
-                  <span className="font-medium">Pending</span> - Report received and awaiting review
+                  <span className="font-medium">Pending</span> - Report received
+                  and awaiting review
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
                 <div>
-                  <span className="font-medium">In Progress</span> - Under investigation
+                  <span className="font-medium">In Progress</span> - Under
+                  investigation
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -111,7 +129,9 @@ export default function TrackPage() {
 
           {/* Security Features */}
           <div className="mt-6 pt-6 border-t border-slate-200">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Your Privacy</h3>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">
+              Your Privacy
+            </h3>
             <div className="grid grid-cols-1 gap-2 text-xs text-slate-600">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -134,10 +154,13 @@ export default function TrackPage() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
             <div className="text-sm">
-              <p className="font-medium text-slate-900">Lost your Tracking ID?</p>
+              <p className="font-medium text-slate-900">
+                Lost your Tracking ID?
+              </p>
               <p className="text-slate-600 mt-1">
-                Unfortunately, we cannot retrieve lost tracking IDs as we don't store any personal information. 
-                Please ensure you keep your tracking ID secure.
+                Unfortunately, we cannot retrieve lost tracking IDs as we don't
+                store any personal information. Please ensure you keep your
+                tracking ID secure.
               </p>
             </div>
           </div>
@@ -146,11 +169,17 @@ export default function TrackPage() {
         {/* Footer Links */}
         <div className="text-center mt-6">
           <div className="flex justify-center gap-4">
-            <a href="/" className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
+            <a
+              href="/"
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+            >
               Back to Home
             </a>
             <span className="text-slate-300">•</span>
-            <a href="/report" className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
+            <a
+              href="/report"
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+            >
               Submit New Report
             </a>
           </div>

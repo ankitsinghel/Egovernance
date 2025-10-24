@@ -1,9 +1,9 @@
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import Link from "next/link";
-import { Shield, Lock, Eye, Upload, Search, CheckCircle } from 'lucide-react';
+import { Shield, Lock, Eye, Upload, Search, CheckCircle } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Hero Section */}
@@ -15,13 +15,13 @@ export default function Home() {
               Secure • Anonymous • Encrypted
             </div>
           </div>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">
             Fight Corruption <span className="text-blue-600">Safely</span>
           </h1>
-          
+
           <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-            Report corruption and unethical practices with complete anonymity. 
+            Report corruption and unethical practices with complete anonymity.
             Your identity is protected with military-grade encryption.
           </p>
 
@@ -33,7 +33,10 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/track" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full sm:w-auto text-lg py-6 px-8 border-2">
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto text-lg py-6 px-8 border-2"
+              >
                 <Search className="w-5 h-5 mr-2" />
                 Track Your Case
               </Button>
@@ -67,18 +70,23 @@ export default function Home() {
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Upload className="w-6 h-6 text-blue-600" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">Safe Reporting Process</h2>
+              <h2 className="text-2xl font-bold text-slate-900">
+                Safe Reporting Process
+              </h2>
             </div>
-            
+
             <div className="space-y-6">
               <div className="flex gap-4">
                 <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                   1
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Submit Evidence Securely</h3>
+                  <h3 className="font-semibold text-slate-900">
+                    Submit Evidence Securely
+                  </h3>
                   <p className="text-slate-600 text-sm mt-1">
-                    Upload documents, photos, or videos. All metadata is automatically removed for your protection.
+                    Upload documents, photos, or videos. All metadata is
+                    automatically removed for your protection.
                   </p>
                 </div>
               </div>
@@ -88,9 +96,12 @@ export default function Home() {
                   2
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Get Secure Tracking ID</h3>
+                  <h3 className="font-semibold text-slate-900">
+                    Get Secure Tracking ID
+                  </h3>
                   <p className="text-slate-600 text-sm mt-1">
-                    Receive an encrypted SHA-256 tracking code. This is your only way to follow up - keep it safe.
+                    Receive an encrypted SHA-256 tracking code. This is your
+                    only way to follow up - keep it safe.
                   </p>
                 </div>
               </div>
@@ -100,9 +111,12 @@ export default function Home() {
                   3
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Monitor Progress Anonymously</h3>
+                  <h3 className="font-semibold text-slate-900">
+                    Monitor Progress Anonymously
+                  </h3>
                   <p className="text-slate-600 text-sm mt-1">
-                    Use your tracking ID to check case status and communicate securely with investigators.
+                    Use your tracking ID to check case status and communicate
+                    securely with investigators.
                   </p>
                 </div>
               </div>
@@ -123,7 +137,9 @@ export default function Home() {
             <Card className="p-6 border-2 border-green-100">
               <div className="flex items-center gap-3 mb-4">
                 <Shield className="w-5 h-5 text-green-600" />
-                <h3 className="text-lg font-semibold text-slate-900">Maximum Security Guarantee</h3>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Maximum Security Guarantee
+                </h3>
               </div>
               <ul className="space-y-3 text-sm text-slate-600">
                 <li className="flex items-center gap-2">
@@ -147,7 +163,9 @@ export default function Home() {
 
             {/* Supported Evidence Card */}
             <Card className="p-6 border-2 border-purple-100">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Supported Evidence Types</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                Supported Evidence Types
+              </h3>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="flex items-center gap-2 text-slate-600">
                   <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
@@ -170,7 +188,9 @@ export default function Home() {
 
             {/* Admin Access Card */}
             <Card className="p-6 border-2 border-slate-200">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Government & Admin Access</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                Government & Admin Access
+              </h3>
               <div className="space-y-3">
                 <Link href="/admin/login" className="block">
                   <Button variant="outline" className="w-full justify-start">
@@ -191,9 +211,12 @@ export default function Home() {
       {/* Bottom CTA */}
       <section className="py-12 px-4 bg-slate-900 text-white rounded-lg">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-4">Ready to Make a Difference?</h2>
+          <h2 className="text-2xl font-bold mb-4">
+            Ready to Make a Difference?
+          </h2>
           <p className="text-slate-300 mb-6">
-            Join thousands of citizens fighting corruption safely and effectively.
+            Join thousands of citizens fighting corruption safely and
+            effectively.
           </p>
           <Link href="/report">
             <Button className="bg-white text-slate-900 hover:bg-slate-100 text-lg py-3 px-8">

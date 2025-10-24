@@ -17,6 +17,8 @@ model Department {
 model State {
   id   Int    @id @default(autoincrement())
   name String @unique
+  admins Admin[]
+  reports UserReport[]
 }
 
 model Admin {
@@ -26,7 +28,8 @@ model Admin {
   password     String
   departmentId Int
   department   Department @relation(fields: [departmentId], references: [id])
-  city         String?
+  stateId      Int?
+  state        State?    @relation(fields: [stateId], references: [id])
   role         String
   superiorId   Int?
   superior     Admin?   @relation("Superior", fields: [superiorId], references: [id])
@@ -42,8 +45,8 @@ model UserReport {
   department    Department @relation(fields: [departmentId], references: [id])
   designation   String?
   accusedName   String?
-  city          String?
-  priority      String   @default("normal")
+  stateId       Int?
+  state         State?    @relation(fields: [stateId], references: [id])
   description   String
   files         String?
   status        String   @default("pending")

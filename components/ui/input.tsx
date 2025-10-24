@@ -14,33 +14,14 @@ export const Input = React.forwardRef<HTMLInputElement, any>(function Input(
   const { value, defaultValue, onChange, className, ...rest } = props;
 
   const baseClass = className || "w-full p-2 border rounded";
+  // Always render as a controlled input to avoid switching between uncontrolled and controlled.
+  const effective = value !== undefined ? value : defaultValue;
 
-  // If consumer provided defaultValue but no value, keep uncontrolled by passing defaultValue.
-  if (value === undefined && defaultValue !== undefined) {
-    return (
-      <input
-        ref={ref}
-        className={baseClass}
-        defaultValue={defaultValue}
-        onChange={onChange}
-        {...rest}
-      />
-    );
-  }
-
-  // If value is undefined and no defaultValue, render uncontrolled input (don't pass value prop)
-  if (value === undefined) {
-    return (
-      <input ref={ref} className={baseClass} onChange={onChange} {...rest} />
-    );
-  }
-
-  // Controlled input when value is provided
   return (
     <input
       ref={ref}
       className={baseClass}
-      value={normalizeValue(value)}
+      value={normalizeValue(effective)}
       onChange={onChange}
       {...rest}
     />
@@ -53,35 +34,13 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, any>(
   function Textarea(props, ref) {
     const { value, defaultValue, onChange, className, ...rest } = props;
     const baseClass = className || "w-full p-2 border rounded";
-
-    if (value === undefined && defaultValue !== undefined) {
-      return (
-        <textarea
-          ref={ref}
-          className={baseClass}
-          defaultValue={defaultValue}
-          onChange={onChange}
-          {...rest}
-        />
-      );
-    }
-
-    if (value === undefined) {
-      return (
-        <textarea
-          ref={ref}
-          className={baseClass}
-          onChange={onChange}
-          {...rest}
-        />
-      );
-    }
+    const effective = value !== undefined ? value : defaultValue;
 
     return (
       <textarea
         ref={ref}
         className={baseClass}
-        value={normalizeValue(value)}
+        value={normalizeValue(effective)}
         onChange={onChange}
         {...rest}
       />

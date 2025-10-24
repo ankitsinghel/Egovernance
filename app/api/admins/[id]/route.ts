@@ -3,7 +3,8 @@ import { prisma } from '../../../../lib/db'
 import { verifyToken } from '../../../../lib/auth'
 import { hashPassword } from '../../../../lib/hash'
 
-export async function PUT(req: Request, { params }: any) {
+export async function PUT(req: Request, props: any) {
+  const params = await props.params;
   const cookie = req.headers.get('cookie') || ''
   const match = cookie.match(/egov_token=([^;]+)/)
   const token = match?.[1]
@@ -22,7 +23,8 @@ export async function PUT(req: Request, { params }: any) {
   return NextResponse.json({ ok: true, admin })
 }
 
-export async function DELETE(req: Request, { params }: any) {
+export async function DELETE(req: Request, props: any) {
+  const params = await props.params;
   const cookie = req.headers.get('cookie') || ''
   const match = cookie.match(/egov_token=([^;]+)/)
   const token = match?.[1]

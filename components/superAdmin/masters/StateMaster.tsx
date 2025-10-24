@@ -46,6 +46,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ButtonGroup } from "@/components/ui/button-group";
 
 type StateT = { id: number; name: string };
 
@@ -136,21 +137,23 @@ export default function StateMaster() {
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => refreshStates()}
-                disabled={loading}
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
-                />
-                <span className="ml-2 hidden sm:inline">Refresh</span>
-              </Button>
-              <Button size="sm" onClick={() => setShowCreate(true)}>
-                <Plus className="w-4 h-4" />
-                <span className="ml-2 hidden sm:inline">Add State</span>
-              </Button>
+              <ButtonGroup>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => refreshStates()}
+                  disabled={loading}
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                  />
+                  {/* <span className="ml-2 hidden sm:inline">Refresh</span> */}
+                </Button>
+                <Button size="sm" onClick={() => setShowCreate(true)}>
+                  <Plus className="w-4 h-4" />
+                  {/* <span className="ml-2 hidden sm:inline">Add State</span> */}
+                </Button>
+              </ButtonGroup>
             </div>
           </div>
         </CardHeader>

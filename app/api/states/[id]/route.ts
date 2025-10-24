@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { prisma } from '../../../../lib/db'
 import { verifyToken } from '../../../../lib/auth'
 
-export async function PUT(req: Request, { params }: any) {
+export async function PUT(req: Request, props: any) {
+  const params = await props.params;
   const cookie = req.headers.get('cookie') || ''
   const match = cookie.match(/egov_token=([^;]+)/)
   const token = match?.[1]
@@ -16,7 +17,8 @@ export async function PUT(req: Request, { params }: any) {
   return NextResponse.json({ ok: true, state })
 }
 
-export async function DELETE(req: Request, { params }: any) {
+export async function DELETE(req: Request, props: any) {
+  const params = await props.params;
   const cookie = req.headers.get('cookie') || ''
   const match = cookie.match(/egov_token=([^;]+)/)
   const token = match?.[1]
