@@ -17,11 +17,15 @@ import {
   Shield,
   CheckCircle2
 } from 'lucide-react';
+import { context } from "@/context/context";
+import { useRouter } from "next/navigation";
 
 export default function AdminLogin() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const { setUser } = context();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
     resolver: zodResolver(LoginSchema),
   });
@@ -37,10 +41,11 @@ export default function AdminLogin() {
         credentials: "include",
       });
       const j = await res.json();
+      console.log("Login successful:", j.user);
       if (j.ok) {
-        // Show success state briefly before redirect
+        setUser(j.user);
         setTimeout(() => {
-          window.location.href = "/admin/dashboard";
+          router.push("/admin/dashboard");
         }, 1000);
       } else {
         setLoginError(j.error || "Invalid credentials. Please try again.");

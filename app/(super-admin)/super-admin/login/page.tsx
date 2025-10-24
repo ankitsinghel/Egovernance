@@ -17,6 +17,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { context } from "@/context/context";
+import { useRouter } from "next/navigation";
 
 export default function SuperLogin() {
   const { user, setUser } = context();
@@ -30,6 +31,7 @@ export default function SuperLogin() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const router = useRouter();
 
   async function onSubmit(data: LoginForm) {
     setLoading(true);
@@ -46,7 +48,7 @@ export default function SuperLogin() {
         setUser(j.user);
         // Show success state briefly before redirect
         setTimeout(() => {
-          window.location.href = "/super-admin/sa-dash/dashboard";
+          router.push("/super-admin/sa-dash/dashboard");
         }, 1000);
       } else {
         setLoginError("Invalid credentials. Please try again.");

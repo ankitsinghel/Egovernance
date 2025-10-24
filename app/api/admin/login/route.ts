@@ -12,8 +12,9 @@ export async function POST(req: Request) {
   const match = await comparePassword(password, admin.password);
   if (!match)
     return NextResponse.json({ ok: false, error: "Invalid" }, { status: 401 });
-  const token = signToken({ id: admin.id, role: admin.role });
-  const res = NextResponse.json({ ok: true, user: token });
+  const token = signToken({ id: admin.id, role: admin.role, name: admin.name });
+  const user = { id: admin.id, role: admin.role, name: admin.name };
+  const res = NextResponse.json({ ok: true, user });
   res.headers.set("Set-Cookie", setAuthCookie(token));
 
   return res;

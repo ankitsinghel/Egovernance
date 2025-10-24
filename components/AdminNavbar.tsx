@@ -13,6 +13,7 @@ export function SuperAdminNavbar() {
     setSuperAdminDrawerOpen,
     loading,
     setLoading,
+    user,
     setUser,
     superAdminDrawerOpen,
   } = context();
@@ -29,13 +30,17 @@ export function SuperAdminNavbar() {
     startTransition(async () => {
       try {
         setLoading(true);
+        console.log(user.role)
+        const role = user.role;
         await fetch("/api/logout", { method: "POST", credentials: "include" });
+        role === "Superadmin" ? router.push("/super-admin/login"): router.push("/admin/login"); 
+        setUser(null);
+        setLoading(false);
       } catch (e) {
+        setLoading(false);
         console.error("logout failed", e);
       }
-      setUser(null);
-      setLoading(false);
-      router.push("/super-admin/login"); //
+   
     });
   }
 

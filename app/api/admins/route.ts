@@ -8,7 +8,8 @@ export async function GET(req: Request) {
   const match = cookie.match(/egov_token=([^;]+)/)
   const token = match?.[1]
   const payload = verifyToken(token as string)
-  if (!payload || (payload as any).role !== 'SuperAdmin') return NextResponse.json({ ok: false }, { status: 403 })
+  console.log(payload)
+  if (!payload || (payload as any).role !== 'Superadmin') return NextResponse.json({ ok: false , message:"Error"}, { status: 403 })
 
   const admins = await prisma.admin.findMany({ orderBy: { id: 'asc' } })
   return NextResponse.json({ ok: true, admins })

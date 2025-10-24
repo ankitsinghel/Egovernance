@@ -1,8 +1,10 @@
 {
-  "/api/departments/route": "app/api/departments/route.js",
-  "/api/states/route": "app/api/states/route.js",
-  "/api/report/[trackingId]/route": "app/api/report/[trackingId]/route.js",
-  "/track/page": "app/track/page.js",
-  "/report/page": "app/report/page.js",
-  "/report/[trackId]/page": "app/report/[trackId]/page.js"
+  "/api/admin/login/route": "app/api/admin/login/route.js",
+  "/api/admin/reports/route": "app/api/admin/reports/route.js",
+  "/api/logout/route": "app/api/logout/route.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/(super-admin)/super-admin/sa-dash/admins/page": "app/(super-admin)/super-admin/sa-dash/admins/page.js",
+  "/(super-admin)/super-admin/sa-dash/states/page": "app/(super-admin)/super-admin/sa-dash/states/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/admin/dashboard/complaints/page": "app/admin/dashboard/complaints/page.js"
 }

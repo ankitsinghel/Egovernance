@@ -30,9 +30,15 @@ type LoadingContextType = {
 
 const globalCOntext = createContext<LoadingContextType | undefined>(undefined);
 
-export function contextProvider({ children }: { children: React.ReactNode }) {
+export function contextProvider({
+  children,
+  initialUser,
+}: {
+  children: React.ReactNode;
+  initialUser?: User | null;
+}) {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(initialUser ?? null);
   const [superAdminDrawerOpen, setSuperAdminDrawerOpen] = useState(true);
 
   const [departments, setDepartments] = useState<
@@ -48,7 +54,6 @@ export function contextProvider({ children }: { children: React.ReactNode }) {
       description: string;
       files: string | null;
       status: string;
-      assignedToId: number | null;
       createdAt: string;
     }>
   >([]);
@@ -62,7 +67,7 @@ export function contextProvider({ children }: { children: React.ReactNode }) {
   }
   async function fetchUserReports() {
     try {
-      const res = await fetch("/api/user-reports");
+      const res = await fetch("/api/admin/reports");
       const j = await res.json();
       if (j.ok) setUserReports(j.reports || []);
     } catch (e) {
@@ -100,12 +105,16 @@ export function contextProvider({ children }: { children: React.ReactNode }) {
     }
   }
   async function fetchUserMasters() {
-    setLoading(true);
-    await Promise.all([fetchDepartments(), fetchStates()]);
+    try {
+      setLoading(true);
+      await Promise.all([fetchDepartments(), fetchStates()]);
+    } finally {
+      setLoading(false);
+    }
   }
   async function fetchMasters() {
     setLoading(true);
-    await Promise.all([fetchDepartments(), fetchStates(), fetchAdmins()]);
+    await Promise.all([ fetchAdmins()]);
     setLoading(false);
   }
 
@@ -114,9 +123,15 @@ export function contextProvider({ children }: { children: React.ReactNode }) {
   const refreshAdmins = async () => fetchAdmins();
   const refreshUserReports = async () => fetchUserReports();
 
-    useEffect(() => {
-      fetchUserMasters();
-    }, []);
+  useEffect(() => {
+    fetchUserMasters();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchAdminMasters();
+    }
+  }, [user]);
   return (
     <globalCOntext.Provider
       value={{
@@ -130,7 +145,6 @@ export function contextProvider({ children }: { children: React.ReactNode }) {
         setLoading,
         superAdminDrawerOpen,
         setSuperAdminDrawerOpen,
-
         departments,
         states,
         admins,

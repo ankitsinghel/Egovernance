@@ -3,11 +3,11 @@ import { prisma } from "../../../../lib/db";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { trackingId: string } }
+  context: { params: Promise<{ trackingId: string }> }
 ) {
   try {
     console.log(req);
-    const { trackingId } = params;
+    const { trackingId } = await context.params;
     console.log(trackingId);
 
     const report = await prisma.userReport.findUnique({

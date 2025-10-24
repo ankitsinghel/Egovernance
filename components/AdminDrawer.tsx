@@ -78,7 +78,7 @@ const SuperAdminDashboard = ({ children, routes }: { children: ReactNode, routes
         </Collapsible.Content>
       </Collapsible.Root>
       <main
-        className={`mt-13 h-dvh w-full  transition-all duration-300 ease-in-out ${
+        className={`mt-13 h-dvh container w-full  transition-all duration-300 ease-in-out ${
           superAdminDrawerOpen ? "blur-xs sm:ml-60" : ""
         } `}
       >

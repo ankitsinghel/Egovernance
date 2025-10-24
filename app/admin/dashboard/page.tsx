@@ -20,6 +20,7 @@ import {
   Shield
 } from 'lucide-react';
 import { useRouter } from "next/navigation";
+import { context } from "@/context/context";
 
 type Report = {
   id: number;
@@ -31,32 +32,32 @@ type Report = {
   createdAt: string;
 };
 
-function PriorityBadge({ priority }: { priority: string }) {
-  const getPriorityConfig = (priority: string) => {
-    switch (priority) {
-      case "critical":
-        return { color: "bg-red-100 text-red-800 border-red-200", icon: AlertTriangle };
-      case "high":
-        return { color: "bg-orange-100 text-orange-800 border-orange-200", icon: AlertTriangle };
-      case "medium":
-        return { color: "bg-yellow-100 text-yellow-800 border-yellow-200", icon: Clock };
-      case "low":
-        return { color: "bg-blue-100 text-blue-800 border-blue-200", icon: Clock };
-      default:
-        return { color: "bg-gray-100 text-gray-800 border-gray-200", icon: FileText };
-    }
-  };
+// function PriorityBadge({ priority }: { priority: string }) {
+//   const getPriorityConfig = (priority: string) => {
+//     switch (priority) {
+//       case "critical":
+//         return { color: "bg-red-100 text-red-800 border-red-200", icon: AlertTriangle };
+//       case "high":
+//         return { color: "bg-orange-100 text-orange-800 border-orange-200", icon: AlertTriangle };
+//       case "medium":
+//         return { color: "bg-yellow-100 text-yellow-800 border-yellow-200", icon: Clock };
+//       case "low":
+//         return { color: "bg-blue-100 text-blue-800 border-blue-200", icon: Clock };
+//       default:
+//         return { color: "bg-gray-100 text-gray-800 border-gray-200", icon: FileText };
+//     }
+//   };
 
-  const config = getPriorityConfig(priority);
-  const IconComponent = config.icon;
+//   const config = getPriorityConfig(priority);
+//   const IconComponent = config.icon;
 
-  return (
-    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-sm font-medium ${config.color}`}>
-      <IconComponent className="w-3 h-3" />
-      {priority.charAt(0).toUpperCase() + priority.slice(1)}
-    </span>
-  );
-}
+//   return (
+//     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-sm font-medium ${config.color}`}>
+//       <IconComponent className="w-3 h-3" />
+//       {priority && priority.charAt(0).toUpperCase() + priority.slice(1)}
+//     </span>
+//   );
+// }
 
 function StatusBadge({ status }: { status: string }) {
   const getStatusConfig = (status: string) => {
@@ -159,66 +160,27 @@ function DonutChart({
 }
 
 export default function AdminDashboard() {
-  const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState(false);
+  // const [userReports, setuserReports] = useState<Report[]>([]);
+  const {loading, setLoading, userReports } = context();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchReports = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch("/api/admin/reports", {
-          credentials: "include", // Include cookies for authentication
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.status === 401) {
-          // Redirect to login if unauthorized
-          router.push("/admin/login");
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch reports: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (data?.ok) {
-          setReports(data.reports || []);
-        } else {
-          throw new Error(data?.error || "Failed to load reports");
-        }
-      } catch (err) {
-        console.error("Error fetching reports:", err);
-        setError(err instanceof Error ? err.message : "Failed to load reports");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReports();
-  }, [router]);
-
   const counts = useMemo(() => {
-    const pending = reports.filter((r) => r.status === "pending").length;
-    const inProgress = reports.filter(
+    const pending = userReports.filter((r) => r.status === "pending").length;
+    const inProgress = userReports.filter(
       (r) =>
         r.status === "in progress" ||
         r.status === "in_progress" ||
         r.status === "inProgress"
     ).length;
-    const resolved = reports.filter((r) => r.status === "resolved").length;
+    const resolved = userReports.filter((r) => r.status === "resolved").length;
     return { pending, inProgress, resolved };
-  }, [reports]);
+  }, [userReports]);
 
-  const filteredReports = useMemo(() => {
-    return reports.filter(report => {
+  const filtereduserReports = useMemo(() => {
+    return userReports.filter(report => {
       const matchesSearch = 
         report.trackingId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         report.organization.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -229,14 +191,14 @@ export default function AdminDashboard() {
       
       return matchesSearch && matchesStatus;
     });
-  }, [reports, searchTerm, statusFilter]);
+  }, [userReports, searchTerm, statusFilter]);
 
   const priorityCounts = useMemo(() => {
-    return reports.reduce((acc, report) => {
+    return userReports.reduce((acc, report) => {
       acc[report.priority] = (acc[report.priority] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-  }, [reports]);
+  }, [userReports]);
 
   if (error) {
     return (
@@ -267,7 +229,7 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
             </div>
             <p className="text-slate-600">
-              Monitor and manage corruption reports in your jurisdiction
+              Monitor and manage corruption userReports in your jurisdiction
             </p>
           </div>
           <div className="flex gap-3">
@@ -288,8 +250,8 @@ export default function AdminDashboard() {
         <Card className="p-6 bg-white border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-600">Total Reports</p>
-              <p className="text-2xl font-bold text-slate-900">{reports.length}</p>
+              <p className="text-sm font-medium text-slate-600">Total userReports</p>
+              <p className="text-2xl font-bold text-slate-900">{userReports.length}</p>
             </div>
             <FileText className="w-8 h-8 text-blue-500" />
           </div>
@@ -329,13 +291,13 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="xl:col-span-2 space-y-8">
-          {/* Reports Table Card */}
+          {/* userReports Table Card */}
           <Card className="p-6 shadow-lg">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Recent Reports</h2>
+                <h2 className="text-xl font-bold text-slate-900">Recent userReports</h2>
                 <p className="text-slate-600 text-sm mt-1">
-                  {filteredReports.length} of {reports.length} reports
+                  {filtereduserReports.length} of {userReports.length} userReports
                 </p>
               </div>
               
@@ -344,7 +306,7 @@ export default function AdminDashboard() {
                   <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Search reports..."
+                    placeholder="Search userReports..."
                     className="pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -382,14 +344,14 @@ export default function AdminDashboard() {
                         <div className="flex justify-center">
                           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                         </div>
-                        <p className="text-slate-600 mt-2">Loading reports...</p>
+                        <p className="text-slate-600 mt-2">Loading userReports...</p>
                       </td>
                     </tr>
-                  ) : filteredReports.length === 0 ? (
+                  ) : filtereduserReports.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="p-8 text-center">
                         <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                        <p className="text-slate-600">No reports found</p>
+                        <p className="text-slate-600">No userReports found</p>
                         {searchTerm || statusFilter !== "all" ? (
                           <Button 
                             variant="outline" 
@@ -405,7 +367,7 @@ export default function AdminDashboard() {
                       </td>
                     </tr>
                   ) : (
-                    filteredReports.slice(0, 10).map((report) => (
+                    filtereduserReports.slice(0, 10).map((report) => (
                       <tr key={report.id} className="hover:bg-slate-50 transition-colors">
                         <td className="p-4">
                           <div className="font-mono text-sm font-medium text-blue-600">
@@ -422,7 +384,7 @@ export default function AdminDashboard() {
                           )}
                         </td>
                         <td className="p-4">
-                          <PriorityBadge priority={report.priority} />
+                          {/* <PriorityBadge priority={report.priority} /> */}
                         </td>
                         <td className="p-4">
                           <StatusBadge status={report.status} />
@@ -443,13 +405,13 @@ export default function AdminDashboard() {
               </table>
             </div>
 
-            {filteredReports.length > 10 && (
+            {filtereduserReports.length > 10 && (
               <div className="mt-4 flex justify-between items-center">
                 <p className="text-sm text-slate-600">
-                  Showing 10 of {filteredReports.length} reports
+                  Showing 10 of {filtereduserReports.length} userReports
                 </p>
                 <Button variant="outline">
-                  View All Reports
+                  View All userReports
                 </Button>
               </div>
             )}
@@ -493,17 +455,7 @@ export default function AdminDashboard() {
           </Card>
 
           {/* Priority Distribution */}
-          <Card className="p-6 shadow-lg">
-            <h3 className="text-lg font-bold text-slate-900 mb-6">Priority Distribution</h3>
-            <div className="space-y-4">
-              {Object.entries(priorityCounts).map(([priority, count]) => (
-                <div key={priority} className="flex items-center justify-between">
-                  <PriorityBadge priority={priority} />
-                  <span className="font-semibold">{count}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
+
 
           {/* Quick Actions */}
           <Card className="p-6 shadow-lg">
@@ -515,7 +467,7 @@ export default function AdminDashboard() {
               </Button>
               <Button variant="outline" className="w-full justify-start">
                 <Download className="w-4 h-4 mr-2" />
-                Export Reports
+                Export userReports
               </Button>
               <Button variant="outline" className="w-full justify-start">
                 <Filter className="w-4 h-4 mr-2" />

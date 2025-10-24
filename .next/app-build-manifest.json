@@ -1,42 +1,5 @@
 {
   "pages": {
-    "/api/report/[trackingId]/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/report/[trackingId]/route.js"
-    ],
-    "/track/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/track/layout.css",
-      "static/chunks/app/track/layout.js"
-    ],
-    "/track/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/track/page.js"
-    ],
-    "/report/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/report/layout.css",
-      "static/chunks/app/report/layout.js"
-    ],
-    "/report/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/report/page.js"
-    ],
-    "/api/states/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/states/route.js"
-    ],
-    "/api/departments/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/departments/route.js"
-    ],
     "/(main)/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -58,10 +21,122 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/me/route.js"
     ],
-    "/report/[trackId]/page": [
+    "/api/departments/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/report/[trackId]/page.js"
+      "static/chunks/app/api/departments/route.js"
+    ],
+    "/api/states/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/states/route.js"
+    ],
+    "/(main)/track/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(main)/track/page.js"
+    ],
+    "/(main)/report/[trackId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(main)/report/[trackId]/page.js"
+    ],
+    "/api/report/[trackingId]/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/report/[trackingId]/route.js"
+    ],
+    "/admin/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/admin/layout.css",
+      "static/chunks/app/admin/layout.js"
+    ],
+    "/admin/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/login/page.js"
+    ],
+    "/api/admin/login/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/admin/login/route.js"
+    ],
+    "/admin/dashboard/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/dashboard/layout.js"
+    ],
+    "/admin/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/dashboard/page.js"
+    ],
+    "/api/admin/reports/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/admin/reports/route.js"
+    ],
+    "/admin/dashboard/complaints/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/dashboard/complaints/page.js"
+    ],
+    "/api/logout/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/logout/route.js"
+    ],
+    "/(super-admin)/super-admin/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(super-admin)/super-admin/layout.css",
+      "static/chunks/app/(super-admin)/super-admin/layout.js"
+    ],
+    "/(super-admin)/super-admin/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(super-admin)/super-admin/login/page.js"
+    ],
+    "/api/super-admin/login/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/super-admin/login/route.js"
+    ],
+    "/(super-admin)/super-admin/sa-dash/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(super-admin)/super-admin/sa-dash/layout.js"
+    ],
+    "/(super-admin)/super-admin/sa-dash/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(super-admin)/super-admin/sa-dash/dashboard/page.js"
+    ],
+    "/api/admins/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/admins/route.js"
+    ],
+    "/(super-admin)/super-admin/sa-dash/departments/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(super-admin)/super-admin/sa-dash/departments/page.js"
+    ],
+    "/(super-admin)/super-admin/sa-dash/states/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(super-admin)/super-admin/sa-dash/states/page.js"
+    ],
+    "/(super-admin)/super-admin/sa-dash/admins/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(super-admin)/super-admin/sa-dash/admins/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

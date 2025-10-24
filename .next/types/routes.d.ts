@@ -4,7 +4,7 @@
 type AppRoutes = "/" | "/admin/dashboard" | "/admin/dashboard/complaints" | "/admin/login" | "/admin/signup" | "/report" | "/report/[trackId]" | "/super-admin/login" | "/super-admin/sa-dash/admins" | "/super-admin/sa-dash/dashboard" | "/super-admin/sa-dash/departments" | "/super-admin/sa-dash/settings" | "/super-admin/sa-dash/states" | "/super-admin/signup" | "/super-admin/states" | "/track"
 type AppRouteHandlerRoutes = "/api/admin/action" | "/api/admin/create" | "/api/admin/exists" | "/api/admin/login" | "/api/admin/reports" | "/api/admins" | "/api/admins/[id]" | "/api/debug/cookies" | "/api/departments" | "/api/departments/[id]" | "/api/logout" | "/api/me" | "/api/otp/request" | "/api/otp/verify" | "/api/report" | "/api/report/[trackingId]" | "/api/states" | "/api/states/[id]" | "/api/super-admin/login" | "/api/super-admin/signup" | "/api/super-admin/verify"
 type PageRoutes = never
-type LayoutRoutes = "/" | "/admin" | "/admin/dashboard" | "/report" | "/super-admin" | "/super-admin/sa-dash" | "/track"
+type LayoutRoutes = "/" | "/admin" | "/admin/dashboard" | "/super-admin" | "/super-admin/sa-dash"
 type RedirectRoutes = never
 type RewriteRoutes = never
 type Routes = AppRoutes | PageRoutes | LayoutRoutes | RedirectRoutes | RewriteRoutes | AppRouteHandlerRoutes
@@ -60,10 +60,8 @@ interface LayoutSlotMap {
   "/": never
   "/admin": never
   "/admin/dashboard": never
-  "/report": never
   "/super-admin": never
   "/super-admin/sa-dash": never
-  "/track": never
 }
 
 

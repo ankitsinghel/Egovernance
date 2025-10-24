@@ -35,11 +35,11 @@ export function clearAuthCookie() {
 export async function getAdminFromToken(token: string | undefined) {
   if (!token) return null
   const payload = verifyToken(token)
+  
   if (!payload?.id) return null
-  if ((payload as any).role === 'SuperAdmin') {
-    const sa = await prisma.superAdmin.findUnique({ where: { id: Number((payload as any).id) } })
-    return sa
+
+  if ((payload as any).role === 'Superadmin') {
+    return payload
   }
-  const admin = await prisma.admin.findUnique({ where: { id: Number((payload as any).id) } })
-  return admin
+  return payload;
 }
