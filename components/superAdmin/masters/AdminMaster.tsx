@@ -1,9 +1,14 @@
-
-
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
-import { RefreshCw, Plus, Search, Edit, Trash2, MoreHorizontal } from "lucide-react";
+import {
+  RefreshCw,
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+} from "lucide-react";
 import { context } from "@/context/context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,19 +53,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-type Admin = {
-  id: number;
-  name: string;
-  email: string;
-  departmentId: number;
-  city: string | null;
-};
+import type { Admin, Department, AnyT } from "@/lib/types";
 
 export default function AdminsMaster() {
   const { admins, refreshAdmins, departments, loading } = context();
   const [showCreate, setShowCreate] = useState(false);
-  const [showEdit, setShowEdit] = useState<any>(null);
+  const [showEdit, setShowEdit] = useState<Admin | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const createForm = useForm({
@@ -75,102 +73,115 @@ export default function AdminsMaster() {
   // Memoized filtered data to prevent unnecessary re-renders
   const { centralAdmins, filteredAdmins } = useMemo(() => {
     const centralAdmins = (admins || []).filter(
-      (a: any) => a.city === null || a.city === undefined
+      (a: Admin) => a.city === null || a.city === undefined
     );
-    
-    const filteredAdmins = centralAdmins.filter((admin: Admin) =>
-      admin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      admin.email.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const filteredAdmins = centralAdmins.filter(
+      (admin: Admin) =>
+        admin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        admin.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return { centralAdmins, filteredAdmins };
   }, [admins, searchQuery]);
 
   // Memoized handlers to prevent unnecessary re-renders
-  const handleCreate = useCallback(async (data: any) => {
-    try {
-      const res = await fetch("/api/admins", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          password: data.password,
-          departmentId: data.departmentId,
-        }),
-      });
-      const j = await res.json();
-      if (j.ok) {
-        setShowCreate(false);
-        createForm.reset();
-        refreshAdmins();
-      } else {
-        alert(j.error || "Create failed");
+  const handleCreate = useCallback(
+    async (data: AnyT) => {
+      try {
+        const res = await fetch("/api/admins", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            departmentId: data.departmentId,
+          }),
+        });
+        const j = await res.json();
+        if (j.ok) {
+          setShowCreate(false);
+          createForm.reset();
+          refreshAdmins();
+        } else {
+          alert(j.error || "Create failed");
+        }
+      } catch (e) {
+        alert("Network error");
       }
-    } catch (e) {
-      alert("Network error");
-    }
-  }, [createForm, refreshAdmins]);
+    },
+    [createForm, refreshAdmins]
+  );
 
-  const handleEdit = useCallback(async (data: any) => {
-    if (!showEdit) return;
-    try {
-      const res = await fetch(`/api/admins/${showEdit.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          password: data.password,
-          departmentId: data.departmentId,
-        }),
-      });
-      const j = await res.json();
-      if (j.ok) {
-        setShowEdit(null);
-        editForm.reset();
-        refreshAdmins();
-      } else {
-        alert(j.error || "Update failed");
+  const handleEdit = useCallback(
+    async (data: AnyT) => {
+      if (!showEdit) return;
+      try {
+        const res = await fetch(`/api/admins/${showEdit.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            departmentId: data.departmentId,
+          }),
+        });
+        const j = await res.json();
+        if (j.ok) {
+          setShowEdit(null);
+          editForm.reset();
+          refreshAdmins();
+        } else {
+          alert(j.error || "Update failed");
+        }
+      } catch (e) {
+        alert("Network error");
       }
-    } catch (e) {
-      alert("Network error");
-    }
-  }, [showEdit, editForm, refreshAdmins]);
+    },
+    [showEdit, editForm, refreshAdmins]
+  );
 
-  const handleDelete = useCallback(async (id: number) => {
-    if (!confirm("Delete this admin?")) return;
-    try {
-      const res = await fetch(`/api/admins/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const j = await res.json();
-      if (j.ok) {
-        refreshAdmins();
-      } else {
-        alert("Delete failed");
+  const handleDelete = useCallback(
+    async (id: number) => {
+      if (!confirm("Delete this admin?")) return;
+      try {
+        const res = await fetch(`/api/admins/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        const j = await res.json();
+        if (j.ok) {
+          refreshAdmins();
+        } else {
+          alert("Delete failed");
+        }
+      } catch (e) {
+        alert("Network error");
       }
-    } catch (e) {
-      alert("Network error");
-    }
-  }, [refreshAdmins]);
+    },
+    [refreshAdmins]
+  );
 
   const handleRefresh = useCallback(async () => {
     await refreshAdmins();
   }, [refreshAdmins]);
 
-  const handleEditClick = useCallback((admin: Admin) => {
-    setShowEdit(admin);
-    editForm.reset({
-      name: admin.name,
-      email: admin.email,
-      password: "",
-      departmentId: admin.departmentId || 0,
-    });
-  }, [editForm]);
+  const handleEditClick = useCallback(
+    (admin: Admin) => {
+      setShowEdit(admin);
+      editForm.reset({
+        name: admin.name,
+        email: admin.email,
+        password: "",
+        departmentId: admin.departmentId || 0,
+      });
+    },
+    [editForm]
+  );
 
   return (
     <div className="space-y-4">
@@ -178,7 +189,9 @@ export default function AdminsMaster() {
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="text-2xl font-bold">Central Admins</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                Central Admins
+              </CardTitle>
               <CardDescription>
                 Manage central administrators and their permissions
               </CardDescription>
@@ -190,13 +203,12 @@ export default function AdminsMaster() {
                 onClick={handleRefresh}
                 disabled={loading}
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                />
                 <span className="ml-2 hidden sm:inline">Refresh</span>
               </Button>
-              <Button 
-                size="sm" 
-                onClick={() => setShowCreate(true)}
-              >
+              <Button size="sm" onClick={() => setShowCreate(true)}>
                 <Plus className="w-4 h-4" />
                 <span className="ml-2 hidden sm:inline">Add Admin</span>
               </Button>
@@ -224,7 +236,9 @@ export default function AdminsMaster() {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Department</TableHead>
-                  <TableHead className="text-right w-[150px]">Actions</TableHead>
+                  <TableHead className="text-right w-[150px]">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -235,7 +249,9 @@ export default function AdminsMaster() {
                       <TableCell>{admin.name}</TableCell>
                       <TableCell className="lowercase">{admin.email}</TableCell>
                       <TableCell>
-                        {departments.find((d: any) => d.id === admin.departmentId)?.name || "-"}
+                        {departments.find(
+                          (d: any) => d.id === admin.departmentId
+                        )?.name || "-"}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
@@ -249,7 +265,11 @@ export default function AdminsMaster() {
                           </Button>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="outline" size="sm" className="h-9 w-9 p-0">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-9 w-9 p-0"
+                              >
                                 <MoreHorizontal className="h-4 w-4" />
                                 <span className="sr-only">Open menu</span>
                               </Button>
@@ -278,12 +298,11 @@ export default function AdminsMaster() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="h-24 text-center"
-                    >
+                    <TableCell colSpan={5} className="h-24 text-center">
                       <div className="text-muted-foreground">
-                        {centralAdmins.length === 0 ? "No central admins found." : "No admins match your search."}
+                        {centralAdmins.length === 0
+                          ? "No central admins found."
+                          : "No admins match your search."}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -357,10 +376,12 @@ export default function AdminsMaster() {
                   Department
                 </label>
                 <Select
-                  onValueChange={(value) => 
+                  onValueChange={(value) =>
                     createForm.setValue("departmentId", parseInt(value))
                   }
-                  defaultValue={createForm.watch("departmentId")?.toString() || "0"}
+                  defaultValue={
+                    createForm.watch("departmentId")?.toString() || "0"
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select department" />
@@ -396,7 +417,10 @@ export default function AdminsMaster() {
       </Dialog>
 
       {/* Edit Dialog */}
-      <Dialog open={!!showEdit} onOpenChange={(open) => !open && setShowEdit(null)}>
+      <Dialog
+        open={!!showEdit}
+        onOpenChange={(open) => !open && setShowEdit(null)}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit Admin</DialogTitle>
@@ -456,11 +480,14 @@ export default function AdminsMaster() {
                 )}
               </div>
               <div className="grid gap-2">
-                <label htmlFor="edit-department" className="text-sm font-medium">
+                <label
+                  htmlFor="edit-department"
+                  className="text-sm font-medium"
+                >
                   Department
                 </label>
                 <Select
-                  onValueChange={(value) => 
+                  onValueChange={(value) =>
                     editForm.setValue("departmentId", parseInt(value))
                   }
                   defaultValue={showEdit?.departmentId?.toString() || "0"}

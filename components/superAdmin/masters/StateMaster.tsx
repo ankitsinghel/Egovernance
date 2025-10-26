@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/card";
 import { ButtonGroup } from "@/components/ui/button-group";
 
-type StateT = { id: number; name: string };
+import type { StateT } from "@/lib/types";
 
 export default function StateMaster() {
   const { states, refreshStates } = context();

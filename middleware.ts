@@ -4,8 +4,11 @@ import { verifyTokenEdge } from "./lib/edgeAuth"; //middleware renders on edge i
 
 const protectedRoutes = [
   "/super-admin/sa-dash",
-  // "/super-admin/profile",
-  // "/super-admin/admin",
+
+];
+const adminProtectedRoutes = [
+  "/admin/dashboard/",
+
 ];
 
 export async function middleware(req: NextRequest) {
@@ -16,6 +19,7 @@ export async function middleware(req: NextRequest) {
   const payload = await verifyTokenEdge(token);
   const user = payload as any;
   const hasToken = !!user;
+  // console.log("middleware token", hasToken);
 
   if (
     !hasToken &&
@@ -37,6 +41,20 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
+  // Admin route protections
+  if (
+    !hasToken &&
+    adminProtectedRoutes.some((route) => pathname.startsWith(route))
+  ) {
+    const loginUrl = new URL("/admin/login", req.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (hasToken && pathname.startsWith("/admin/login")) {
+    const res = NextResponse.redirect(new URL("/admin/dashboard", req.url));
+    res.headers.set("x-egov-middleware", "redirected-logged-in");
+    return res;
+  }
   const res = NextResponse.next();
   res.headers.set("x-egov-middleware", hasToken ? "ok-auth" : "ok-anon");
   if (hasToken) {
@@ -49,5 +67,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/super-admin", "/super-admin/:path*"],
+  matcher: ["/super-admin", "/super-admin/:path*", "/admin", "/admin/:path*"],
 };

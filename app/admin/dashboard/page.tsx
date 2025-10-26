@@ -3,11 +3,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
-import { 
-  FileText, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
+import {
+  FileText,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
   TrendingUp,
   Download,
   Filter,
@@ -17,20 +17,11 @@ import {
   Users,
   MapPin,
   Building,
-  Shield
-} from 'lucide-react';
+  Shield,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { context } from "@/context/context";
-
-type Report = {
-  id: number;
-  trackingId: string;
-  organization: string;
-  city?: string;
-  priority: string;
-  status: string;
-  createdAt: string;
-};
+import type { Report } from "@/lib/types";
 
 // function PriorityBadge({ priority }: { priority: string }) {
 //   const getPriorityConfig = (priority: string) => {
@@ -63,15 +54,27 @@ function StatusBadge({ status }: { status: string }) {
   const getStatusConfig = (status: string) => {
     switch (status) {
       case "resolved":
-        return { color: "bg-green-100 text-green-800 border-green-200", icon: CheckCircle };
+        return {
+          color: "bg-green-100 text-green-800 border-green-200",
+          icon: CheckCircle,
+        };
       case "in progress":
       case "in_progress":
       case "inProgress":
-        return { color: "bg-blue-100 text-blue-800 border-blue-200", icon: Clock };
+        return {
+          color: "bg-blue-100 text-blue-800 border-blue-200",
+          icon: Clock,
+        };
       case "pending":
-        return { color: "bg-yellow-100 text-yellow-800 border-yellow-200", icon: Clock };
+        return {
+          color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+          icon: Clock,
+        };
       default:
-        return { color: "bg-gray-100 text-gray-800 border-gray-200", icon: FileText };
+        return {
+          color: "bg-gray-100 text-gray-800 border-gray-200",
+          icon: FileText,
+        };
     }
   };
 
@@ -79,9 +82,14 @@ function StatusBadge({ status }: { status: string }) {
   const IconComponent = config.icon;
 
   return (
-    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-sm font-medium ${config.color}`}>
+    <span
+      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-sm font-medium ${config.color}`}
+    >
       <IconComponent className="w-3 h-3" />
-      {status.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+      {status
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")}
     </span>
   );
 }
@@ -161,53 +169,68 @@ function DonutChart({
 
 export default function AdminDashboard() {
   // const [userReports, setuserReports] = useState<Report[]>([]);
-  const {loading, setLoading, userReports } = context();
+  const { loading, setLoading, userReports, departments, states } = context();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  // Map raw userReports (backend shape) into a display-friendly Report shape
+  const displayReports = useMemo(() => {
+    return (userReports || []).map((r) => {
+      const dept =
+        departments.find((d) => d.id === (r as any).departmentId)?.name || "";
+      // state is optional — backend may not provide a direct state id on reports
+      const stateName = undefined as string | undefined;
+      return {
+        id: r.id,
+        trackingId: r.trackingId,
+        department: dept,
+        state: stateName,
+        status: r.status,
+        createdAt: r.createdAt,
+      };
+    });
+  }, [userReports, departments]);
+
   const counts = useMemo(() => {
-    const pending = userReports.filter((r) => r.status === "pending").length;
-    const inProgress = userReports.filter(
-      (r) =>
-        r.status === "in progress" ||
-        r.status === "in_progress" ||
-        r.status === "inProgress"
+    const pending = displayReports.filter(
+      (r) => String(r.status) === "pending"
     ).length;
-    const resolved = userReports.filter((r) => r.status === "resolved").length;
+    const inProgress = displayReports.filter((r) =>
+      ["in_progress", "in progress", "inProgress"].includes(String(r.status))
+    ).length;
+    const resolved = displayReports.filter(
+      (r) => String(r.status) === "resolved"
+    ).length;
     return { pending, inProgress, resolved };
-  }, [userReports]);
+  }, [displayReports]);
 
   const filtereduserReports = useMemo(() => {
-    return userReports.filter(report => {
-      const matchesSearch = 
+    return displayReports.filter((report) => {
+      const matchesSearch =
         report.trackingId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.organization.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.city?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesStatus = statusFilter === "all" || 
+        report.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        report.state?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        statusFilter === "all" ||
         report.status.toLowerCase() === statusFilter.toLowerCase();
-      
+
       return matchesSearch && matchesStatus;
     });
-  }, [userReports, searchTerm, statusFilter]);
-
-  const priorityCounts = useMemo(() => {
-    return userReports.reduce((acc, report) => {
-      acc[report.priority] = (acc[report.priority] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-  }, [userReports]);
+  }, [displayReports, searchTerm, statusFilter]);
 
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 flex items-center justify-center">
         <Card className="p-8 max-w-md w-full text-center">
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-slate-900 mb-2">Access Denied</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">
+            Access Denied
+          </h2>
           <p className="text-slate-600 mb-4">{error}</p>
-          <Button 
+          <Button
             onClick={() => router.push("/admin/login")}
             className="bg-blue-600 hover:bg-blue-700"
           >
@@ -226,7 +249,9 @@ export default function AdminDashboard() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <Building className="w-8 h-8 text-blue-600" />
-              <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
+              <h1 className="text-3xl font-bold text-slate-900">
+                Admin Dashboard
+              </h1>
             </div>
             <p className="text-slate-600">
               Monitor and manage corruption userReports in your jurisdiction
@@ -250,8 +275,12 @@ export default function AdminDashboard() {
         <Card className="p-6 bg-white border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-600">Total userReports</p>
-              <p className="text-2xl font-bold text-slate-900">{userReports.length}</p>
+              <p className="text-sm font-medium text-slate-600">
+                Total userReports
+              </p>
+              <p className="text-2xl font-bold text-slate-900">
+                {userReports.length}
+              </p>
             </div>
             <FileText className="w-8 h-8 text-blue-500" />
           </div>
@@ -261,7 +290,9 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-600">Pending</p>
-              <p className="text-2xl font-bold text-slate-900">{counts.pending}</p>
+              <p className="text-2xl font-bold text-slate-900">
+                {counts.pending}
+              </p>
             </div>
             <Clock className="w-8 h-8 text-yellow-500" />
           </div>
@@ -271,7 +302,9 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-600">In Progress</p>
-              <p className="text-2xl font-bold text-slate-900">{counts.inProgress}</p>
+              <p className="text-2xl font-bold text-slate-900">
+                {counts.inProgress}
+              </p>
             </div>
             <TrendingUp className="w-8 h-8 text-blue-500" />
           </div>
@@ -281,7 +314,9 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-600">Resolved</p>
-              <p className="text-2xl font-bold text-slate-900">{counts.resolved}</p>
+              <p className="text-2xl font-bold text-slate-900">
+                {counts.resolved}
+              </p>
             </div>
             <CheckCircle className="w-8 h-8 text-green-500" />
           </div>
@@ -295,12 +330,15 @@ export default function AdminDashboard() {
           <Card className="p-6 shadow-lg">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Recent userReports</h2>
+                <h2 className="text-xl font-bold text-slate-900">
+                  Recent userReports
+                </h2>
                 <p className="text-slate-600 text-sm mt-1">
-                  {filtereduserReports.length} of {userReports.length} userReports
+                  {filtereduserReports.length} of {userReports.length}{" "}
+                  userReports
                 </p>
               </div>
-              
+
               <div className="flex gap-3">
                 <div className="relative">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
@@ -312,7 +350,7 @@ export default function AdminDashboard() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <select 
+                <select
                   className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -329,32 +367,41 @@ export default function AdminDashboard() {
               <table className="w-full">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
-                    <th className="text-left p-4 font-semibold text-slate-900">Tracking ID</th>
-                    <th className="text-left p-4 font-semibold text-slate-900">Organization</th>
-                    <th className="text-left p-4 font-semibold text-slate-900">Priority</th>
-                    <th className="text-left p-4 font-semibold text-slate-900">Status</th>
-                    <th className="text-left p-4 font-semibold text-slate-900">Created</th>
+                    <th className="text-left p-4 font-semibold text-slate-900">
+                      Tracking ID
+                    </th>
+                    <th className="text-left p-4 font-semibold text-slate-900">
+                      Department
+                    </th>
+                    <th className="text-left p-4 font-semibold text-slate-900">
+                      Status
+                    </th>
+                    <th className="text-left p-4 font-semibold text-slate-900">
+                      Created
+                    </th>
                     <th className="p-4"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {loading ? (
                     <tr>
-                      <td colSpan={6} className="p-8 text-center">
+                      <td colSpan={5} className="p-8 text-center">
                         <div className="flex justify-center">
                           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                         </div>
-                        <p className="text-slate-600 mt-2">Loading userReports...</p>
+                        <p className="text-slate-600 mt-2">
+                          Loading userReports...
+                        </p>
                       </td>
                     </tr>
                   ) : filtereduserReports.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="p-8 text-center">
+                      <td colSpan={5} className="p-8 text-center">
                         <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                         <p className="text-slate-600">No userReports found</p>
                         {searchTerm || statusFilter !== "all" ? (
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             className="mt-2"
                             onClick={() => {
                               setSearchTerm("");
@@ -368,23 +415,25 @@ export default function AdminDashboard() {
                     </tr>
                   ) : (
                     filtereduserReports.slice(0, 10).map((report) => (
-                      <tr key={report.id} className="hover:bg-slate-50 transition-colors">
+                      <tr
+                        key={report.id}
+                        className="hover:bg-slate-50 transition-colors"
+                      >
                         <td className="p-4">
                           <div className="font-mono text-sm font-medium text-blue-600">
                             {report.trackingId.slice(0, 8)}...
                           </div>
                         </td>
                         <td className="p-4">
-                          <div className="font-medium text-slate-900">{report.organization}</div>
-                          {report.city && (
+                          <div className="font-medium text-slate-900">
+                            {report.department}
+                          </div>
+                          {report.state && (
                             <div className="flex items-center gap-1 text-sm text-slate-500 mt-1">
                               <MapPin className="w-3 h-3" />
-                              {report.city}
+                              {report.state}
                             </div>
                           )}
-                        </td>
-                        <td className="p-4">
-                          {/* <PriorityBadge priority={report.priority} /> */}
                         </td>
                         <td className="p-4">
                           <StatusBadge status={report.status} />
@@ -393,7 +442,11 @@ export default function AdminDashboard() {
                           {new Date(report.createdAt).toLocaleDateString()}
                         </td>
                         <td className="p-4">
-                          <Button variant="outline" size="sm" className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-2"
+                          >
                             <Eye className="w-4 h-4" />
                             View
                           </Button>
@@ -410,9 +463,7 @@ export default function AdminDashboard() {
                 <p className="text-sm text-slate-600">
                   Showing 10 of {filtereduserReports.length} userReports
                 </p>
-                <Button variant="outline">
-                  View All userReports
-                </Button>
+                <Button variant="outline">View All userReports</Button>
               </div>
             )}
           </Card>
@@ -424,7 +475,9 @@ export default function AdminDashboard() {
           <Card className="p-6 shadow-lg">
             <div className="flex items-center gap-3 mb-6">
               <BarChart3 className="w-6 h-6 text-blue-600" />
-              <h3 className="text-lg font-bold text-slate-900">Status Overview</h3>
+              <h3 className="text-lg font-bold text-slate-900">
+                Status Overview
+              </h3>
             </div>
             <div className="flex items-center justify-center mb-4">
               <DonutChart counts={counts} />
@@ -456,10 +509,11 @@ export default function AdminDashboard() {
 
           {/* Priority Distribution */}
 
-
           {/* Quick Actions */}
           <Card className="p-6 shadow-lg">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Quick Actions</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">
+              Quick Actions
+            </h3>
             <div className="space-y-3">
               <Button className="w-full justify-start bg-blue-600 hover:bg-blue-700">
                 <FileText className="w-4 h-4 mr-2" />

@@ -57,28 +57,13 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-
-type UserReport = {
-  id: number;
-  trackingId: string;
-  departmentId: number;
-  designation: string | null;
-  accusedName: string | null;
-  description: string;
-  files: string | null;
-  status: "pending" | "in_progress" | "resolved" | "closed";
-  assignedToId: number | null;
-  createdAt: string;
-};
-
-type ActionLog = {
-  id: number;
-  action: string;
-  description: string | null;
-  createdAt: string;
-  adminId: number;
-  userReportId: number;
-};
+import type {
+  UserReport,
+  ActionLog,
+  Department,
+  Admin,
+  AnyT,
+} from "@/lib/types";
 
 export default function ComplaintsMaster() {
   const { userReports, refreshUserReports, departments, admins, loading } =
@@ -148,7 +133,7 @@ export default function ComplaintsMaster() {
 
   // Handler functions
   const handleCreate = useCallback(
-    async (data: any) => {
+    async (data: AnyT) => {
       try {
         const res = await fetch("/api/user-reports", {
           method: "POST",
@@ -178,7 +163,7 @@ export default function ComplaintsMaster() {
   );
 
   const handleEdit = useCallback(
-    async (data: any) => {
+    async (data: AnyT) => {
       if (!showEdit) return;
       try {
         const res = await fetch(`/api/user-reports/${showEdit.id}`, {
@@ -342,7 +327,7 @@ export default function ComplaintsMaster() {
                       </TableCell>
                       <TableCell>
                         {departments.find(
-                          (d: any) => d.id === report.departmentId
+                          (d: Department) => d.id === report.departmentId
                         )?.name || "-"}
                       </TableCell>
                       <TableCell>{report.accusedName || "-"}</TableCell>
@@ -357,7 +342,7 @@ export default function ComplaintsMaster() {
                       <TableCell>
                         {report.assignedToId
                           ? admins.find(
-                              (a: any) => a.id === report.assignedToId
+                              (a: Admin) => a.id === report.assignedToId
                             )?.name || "-"
                           : "-"}
                       </TableCell>
@@ -467,7 +452,7 @@ export default function ComplaintsMaster() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="0">Select Department</SelectItem>
-                    {departments.map((d: any) => (
+                    {departments.map((d: Department) => (
                       <SelectItem key={d.id} value={d.id.toString()}>
                         {d.name}
                       </SelectItem>
@@ -476,7 +461,7 @@ export default function ComplaintsMaster() {
                 </Select>
                 {createForm.formState.errors.departmentId && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.departmentId as any).message}
+                    {(createForm.formState.errors.departmentId as AnyT).message}
                   </p>
                 )}
               </div>
@@ -491,7 +476,7 @@ export default function ComplaintsMaster() {
                 />
                 {createForm.formState.errors.designation && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.designation as any).message}
+                    {(createForm.formState.errors.designation as AnyT).message}
                   </p>
                 )}
               </div>
@@ -506,7 +491,7 @@ export default function ComplaintsMaster() {
                 />
                 {createForm.formState.errors.accusedName && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.accusedName as any).message}
+                    {(createForm.formState.errors.accusedName as AnyT).message}
                   </p>
                 )}
               </div>
@@ -521,7 +506,7 @@ export default function ComplaintsMaster() {
                 />
                 {createForm.formState.errors.description && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.description as any).message}
+                    {(createForm.formState.errors.description as AnyT).message}
                   </p>
                 )}
               </div>
@@ -536,7 +521,7 @@ export default function ComplaintsMaster() {
                 />
                 {createForm.formState.errors.files && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.files as any).message}
+                    {(createForm.formState.errors.files as AnyT).message}
                   </p>
                 )}
               </div>
@@ -587,7 +572,7 @@ export default function ComplaintsMaster() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="0">Select Department</SelectItem>
-                    {departments.map((d: any) => (
+                    {departments.map((d: Department) => (
                       <SelectItem key={d.id} value={d.id.toString()}>
                         {d.name}
                       </SelectItem>
@@ -596,7 +581,7 @@ export default function ComplaintsMaster() {
                 </Select>
                 {editForm.formState.errors.departmentId && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.departmentId as any).message}
+                    {(editForm.formState.errors.departmentId as AnyT).message}
                   </p>
                 )}
               </div>
@@ -614,7 +599,7 @@ export default function ComplaintsMaster() {
                 />
                 {editForm.formState.errors.designation && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.designation as any).message}
+                    {(editForm.formState.errors.designation as AnyT).message}
                   </p>
                 )}
               </div>
@@ -632,7 +617,7 @@ export default function ComplaintsMaster() {
                 />
                 {editForm.formState.errors.accusedName && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.accusedName as any).message}
+                    {(editForm.formState.errors.accusedName as AnyT).message}
                   </p>
                 )}
               </div>
@@ -650,7 +635,7 @@ export default function ComplaintsMaster() {
                 />
                 {editForm.formState.errors.description && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.description as any).message}
+                    {(editForm.formState.errors.description as AnyT).message}
                   </p>
                 )}
               </div>
@@ -665,7 +650,7 @@ export default function ComplaintsMaster() {
                 />
                 {editForm.formState.errors.files && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.files as any).message}
+                    {(editForm.formState.errors.files as AnyT).message}
                   </p>
                 )}
               </div>
@@ -719,7 +704,7 @@ export default function ComplaintsMaster() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="0">Unassigned</SelectItem>
-                      {admins.map((admin: any) => (
+                      {admins.map((admin: Admin) => (
                         <SelectItem key={admin.id} value={admin.id.toString()}>
                           {admin.name}
                         </SelectItem>
@@ -782,7 +767,7 @@ export default function ComplaintsMaster() {
                   </label>
                   <p className="text-sm">
                     {departments.find(
-                      (d: any) => d.id === showDetails.departmentId
+                      (d: Department) => d.id === showDetails.departmentId
                     )?.name || "-"}
                   </p>
                 </div>
@@ -793,7 +778,7 @@ export default function ComplaintsMaster() {
                   <p className="text-sm">
                     {showDetails.assignedToId
                       ? admins.find(
-                          (a: any) => a.id === showDetails.assignedToId
+                          (a: Admin) => a.id === showDetails.assignedToId
                         )?.name || "-"
                       : "Unassigned"}
                   </p>

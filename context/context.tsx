@@ -1,34 +1,15 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import type {
+  User,
+  contextType,
+  Department,
+  StateT,
+  UserReport,
+  Admin,
+} from "@/lib/types";
 
-interface User {
-  id: string;
-  name: string;
-  role: string;
-}
-type LoadingContextType = {
-  loading: boolean;
-  setLoading: (b: boolean) => void;
-  user: User | null;
-  setUser: (user: User | null) => void;
-  superAdminDrawerOpen: boolean;
-  setSuperAdminDrawerOpen: (b: boolean) => void;
-
-  // Masters
-  departments: Array<{ id: number; name: string }>;
-  states: Array<{ id: number; name: string }>;
-  admins: Array<any>;
-  userReports: Array<any>;
-  fetchAdminMasters: () => Promise<void>;
-  fetchMasters: () => Promise<void>;
-  fetchUserMasters: () => Promise<void>;
-  refreshDepartments: () => Promise<void>;
-  refreshStates: () => Promise<void>;
-  refreshUserReports: () => Promise<void>;
-  refreshAdmins: () => Promise<void>;
-};
-
-const globalCOntext = createContext<LoadingContextType | undefined>(undefined);
+const globalCOntext = createContext<contextType | undefined>(undefined);
 
 export function contextProvider({
   children,
@@ -41,24 +22,10 @@ export function contextProvider({
   const [user, setUser] = useState<User | null>(initialUser ?? null);
   const [superAdminDrawerOpen, setSuperAdminDrawerOpen] = useState(true);
 
-  const [departments, setDepartments] = useState<
-    Array<{ id: number; name: string }>
-  >([]);
-  const [userReports, setUserReports] = useState<
-    Array<{
-      id: number;
-      trackingId: string;
-      departmentId: number;
-      designation: string | null;
-      accusedName: string | null;
-      description: string;
-      files: string | null;
-      status: string;
-      createdAt: string;
-    }>
-  >([]);
-  const [states, setStates] = useState<Array<{ id: number; name: string }>>([]);
-  const [admins, setAdmins] = useState<Array<any>>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [userReports, setUserReports] = useState<UserReport[]>([]);
+  const [states, setStates] = useState<StateT[]>([]);
+  const [admins, setAdmins] = useState<Admin[]>([]);
 
   async function fetchAdminMasters() {
     setLoading(true);
@@ -114,7 +81,7 @@ export function contextProvider({
   }
   async function fetchMasters() {
     setLoading(true);
-    await Promise.all([ fetchAdmins()]);
+    await Promise.all([fetchAdmins()]);
     setLoading(false);
   }
 
