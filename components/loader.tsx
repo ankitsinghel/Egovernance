@@ -26,7 +26,7 @@ export function Spinner({ size = 6 }: { size?: number }) {
   if (!loading) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-[2147483647] flex items-center justify-center">
       {/* Overlay backdrop that blocks clicks */}
       <div
         className="absolute inset-0 bg-gradient-to-br from-blue-50/90 to-purple-50/90 backdrop-blur-sm"
@@ -39,7 +39,7 @@ export function Spinner({ size = 6 }: { size?: number }) {
       />
 
       {/* Spinner container */}
-      <div className="relative z-50">
+      <div className="relative z-[2147483649]">
         {/* Outer glowing ring */}
         <div
           className="absolute inset-0 rounded-full animate-ping"

@@ -3,6 +3,7 @@ import { contextProvider as ContextProvider } from "../../context/context";
 import Spinner from "@/components/loader";
 import { cookies } from "next/headers";
 import { getAdminFromToken } from "../../lib/auth";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: "Admin Dashboard",
@@ -23,11 +24,12 @@ export default async function AdminLayout({
         role: (admin as any).role || "Admin",
       }
     : null;
-  //  console.log("Admin Layout admin",initialUser);  
+  //  console.log("Admin Layout admin",initialUser);
   return (
     <html lang="en">
       <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
         <ContextProvider initialUser={initialUser}>
+          <Toaster />
           <Spinner />
           <main>{children}</main>
         </ContextProvider>

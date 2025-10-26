@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { toast } from "sonner";
 import type {
   User,
   contextType,
@@ -7,7 +8,9 @@ import type {
   StateT,
   UserReport,
   Admin,
+  Role,
 } from "@/lib/types";
+import type { Permission } from "@/lib/types";
 
 const globalCOntext = createContext<contextType | undefined>(undefined);
 
@@ -26,6 +29,14 @@ export function contextProvider({
   const [userReports, setUserReports] = useState<UserReport[]>([]);
   const [states, setStates] = useState<StateT[]>([]);
   const [admins, setAdmins] = useState<Admin[]>([]);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
+
+  // Initialize known roles once (avoid calling setState during render)
+  const [roles, setRoles] = useState<Role[]>([
+    { id: 1, name: "SuperAdmin" },
+    { id: 2, name: "CentralAdmin" },
+    { id: 3, name: "StateAdmin" },
+  ]);
 
   async function fetchAdminMasters() {
     setLoading(true);
@@ -36,18 +47,30 @@ export function contextProvider({
     try {
       const res = await fetch("/api/admin/reports");
       const j = await res.json();
-      if (j.ok) setUserReports(j.reports || []);
+      if (j.ok) {
+        setUserReports(j.reports || []);
+        if (j.message) toast.success(j.message);
+      } else {
+        if (j.message) toast.error(j.message);
+      }
     } catch (e) {
       console.error("fetchUserReports", e);
+      toast.error("Failed to load reports");
     }
   }
   async function fetchDepartments() {
     try {
       const res = await fetch("/api/departments");
       const j = await res.json();
-      if (j.ok) setDepartments(j.departments || []);
+      if (j.ok) {
+        setDepartments(j.departments || []);
+        if (j.message) toast.success(j.message);
+      } else {
+        if (j.message) toast.error(j.message);
+      }
     } catch (e) {
       console.error("fetchDepartments", e);
+      toast.error("Failed to load departments");
     }
   }
 
@@ -55,9 +78,15 @@ export function contextProvider({
     try {
       const res = await fetch("/api/states");
       const j = await res.json();
-      if (j.ok) setStates(j.list || []);
+      if (j.ok) {
+        setStates(j.list || []);
+        if (j.message) toast.success(j.message);
+      } else {
+        if (j.message) toast.error(j.message);
+      }
     } catch (e) {
       console.error("fetchStates", e);
+      toast.error("Failed to load states");
     }
   }
 
@@ -65,10 +94,45 @@ export function contextProvider({
     try {
       const res = await fetch("/api/admins");
       const j = await res.json();
-      if (j.ok) setAdmins(j.admins || []);
+      if (j.ok) {
+        setAdmins(j.admins || []);
+        if (j.message) toast.success(j.message);
+      } else {
+        if (j.message) toast.error(j.message);
+      }
     } catch (e) {
       // If admins endpoint doesn't exist, ignore
       console.warn("fetchAdmins failed", e);
+    }
+  }
+
+  async function fetchRoles() {
+    try {
+      const res = await fetch("/api/roles");
+      const j = await res.json();
+      if (j.ok) {
+        setRoles(j.list || []);
+        if (j.message) toast.success(j.message);
+      } else {
+        if (j.message) toast.error(j.message);
+      }
+    } catch (e) {
+      console.error("fetchRoles", e);
+    }
+  }
+
+  async function fetchPermissions() {
+    try {
+      const res = await fetch("/api/permissions");
+      const j = await res.json();
+      if (j.ok) {
+        setPermissions(j.list || []);
+        if (j.message) toast.success(j.message);
+      } else {
+        if (j.message) toast.error(j.message);
+      }
+    } catch (e) {
+      console.error("fetchPermissions", e);
     }
   }
   async function fetchUserMasters() {
@@ -81,7 +145,7 @@ export function contextProvider({
   }
   async function fetchMasters() {
     setLoading(true);
-    await Promise.all([fetchAdmins()]);
+    await Promise.all([fetchAdmins(), fetchRoles(), fetchPermissions()]);
     setLoading(false);
   }
 
@@ -89,19 +153,28 @@ export function contextProvider({
   const refreshStates = async () => fetchStates();
   const refreshAdmins = async () => fetchAdmins();
   const refreshUserReports = async () => fetchUserReports();
+  const refreshRoles = async () => fetchRoles();
+  const refreshPermissions = async () => fetchPermissions();
 
   useEffect(() => {
+    console.log("context mounted, user:", user);
     fetchUserMasters();
+    // fetch roles and permissions for everyone (super-admin or normal)
+
   }, []);
 
   useEffect(() => {
     if (user) {
       fetchAdminMasters();
+
     }
   }, [user]);
   return (
     <globalCOntext.Provider
       value={{
+        roles,
+        setRoles,
+        permissions,
         fetchUserMasters,
         userReports,
         refreshUserReports,
@@ -115,6 +188,8 @@ export function contextProvider({
         departments,
         states,
         admins,
+        refreshPermissions,
+        refreshRoles,
         fetchMasters,
         refreshDepartments,
         refreshStates,

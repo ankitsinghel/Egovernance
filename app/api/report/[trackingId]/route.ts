@@ -17,15 +17,15 @@ export async function GET(
 
     if (!report)
       return NextResponse.json(
-        { ok: false, error: "Not found" },
+        { ok: false, message: "Not found" },
         { status: 404 }
       );
 
-    return NextResponse.json({ ok: true, report });
+    return NextResponse.json({ ok: true, report, message: "Report found" });
   } catch (error) {
     console.log("Get tracking id error", error);
     return NextResponse.json(
-      { ok: false, error: "Internal Server Error" },
+      { ok: false, message: "Internal Server Error" },
       { status: 500 }
     );
   }

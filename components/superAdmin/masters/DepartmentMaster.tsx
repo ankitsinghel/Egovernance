@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { toast } from "sonner";
 import {
   RefreshCw,
   Plus,
@@ -39,6 +40,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   Card,
   CardContent,
@@ -46,15 +48,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { set } from "zod";
 
 type Dept = { id: number; name: string };
 
 export default function DepartmentMaster() {
-  const { departments, refreshDepartments } = context();
-  const [loading, setLoading] = useState(false);
+  const { departments, refreshDepartments, loading, setLoading } = context();
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState<null | Dept>(null);
   const [query, setQuery] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  function promptDelete(id: number) {
+    setDeleteTargetId(id);
+    setShowDeleteDialog(true);
+  }
   const list = departments || [];
 
   const createForm = useForm({
@@ -68,6 +77,7 @@ export default function DepartmentMaster() {
 
   async function handleCreate(data: any) {
     try {
+      setLoading(true);
       const res = await fetch("/api/departments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -76,18 +86,25 @@ export default function DepartmentMaster() {
       });
       const j = await res.json();
       if (j.ok) {
+        setLoading(false);
         setShowCreate(false);
         createForm.reset();
         refreshDepartments();
-      } else alert(j.error || "Create failed");
+        if (j.message) toast.success(j.message);
+      } else {
+        setLoading(false);
+        toast.error(j.error || "Create failed");
+      }
     } catch (e) {
-      alert("Network error");
+      setLoading(false);
+      toast.error("Network error");
     }
   }
 
   async function handleEdit(data: any) {
     if (!showEdit) return;
     try {
+      setLoading(true);
       const res = await fetch(`/api/departments/${showEdit.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -96,27 +113,36 @@ export default function DepartmentMaster() {
       });
       const j = await res.json();
       if (j.ok) {
+        setLoading(false);
         setShowEdit(null);
         editForm.reset();
         refreshDepartments();
-      } else alert(j.error || "Update failed");
+        if (j.message) toast.success(j.message);
+      } else toast.error(j.error || "Update failed");
     } catch (e) {
-      alert("Network error");
+      setLoading(false);
+      toast.error("Network error");
     }
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("Delete this department?")) return;
     try {
+      setLoading(true);
       const res = await fetch(`/api/departments/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
       const j = await res.json();
-      if (j.ok) refreshDepartments();
-      else alert("Delete failed");
+      if (j.ok) {
+        refreshDepartments();
+        if (j.message) toast.success(j.message);
+      } else toast.error(j.message || "Delete failed");
     } catch (e) {
-      alert("Network error");
+      toast.error("Network error");
+    } finally {
+      setLoading(false);
+      setShowDeleteDialog(false);
+      setDeleteTargetId(null);
     }
   }
 
@@ -238,7 +264,7 @@ export default function DepartmentMaster() {
                                 Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                onClick={() => handleDelete(d.id)}
+                                onClick={() => promptDelete(d.id)}
                                 className="text-destructive focus:text-destructive"
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
@@ -256,6 +282,22 @@ export default function DepartmentMaster() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation (shared) */}
+      <ConfirmDialog
+        open={showDeleteDialog}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this department? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onClose={() => {
+          setShowDeleteDialog(false);
+          setDeleteTargetId(null);
+        }}
+        onConfirm={async () => {
+          if (deleteTargetId) await handleDelete(deleteTargetId);
+        }}
+      />
 
       {/* Create Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>

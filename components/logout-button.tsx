@@ -1,10 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
+import { context } from "@/context/context";
 
 export default function LogoutButton() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const { setLoading } = context();
 
   async function handleLogout() {
     setLoading(true);
@@ -17,10 +19,10 @@ export default function LogoutButton() {
       if (j.ok) {
         router.push("/");
       } else {
-        alert("Logout failed");
+        toast.error("Logout failed");
       }
     } catch (e) {
-      alert("Network error");
+      toast.error("Network error");
     } finally {
       setLoading(false);
     }
@@ -30,9 +32,8 @@ export default function LogoutButton() {
     <button
       onClick={handleLogout}
       className="text-sm text-slate-600"
-      disabled={loading}
     >
-      {loading ? "Logging out..." : "Logout"}
+       Logout
     </button>
   );
 }

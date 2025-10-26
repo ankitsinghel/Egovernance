@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
+import { toast } from "sonner";
 import {
   RefreshCw,
   Plus,
@@ -66,13 +67,26 @@ import type {
 } from "@/lib/types";
 
 export default function ComplaintsMaster() {
-  const { userReports, refreshUserReports, departments, admins, loading } =
-    context();
+  const {
+    userReports,
+    refreshUserReports,
+    departments,
+    admins,
+    loading,
+    setLoading,
+  } = context();
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState<UserReport | null>(null);
   const [showDetails, setShowDetails] = useState<UserReport | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  function promptDelete(id: number) {
+    setDeleteTargetId(id);
+    setShowDeleteDialog(true);
+  }
 
   const createForm = useForm({
     resolver: zodResolver(UserReportCreateSchema),
@@ -135,6 +149,7 @@ export default function ComplaintsMaster() {
   const handleCreate = useCallback(
     async (data: AnyT) => {
       try {
+        setLoading(true);
         const res = await fetch("/api/user-reports", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -152,11 +167,14 @@ export default function ComplaintsMaster() {
           setShowCreate(false);
           createForm.reset();
           refreshUserReports();
+          if (j.message) toast.success(j.message);
         } else {
-          alert(j.error || "Create failed");
+          toast.error(j.message || j.error || "Create failed");
         }
       } catch (e) {
-        alert("Network error");
+        toast.error("Network error");
+      } finally {
+        setLoading(false);
       }
     },
     [createForm, refreshUserReports]
@@ -166,6 +184,7 @@ export default function ComplaintsMaster() {
     async (data: AnyT) => {
       if (!showEdit) return;
       try {
+        setLoading(true);
         const res = await fetch(`/api/user-reports/${showEdit.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -185,11 +204,14 @@ export default function ComplaintsMaster() {
           setShowEdit(null);
           editForm.reset();
           refreshUserReports();
+          if (j.message) toast.success(j.message);
         } else {
-          alert(j.error || "Update failed");
+          toast.error(j.message || j.error || "Update failed");
         }
       } catch (e) {
-        alert("Network error");
+        toast.error("Network error");
+      } finally {
+        setLoading(false);
       }
     },
     [showEdit, editForm, refreshUserReports]
@@ -197,8 +219,8 @@ export default function ComplaintsMaster() {
 
   const handleDelete = useCallback(
     async (id: number) => {
-      if (!confirm("Delete this complaint?")) return;
       try {
+        setLoading(true);
         const res = await fetch(`/api/user-reports/${id}`, {
           method: "DELETE",
           credentials: "include",
@@ -206,11 +228,16 @@ export default function ComplaintsMaster() {
         const j = await res.json();
         if (j.ok) {
           refreshUserReports();
+          if (j.message) toast.success(j.message);
         } else {
-          alert("Delete failed");
+          toast.error(j.message || "Delete failed");
         }
       } catch (e) {
-        alert("Network error");
+        toast.error("Network error");
+      } finally {
+        setLoading(false);
+        setShowDeleteDialog(false);
+        setDeleteTargetId(null);
       }
     },
     [refreshUserReports]
@@ -395,7 +422,7 @@ export default function ComplaintsMaster() {
                               )}
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
-                                onClick={() => handleDelete(report.id)}
+                                onClick={() => promptDelete(report.id)}
                                 className="text-destructive focus:text-destructive"
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
@@ -537,6 +564,38 @@ export default function ComplaintsMaster() {
               <Button type="submit">Create Complaint</Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this complaint? This action cannot
+              be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setDeleteTargetId(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                if (deleteTargetId) await handleDelete(deleteTargetId);
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

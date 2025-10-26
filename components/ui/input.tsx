@@ -14,14 +14,26 @@ export const Input = React.forwardRef<HTMLInputElement, any>(function Input(
   const { value, defaultValue, onChange, className, ...rest } = props;
 
   const baseClass = className || "w-full p-2 border rounded";
-  // Always render as a controlled input to avoid switching between uncontrolled and controlled.
-  const effective = value !== undefined ? value : defaultValue;
+  // If an explicit `value` prop is provided we render a controlled input.
+  // Otherwise forward defaultValue so the input remains uncontrolled and
+  // works with refs (react-hook-form register) and internal browser state.
+  if (value !== undefined) {
+    return (
+      <input
+        ref={ref}
+        className={baseClass}
+        value={normalizeValue(value)}
+        onChange={onChange}
+        {...rest}
+      />
+    );
+  }
 
   return (
     <input
       ref={ref}
       className={baseClass}
-      value={normalizeValue(effective)}
+      defaultValue={normalizeValue(defaultValue)}
       onChange={onChange}
       {...rest}
     />

@@ -5,6 +5,7 @@ import { contextProvider as ContextProvider } from "../../context/context";
 import { Spinner } from "@/components/loader";
 import { cookies } from "next/headers";
 import { getAdminFromToken } from "../../lib/auth";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: "E-Governance Whistleblower",
@@ -32,6 +33,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
         <ContextProvider initialUser={initialUser}>
+          <Toaster />
           <Spinner />
           <Navbar />
           <main className="py-8">

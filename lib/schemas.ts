@@ -108,3 +108,20 @@ export const ActionLogCreateSchema = z.object({
 export type ActionLogCreateForm = z.infer<typeof ActionLogCreateSchema>;
 
 export type AdminUpdateForm = z.infer<typeof AdminUpdateSchema>;
+
+export const RoleSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Minimum 2 characters")
+    .max(100, "Maximum 100 characters"),
+});
+export type RoleForm = z.infer<typeof RoleSchema>;
+
+export const PermissionSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Minimum 2 characters")
+    .max(100, "Maximum 100 characters"),
+  description: z.string().max(255).optional(),
+});
+export type PermissionForm = z.infer<typeof PermissionSchema>;

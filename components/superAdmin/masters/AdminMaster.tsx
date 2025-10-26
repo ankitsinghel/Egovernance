@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useCallback } from "react";
+import { toast } from "sonner";
 import {
   RefreshCw,
   Plus,
@@ -39,6 +40,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   Card,
   CardContent,
@@ -56,10 +58,17 @@ import {
 import type { Admin, Department, AnyT } from "@/lib/types";
 
 export default function AdminsMaster() {
-  const { admins, refreshAdmins, departments, loading } = context();
+  const { admins, refreshAdmins, departments, loading, setLoading } = context();
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState<Admin | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  function promptDelete(id: number) {
+    setDeleteTargetId(id);
+    setShowDeleteDialog(true);
+  }
 
   const createForm = useForm({
     resolver: zodResolver(AdminCreateSchema),
@@ -89,6 +98,7 @@ export default function AdminsMaster() {
   const handleCreate = useCallback(
     async (data: AnyT) => {
       try {
+        setLoading(true);
         const res = await fetch("/api/admins", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -105,11 +115,14 @@ export default function AdminsMaster() {
           setShowCreate(false);
           createForm.reset();
           refreshAdmins();
+          if (j.message) toast.success(j.message);
         } else {
-          alert(j.error || "Create failed");
+          toast.error(j.message || j.error || "Create failed");
         }
       } catch (e) {
-        alert("Network error");
+        toast.error("Network error");
+      } finally {
+        setLoading(false);
       }
     },
     [createForm, refreshAdmins]
@@ -119,6 +132,7 @@ export default function AdminsMaster() {
     async (data: AnyT) => {
       if (!showEdit) return;
       try {
+        setLoading(true);
         const res = await fetch(`/api/admins/${showEdit.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -135,11 +149,14 @@ export default function AdminsMaster() {
           setShowEdit(null);
           editForm.reset();
           refreshAdmins();
+          if (j.message) toast.success(j.message);
         } else {
-          alert(j.error || "Update failed");
+          toast.error(j.message || j.error || "Update failed");
         }
       } catch (e) {
-        alert("Network error");
+        toast.error("Network error");
+      } finally {
+        setLoading(false);
       }
     },
     [showEdit, editForm, refreshAdmins]
@@ -147,8 +164,9 @@ export default function AdminsMaster() {
 
   const handleDelete = useCallback(
     async (id: number) => {
-      if (!confirm("Delete this admin?")) return;
+      // deletion is confirmed via dialog
       try {
+        setLoading(true);
         const res = await fetch(`/api/admins/${id}`, {
           method: "DELETE",
           credentials: "include",
@@ -156,18 +174,26 @@ export default function AdminsMaster() {
         const j = await res.json();
         if (j.ok) {
           refreshAdmins();
+          if (j.message) toast.success(j.message);
         } else {
-          alert("Delete failed");
+          toast.error(j.message || "Delete failed");
         }
       } catch (e) {
-        alert("Network error");
+        toast.error("Network error");
+      } finally {
+        setLoading(false);
       }
     },
     [refreshAdmins]
   );
 
   const handleRefresh = useCallback(async () => {
-    await refreshAdmins();
+    setLoading(true);
+    try {
+      await refreshAdmins();
+    } finally {
+      setLoading(false);
+    }
   }, [refreshAdmins]);
 
   const handleEditClick = useCallback(
@@ -284,7 +310,7 @@ export default function AdminsMaster() {
                                 Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                onClick={() => handleDelete(admin.id)}
+                                onClick={() => promptDelete(admin.id)}
                                 className="text-destructive focus:text-destructive"
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
@@ -312,6 +338,19 @@ export default function AdminsMaster() {
           </div>
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onClose={() => {
+          setShowDeleteDialog(false);
+          setDeleteTargetId(null);
+        }}
+        onConfirm={async () => {
+          if (deleteTargetId) await handleDelete(deleteTargetId);
+        }}
+        title="Confirm Delete"
+        description={`Are you sure you want to delete this admin? This action cannot be undone.`}
+      />
 
       {/* Create Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>

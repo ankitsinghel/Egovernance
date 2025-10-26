@@ -2,17 +2,19 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { 
-  Shield, 
-  FileText, 
-  Search, 
-  User, 
-  LogOut, 
+import { toast } from "sonner";
+import { context } from "@/context/context";
+import {
+  Shield,
+  FileText,
+  Search,
+  User,
+  LogOut,
   Building,
   Menu,
   X,
-  ChevronDown
-} from 'lucide-react';
+  ChevronDown,
+} from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -20,6 +22,7 @@ export default function Navbar() {
   const [user, setUser] = useState<any | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { setLoading } = context();
 
   // Hide global navbar inside super-admin pages
   if (pathname?.startsWith("/super-admin")) return null;
@@ -28,11 +31,14 @@ export default function Navbar() {
     let mounted = true;
     async function fetchMe() {
       try {
+        setLoading(true);
         const res = await fetch("/api/me");
         const j = await res.json();
         if (mounted && j.ok) setUser(j.user);
       } catch (e) {
         // ignore
+      } finally {
+        setLoading(false);
       }
     }
     fetchMe();
@@ -45,12 +51,13 @@ export default function Navbar() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   async function handleLogout() {
     try {
+      setLoading(true);
       const res = await fetch("/api/logout", {
         method: "POST",
         credentials: "include",
@@ -61,10 +68,12 @@ export default function Navbar() {
         router.push("/");
         setIsOpen(false);
       } else {
-        alert("Logout failed");
+        toast.error("Logout failed");
       }
     } catch (e) {
-      alert("Network error");
+      toast.error("Network error");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -75,18 +84,17 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/90 backdrop-blur-md shadow-lg border-b border-slate-200' 
-          : 'bg-transparent'
-      }`}>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled
+            ? "bg-white/90 backdrop-blur-md shadow-lg border-b border-slate-200"
+            : "bg-transparent"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link 
-              href="/" 
-              className="flex items-center gap-3 group"
-            >
+            <Link href="/" className="flex items-center gap-3 group">
               <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl shadow-lg">
                 <Shield className="w-6 h-6 text-white" />
               </div>
@@ -111,8 +119,8 @@ export default function Navbar() {
                     href={item.href}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                       isActive
-                        ? 'bg-blue-100 text-blue-700 shadow-sm'
-                        : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100'
+                        ? "bg-blue-100 text-blue-700 shadow-sm"
+                        : "text-slate-700 hover:text-blue-600 hover:bg-slate-100"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -129,7 +137,7 @@ export default function Navbar() {
                   <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg">
                     <Building className="w-4 h-4 text-slate-600" />
                     <span className="text-sm font-medium text-slate-700">
-                      {user.organization || 'Admin'}
+                      {user.organization || "Admin"}
                     </span>
                   </div>
                   <button
@@ -179,8 +187,8 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
                       isActive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-slate-700 hover:bg-slate-100'
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-slate-700 hover:bg-slate-100"
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -188,7 +196,7 @@ export default function Navbar() {
                   </Link>
                 );
               })}
-              
+
               {/* Mobile Admin Section */}
               <div className="pt-4 border-t border-slate-200">
                 {user ? (
@@ -196,8 +204,12 @@ export default function Navbar() {
                     <div className="flex items-center gap-3 px-4 py-3 bg-slate-100 rounded-xl">
                       <Building className="w-5 h-5 text-slate-600" />
                       <div className="flex-1">
-                        <p className="font-medium text-slate-900">{user.name}</p>
-                        <p className="text-sm text-slate-600">{user.organization}</p>
+                        <p className="font-medium text-slate-900">
+                          {user.name}
+                        </p>
+                        <p className="text-sm text-slate-600">
+                          {user.organization}
+                        </p>
                       </div>
                     </div>
                     <button

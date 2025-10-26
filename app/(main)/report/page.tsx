@@ -35,6 +35,7 @@ import {
   CheckCircle2,
   ArrowRight,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 
 export default function ReportPage() {
@@ -66,10 +67,10 @@ export default function ReportPage() {
         setTrackingId(j.trackingId);
         setSubmitted(true);
       } else {
-        alert("Submit failed: " + (j.error || "Unknown error"));
+        toast.error("Submit failed: " + (j.error || "Unknown error"));
       }
     } catch (e) {
-      alert("Network error. Please check your connection.");
+      toast.error("Network error. Please check your connection.");
     } finally {
       setLoading(false);
     }
@@ -186,7 +187,6 @@ export default function ReportPage() {
                 control={form.control}
                 name="department"
                 render={({ field, fieldState }: any) => {
-
                   return (
                     <FormItem>
                       <div className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">

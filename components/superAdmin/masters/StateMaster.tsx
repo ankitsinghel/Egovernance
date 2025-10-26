@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { toast } from "sonner";
 import {
   RefreshCw,
   Plus,
@@ -39,6 +40,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   Card,
   CardContent,
@@ -51,11 +53,17 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import type { StateT } from "@/lib/types";
 
 export default function StateMaster() {
-  const { states, refreshStates } = context();
-  const [loading, setLoading] = useState(false);
+  const { states, refreshStates, setLoading } = context();
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState<null | StateT>(null);
   const [query, setQuery] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  function promptDelete(id: number) {
+    setDeleteTargetId(id);
+    setShowDeleteDialog(true);
+  }
   const list = states || [];
 
   const createForm = useForm({
@@ -69,6 +77,7 @@ export default function StateMaster() {
 
   async function handleCreate(data: any) {
     try {
+      setLoading(true);
       const res = await fetch("/api/states", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,15 +89,19 @@ export default function StateMaster() {
         setShowCreate(false);
         createForm.reset();
         refreshStates();
-      } else alert(j.error || "Create failed");
+        if (j.message) toast.success(j.message);
+      } else toast.error(j.error || "Create failed");
     } catch (e) {
-      alert("Network error");
+      toast.error("Network error");
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleEdit(data: any) {
     if (!showEdit) return;
     try {
+      setLoading(true);
       const res = await fetch(`/api/states/${showEdit.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -100,24 +113,33 @@ export default function StateMaster() {
         setShowEdit(null);
         editForm.reset();
         refreshStates();
-      } else alert(j.error || "Update failed");
+        if (j.message) toast.success(j.message);
+      } else toast.error(j.error || "Update failed");
     } catch (e) {
-      alert("Network error");
+      toast.error("Network error");
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("Delete this state?")) return;
     try {
+      setLoading(true);
       const res = await fetch(`/api/states/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
       const j = await res.json();
-      if (j.ok) refreshStates();
-      else alert("Delete failed");
+      if (j.ok) {
+        refreshStates();
+        if (j.message) toast.success(j.message);
+      } else toast.error(j.message || "Delete failed");
     } catch (e) {
-      alert("Network error");
+      toast.error("Network error");
+    } finally {
+      setShowDeleteDialog(false);
+      setDeleteTargetId(null);
+      setLoading(false);
     }
   }
 
@@ -142,10 +164,9 @@ export default function StateMaster() {
                   variant="outline"
                   size="sm"
                   onClick={() => refreshStates()}
-                  disabled={loading}
                 >
                   <RefreshCw
-                    className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                    className={`w-4 h-4 `}
                   />
                   {/* <span className="ml-2 hidden sm:inline">Refresh</span> */}
                 </Button>
@@ -228,7 +249,7 @@ export default function StateMaster() {
                                 Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                onClick={() => handleDelete(s.id)}
+                                onClick={() => promptDelete(s.id)}
                                 className="text-destructive focus:text-destructive"
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
@@ -246,6 +267,19 @@ export default function StateMaster() {
           </div>
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onClose={() => {
+          setShowDeleteDialog(false);
+          setDeleteTargetId(null);
+        }}
+        onConfirm={async () => {
+          if (deleteTargetId) await handleDelete(deleteTargetId);
+        }}
+        title="Confirm Delete"
+        description={`Are you sure you want to delete this state? This action cannot be undone.`}
+      />
 
       {/* Create Dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>

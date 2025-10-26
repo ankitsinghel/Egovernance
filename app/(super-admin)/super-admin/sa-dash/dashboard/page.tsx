@@ -1,6 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Card } from "../../../../../components/ui/card";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../../../../../components/ui/dialog";
 import { Button } from "../../../../../components/ui/button";
 import {
   Building,
@@ -83,25 +92,42 @@ export default function SuperAdminDashboardPage() {
       headers: { "Content-Type": "application/json" },
     });
     const j = await res.json();
-    if (!j.ok) alert(j.error || "Create failed");
+    if (!j.ok) toast.error(j.error || "Create failed");
     else {
-      alert("Admin created successfully!");
+      toast.success("Admin created successfully!");
       e.target.reset();
       load();
     }
   }
 
-  async function deleteOrg(id: number) {
-    if (confirm("Are you sure you want to delete this department?")) {
-      await fetch(`/api/departments/${id}`, { method: "DELETE" });
-      load();
-    }
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    type: "org" | "city";
+    id: number;
+  } | null>(null);
+
+  function promptDelete(type: "org" | "city", id: number) {
+    setDeleteTarget({ type, id });
+    setShowDeleteDialog(true);
   }
 
-  async function deleteCity(id: number) {
-    if (confirm("Are you sure you want to delete this city?")) {
-      await fetch(`/api/cities/${id}`, { method: "DELETE" });
+  async function performDelete() {
+    if (!deleteTarget) return;
+    try {
+      if (deleteTarget.type === "org") {
+        await fetch(`/api/departments/${deleteTarget.id}`, {
+          method: "DELETE",
+        });
+      } else {
+        await fetch(`/api/cities/${deleteTarget.id}`, { method: "DELETE" });
+      }
+      toast.success("Deleted");
       load();
+    } catch (e) {
+      toast.error("Delete failed");
+    } finally {
+      setShowDeleteDialog(false);
+      setDeleteTarget(null);
     }
   }
 
@@ -224,7 +250,7 @@ export default function SuperAdminDashboardPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => deleteOrg(org.id)}
+                    onClick={() => promptDelete("org", org.id)}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -285,7 +311,7 @@ export default function SuperAdminDashboardPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => deleteCity(city.id)}
+                    onClick={() => promptDelete("city", city.id)}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -416,6 +442,29 @@ export default function SuperAdminDashboardPage() {
           </Button>
         </div>
       </Card>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this item? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={performDelete}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
+// Delete confirmation dialog markup at the end of the component file (client-side)

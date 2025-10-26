@@ -4,13 +4,13 @@ import { cookies } from "next/headers";
 
 export async function POST() {
   try {
-    const res = NextResponse.json({ ok: true });
+    const res = NextResponse.json({ ok: true, message: "Logged out" });
     // set cookie header to clear the auth cookie
     res.headers.set("Set-Cookie", clearAuthCookie());
     return res;
   } catch (e) {
     return NextResponse.json(
-      { ok: false, error: "Server error" },
+      { ok: false, message: "Server error" },
       { status: 500 }
     );
   }

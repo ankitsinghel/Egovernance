@@ -4,13 +4,9 @@ import { prisma } from "../../../lib/db";
 import { generateTrackingId } from "../../../lib/hash";
 import { sendNewReportNotification } from "../../../lib/email";
 
-
-
 export async function POST(req: Request) {
   try {
-    
     const { fields, files } = await parseForm(req as any);
-
 
     const deptId = Number(fields.department) || null;
     const designation = fields.designation || null;
@@ -80,7 +76,7 @@ export async function POST(req: Request) {
     if (!assignedAdmin) {
       assignedAdmin = await prisma.superAdmin.findFirst();
     }
-  
+
     const report = await prisma.userReport.create({
       data: {
         trackingId,
@@ -103,11 +99,15 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json({ ok: true, trackingId });
+    return NextResponse.json({
+      ok: true,
+      trackingId,
+      message: "Report created",
+    });
   } catch (err) {
     console.error("report POST error", err);
     return NextResponse.json(
-      { ok: false, error: "Internal Server Error" },
+      { ok: false, message: "Internal Server Error" },
       { status: 500 }
     );
   }

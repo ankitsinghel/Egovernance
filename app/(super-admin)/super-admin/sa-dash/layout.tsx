@@ -5,7 +5,8 @@ import { context } from "../../../../context/context";
 import { Button } from "../../../../components/ui/button";
 import { SuperAdminDashboard } from "@/components/AdminDrawer";
 import { SuperAdminNavbar } from "@/components/AdminNavbar";
-import { Boxes, MapPin, Settings, Users } from "lucide-react";
+import { Boxes, MapPin, Settings, Users, Shield, Key } from "lucide-react";
+import Spinner from "@/components/loader";
 
 export default function MastersLayout({
   children,
@@ -37,15 +38,27 @@ export default function MastersLayout({
       icon: <Users className="mr-2 size-3" />,
     },
     {
+      name: "Roles",
+      href: "/super-admin/sa-dash/roles",
+      icon: <Shield className="mr-2 size-3" />,
+    },
+    {
+      name: "Permissions",
+      href: "/super-admin/sa-dash/permissions",
+      icon: <Key className="mr-2 size-3" />,
+    },
+    {
       name: "Settings",
       href: "/super-admin/sa-dash/settings",
       icon: <Settings className="mr-2 size-3" />,
     },
   ];
   return (
-    <SuperAdminDashboard routes={routes}>
-      <SuperAdminNavbar />
-      <main>{children}</main>
-    </SuperAdminDashboard>
+    <div>
+      <SuperAdminDashboard routes={routes}>
+        <SuperAdminNavbar />
+        <main>{children}</main>
+      </SuperAdminDashboard>
+    </div>
   );
 }

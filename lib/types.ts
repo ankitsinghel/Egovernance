@@ -5,7 +5,11 @@ export interface User {
   name: string;
   role: string;
 }
-
+export interface Role {
+  id: number;
+  name: string;
+}
+export type Permission = { id: number; name: string; description?: string };
 export type Department = { id: number; name: string };
 export type StateT = { id: number; name: string };
 
@@ -56,7 +60,11 @@ export type contextType = {
   setUser: (user: User | null) => void;
   superAdminDrawerOpen: boolean;
   setSuperAdminDrawerOpen: (b: boolean) => void;
-
+  roles: Role[];
+  setRoles: (roles: Role[]) => void;
+  permissions: Permission[];
+  refreshPermissions: () => Promise<void>;
+  refreshRoles?: () => Promise<void>;
   // Masters
   departments: Department[];
   states: StateT[];

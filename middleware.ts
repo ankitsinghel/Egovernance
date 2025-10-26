@@ -4,23 +4,17 @@ import { verifyTokenEdge } from "./lib/edgeAuth"; //middleware renders on edge i
 
 const protectedRoutes = [
   "/super-admin/sa-dash",
-
 ];
 const adminProtectedRoutes = [
   "/admin/dashboard/",
-
 ];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-
-  // Try to verify the token in Edge runtime using jose (verifyTokenEdge).
   const token = req.cookies.get("egov_token")?.value || null;
   const payload = await verifyTokenEdge(token);
   const user = payload as any;
   const hasToken = !!user;
-  // console.log("middleware token", hasToken);
-
   if (
     !hasToken &&
     protectedRoutes.some((route) => pathname.startsWith(route))
@@ -28,7 +22,6 @@ export async function middleware(req: NextRequest) {
     const loginUrl = new URL("/super-admin/login", req.url);
     return NextResponse.redirect(loginUrl);
   }
-
   if (
     hasToken &&
     (pathname.startsWith("/super-admin/login") ||
@@ -40,7 +33,6 @@ export async function middleware(req: NextRequest) {
     res.headers.set("x-egov-middleware", "redirected-logged-in");
     return res;
   }
-
   // Admin route protections
   if (
     !hasToken &&
@@ -49,7 +41,6 @@ export async function middleware(req: NextRequest) {
     const loginUrl = new URL("/admin/login", req.url);
     return NextResponse.redirect(loginUrl);
   }
-
   if (hasToken && pathname.startsWith("/admin/login")) {
     const res = NextResponse.redirect(new URL("/admin/dashboard", req.url));
     res.headers.set("x-egov-middleware", "redirected-logged-in");
