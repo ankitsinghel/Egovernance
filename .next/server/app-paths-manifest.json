@@ -1,8 +1,9 @@
 {
-  "/api/states/[id]/route": "app/api/states/[id]/route.js",
-  "/(super-admin)/super-admin/sa-dash/roles/page": "app/(super-admin)/super-admin/sa-dash/roles/page.js",
-  "/(super-admin)/super-admin/sa-dash/permissions/page": "app/(super-admin)/super-admin/sa-dash/permissions/page.js",
-  "/(super-admin)/super-admin/sa-dash/states/page": "app/(super-admin)/super-admin/sa-dash/states/page.js",
+  "/api/super-admin/permissions/route": "app/api/super-admin/permissions/route.js",
+  "/api/super-admin/roles/[id]/permissions/route": "app/api/super-admin/roles/[id]/permissions/route.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/(super-admin)/super-admin/sa-dash/dashboard/page": "app/(super-admin)/super-admin/sa-dash/dashboard/page.js",
   "/(super-admin)/super-admin/sa-dash/departments/page": "app/(super-admin)/super-admin/sa-dash/departments/page.js",
-  "/(super-admin)/super-admin/sa-dash/admins/page": "app/(super-admin)/super-admin/sa-dash/admins/page.js"
+  "/(super-admin)/super-admin/sa-dash/roles/page": "app/(super-admin)/super-admin/sa-dash/roles/page.js",
+  "/(super-admin)/super-admin/sa-dash/permissions/page": "app/(super-admin)/super-admin/sa-dash/permissions/page.js"
 }

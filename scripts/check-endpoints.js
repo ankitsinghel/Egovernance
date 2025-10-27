@@ -13,7 +13,7 @@ async function check(url) {
 }
 
 async function main() {
-  const base = 'http://localhost:3000';
+  const base = '';
   const endpoints = [
     `${base}/api/roles`,
     `${base}/api/permissions`,

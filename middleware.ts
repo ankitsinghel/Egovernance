@@ -2,12 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyTokenEdge } from "./lib/edgeAuth"; //middleware renders on edge instead of node that's why we have to use a different library for checking pass
 
-const protectedRoutes = [
-  "/super-admin/sa-dash",
-];
-const adminProtectedRoutes = [
-  "/admin/dashboard/",
-];
+const protectedRoutes = ["/super-admin/sa-dash"];
+const adminProtectedRoutes = ["/admin/dashboard/"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -22,16 +18,28 @@ export async function middleware(req: NextRequest) {
     const loginUrl = new URL("/super-admin/login", req.url);
     return NextResponse.redirect(loginUrl);
   }
-  if (
-    hasToken &&
-    (pathname.startsWith("/super-admin/login") ||
-      pathname.startsWith("/super-admin/sign-up"))
-  ) {
-    const res = NextResponse.redirect(
-      new URL("/super-admin/sa-dash/dashboard", req.url)
-    );
-    res.headers.set("x-egov-middleware", "redirected-logged-in");
-    return res;
+  if (hasToken){
+
+    if (
+      user.role == "Superadmin" &&
+      (pathname.startsWith("/super-admin/login") ||
+        pathname.startsWith("/super-admin/sign-up"))
+      ) {
+      const res = NextResponse.redirect(
+        new URL("/super-admin/sa-dash/dashboard", req.url)
+      );
+        if (user.role == "admin" && pathname.startsWith("/admin/login")) {
+          const res = NextResponse.redirect(
+            new URL("/admin/dashboard", req.url)
+          );
+          res.headers.set("x-egov-middleware", "redirected-logged-in");
+          return res;
+        }
+      res.headers.set("x-egov-middleware", "redirected-logged-in");
+      return res;
+    }
+
+
   }
   // Admin route protections
   if (
@@ -41,11 +49,8 @@ export async function middleware(req: NextRequest) {
     const loginUrl = new URL("/admin/login", req.url);
     return NextResponse.redirect(loginUrl);
   }
-  if (hasToken && pathname.startsWith("/admin/login")) {
-    const res = NextResponse.redirect(new URL("/admin/dashboard", req.url));
-    res.headers.set("x-egov-middleware", "redirected-logged-in");
-    return res;
-  }
+
+
   const res = NextResponse.next();
   res.headers.set("x-egov-middleware", hasToken ? "ok-auth" : "ok-anon");
   if (hasToken) {
