@@ -1,11 +1,11 @@
 "use client";
-import { Card } from "../../../components/ui/card";
-import { Button } from "../../../components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { LoginSchema, LoginForm } from "../../../lib/schemas";
+import { LoginSchema, LoginForm } from "@/lib/schemas";
 import { 
   Building, 
   Mail, 

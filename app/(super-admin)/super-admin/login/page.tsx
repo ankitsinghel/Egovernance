@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { context } from "@/context/context";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SuperLogin() {
   const { user, setUser } = context();
@@ -47,6 +48,7 @@ export default function SuperLogin() {
       if (j.ok) {
         setUser(j.user);
         // Show success state briefly before redirect
+        toast.success(j.message || "Login successful");
         setTimeout(() => {
           router.push("/super-admin/sa-dash/dashboard");
         }, 1000);

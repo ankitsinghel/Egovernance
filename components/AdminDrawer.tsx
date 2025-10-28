@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { context } from "@/context/context";
+import { RouteItem } from "@/lib/types";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import {
   ChevronLeft,
@@ -11,11 +12,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 
-type RouteItem = { name: string; href: string; icon: ReactNode };
-
 
 const SuperAdminDashboard = ({ children, routes }: { children: ReactNode, routes: RouteItem[] }) => {
-  const { superAdminDrawerOpen, setSuperAdminDrawerOpen } = context();
+  const { superAdminDrawerOpen, setSuperAdminDrawerOpen,user } = context();
+  const filteredRoutes = routes.filter((route) => {
+    if (!route.permission) return true;
+    return user?.permissions?.some((p) => p.name === route.permission);
+  });
+
   return (
     <div className="flex">
       <Collapsible.Root
@@ -54,7 +58,7 @@ const SuperAdminDashboard = ({ children, routes }: { children: ReactNode, routes
                 !superAdminDrawerOpen ? "pointer-events-none" : ""
               }`}
             >
-              {routes.map((r) => (
+              {filteredRoutes.map((r) => (
                 <Button
                   key={r.href}
                   className="w-full justify-start font-normal"

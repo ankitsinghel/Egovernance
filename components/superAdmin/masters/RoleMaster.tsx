@@ -35,6 +35,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   Card,
@@ -48,6 +56,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RoleSchema } from "@/lib/schemas";
 import { context } from "@/context/context";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Role } from "@/lib/types";
+import { set } from "zod";
 
 export default function RoleMaster() {
   const {
@@ -60,8 +71,8 @@ export default function RoleMaster() {
     setLoading,
   } = context();
   const [showCreate, setShowCreate] = useState(false);
-  const [showEdit, setShowEdit] = useState<any | null>(null);
-  const [showPerms, setShowPerms] = useState<any | null>(null);
+  const [showEdit, setShowEdit] = useState<Role | null>(null);
+  const [showPerms, setShowPerms] = useState<Role | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
   const [query, setQuery] = useState("");
@@ -147,7 +158,9 @@ export default function RoleMaster() {
     setShowDeleteDialog(true);
   }
 
-  function openManagePerms(role: any) {
+  function openManagePerms(role: Role) {
+    console.log("openManagePerms", role);
+    set;
     setShowPerms(role);
     const ids = (role.permissions || []).map((p: any) => p.id);
     setSelectedPerms(ids);
@@ -411,25 +424,30 @@ export default function RoleMaster() {
         </DialogContent>
       </Dialog>
 
-      {/* Manage Permissions Dialog */}
-      <Dialog
+      {/* Manage Permissions Drawer (scrollable) */}
+      <Drawer
         open={!!showPerms}
         onOpenChange={(open) => !open && setShowPerms(null)}
       >
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Manage Permissions</DialogTitle>
-            <DialogDescription>
+        <DrawerContent className="sm:max-w-[600px] h-[70vh]">
+          <DrawerHeader>
+            <DrawerTitle>
+              Manage Permissions for{" "}
+              <span className="font-bold underline">{showPerms?.name}</span>
+            </DrawerTitle>
+
+            <DrawerDescription>
               Assign or remove permissions for this role.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4 grid gap-3">
+            </DrawerDescription>
+          </DrawerHeader>
+
+          <div className="px-4 py-4 overflow-auto space-y-3">
             {permissions.map((p) => (
-              <label key={p.id} className="flex items-center gap-3">
-                <input
-                  type="checkbox"
+              <label key={p.id} className="flex items-start gap-3">
+                <Checkbox
                   checked={selectedPerms.includes(p.id)}
                   onChange={() => togglePerm(p.id)}
+                  className="mt-1"
                 />
                 <div>
                   <div className="font-medium">{p.name}</div>
@@ -440,18 +458,21 @@ export default function RoleMaster() {
               </label>
             ))}
           </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowPerms(null)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={savePerms}>Save Permissions</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+          <DrawerFooter>
+            <div className="w-full flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowPerms(null)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={savePerms}>Save Permissions</Button>
+            </div>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

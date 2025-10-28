@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
-import { verifyToken } from "../../../../lib/auth";
+import { requireAuth } from "../../../../lib/api_middleware/auth";
 
 export async function GET(req: Request) {
-  const cookie = req.headers.get("cookie") || "";
-  const match = cookie.match(/egov_token=([^;]+)/);
-  const token = match?.[1];
-  const payload = verifyToken(token as string);
-  if (!payload) return NextResponse.json({ ok: false }, { status: 401 });
+  const maybe = requireAuth(req);
+  if (maybe instanceof NextResponse) return maybe;
+  const payload = maybe;
   const role = (payload as any).role;
   const adminId = (payload as any).id;
 

@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../../../lib/db";
-import { verifyToken } from "../../../../../../lib/auth";
+import { requireSuperadmin } from "../../../../../../lib/api_middleware/auth";
 
 export async function PUT(req: Request, props: any) {
   const params = await props.params;
-  const cookie = req.headers.get("cookie") || "";
-  const match = cookie.match(/egov_token=([^;]+)/);
-  const token = match?.[1];
-  const payload = verifyToken(token as string);
-  if (!payload || (payload as any).role !== "SuperAdmin")
-    return NextResponse.json({ ok: false }, { status: 403 });
+  const guard = requireSuperadmin(req);
+  if (guard instanceof NextResponse) return guard;
 
   const roleId = Number(params.id);
   const body = await req.json();

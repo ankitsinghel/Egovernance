@@ -1,67 +1,78 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyTokenEdge } from "./lib/edgeAuth"; //middleware renders on edge instead of node that's why we have to use a different library for checking pass
+import { verifyTokenEdge } from "./lib/edgeAuth";
+import type { User } from "@/lib/types";
 
 const protectedRoutes = ["/super-admin/sa-dash"];
-const adminProtectedRoutes = ["/admin/dashboard/"];
+const adminProtectedRoutes = ["/admin/dashboard"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("egov_token")?.value || null;
-  const payload = await verifyTokenEdge(token);
-  const user = payload as any;
-  const hasToken = !!user;
-  if (
-    !hasToken &&
-    protectedRoutes.some((route) => pathname.startsWith(route))
-  ) {
-    const loginUrl = new URL("/super-admin/login", req.url);
-    return NextResponse.redirect(loginUrl);
-  }
-  if (hasToken){
 
+  let user: User | null = null;
+  try {
+    if (token) user = (await verifyTokenEdge(token)) as User;
+  } catch {
+    user = null;
+  }
+
+  const hasToken = !!user;
+  let res: NextResponse;
+
+  // 🔒 Redirect unauthenticated users trying to access protected routes
+  if (!hasToken) {
+    if (protectedRoutes.some((route) => pathname.startsWith(route))) {
+      return NextResponse.redirect(new URL("/super-admin/login", req.url));
+    }
+    if (adminProtectedRoutes.some((route) => pathname.startsWith(route))) {
+      return NextResponse.redirect(new URL("/admin/login", req.url));
+    }
+    // no token but accessing public page — allow
+    res = NextResponse.next();
+    res.headers.set("x-egov-middleware", "ok-anon");
+    return res;
+  }
+
+  // ✅ Authenticated user logic
+  if (user.role === "Superadmin") {
+    // redirect if already logged in
     if (
-      user.role == "Superadmin" &&
-      (pathname.startsWith("/super-admin/login") ||
-        pathname.startsWith("/super-admin/sign-up"))
-      ) {
-      const res = NextResponse.redirect(
+      pathname.startsWith("/super-admin/login") ||
+      pathname.startsWith("/super-admin/sign-up")
+    ) {
+      return NextResponse.redirect(
         new URL("/super-admin/sa-dash/dashboard", req.url)
       );
-        if (user.role == "admin" && pathname.startsWith("/admin/login")) {
-          const res = NextResponse.redirect(
-            new URL("/admin/dashboard", req.url)
-          );
-          res.headers.set("x-egov-middleware", "redirected-logged-in");
-          return res;
-        }
-      res.headers.set("x-egov-middleware", "redirected-logged-in");
-      return res;
     }
 
+    // prevent superadmin from accessing admin area
+    if (pathname.startsWith("/admin/")) {
+      return NextResponse.redirect(
+        new URL("/super-admin/sa-dash/dashboard", req.url)
+      );
+    }
+  } else {
+    // regular admin routes
+    if (pathname.startsWith("/admin/login")) {
+      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+    }
 
-  }
-  // Admin route protections
-  if (
-    !hasToken &&
-    adminProtectedRoutes.some((route) => pathname.startsWith(route))
-  ) {
-    const loginUrl = new URL("/admin/login", req.url);
-    return NextResponse.redirect(loginUrl);
+    // prevent admin from accessing super-admin area
+    if (pathname.startsWith("/super-admin/")) {
+      return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+    }
   }
 
-
-  const res = NextResponse.next();
-  res.headers.set("x-egov-middleware", hasToken ? "ok-auth" : "ok-anon");
-  if (hasToken) {
-    // expose limited user info for debugging (do not leak sensitive data)
-    try {
-      res.headers.set("x-egov-user", String(user?.id || user?.sub || ""));
-    } catch (e) {}
-  }
+  // default case — allow through
+  res = NextResponse.next();
+  res.headers.set("x-egov-middleware", "ok-auth");
+  try {
+    res.headers.set("x-egov-user", String(user?.id || ""));
+  } catch {}
   return res;
 }
 
 export const config = {
-  matcher: ["/super-admin", "/super-admin/:path*", "/admin", "/admin/:path*"],
+  matcher: ["/super-admin/:path*", "/admin/:path*"],
 };

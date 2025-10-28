@@ -1,21 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { hashPassword } from "../../../../lib/hash";
-import { verifyToken, signToken, setAuthCookie } from "../../../../lib/auth";
+import { requireSuperadmin } from "../../../../lib/api_middleware/auth";
+import { signToken, setAuthCookie } from "../../../../lib/auth";
 
 export async function POST(req: Request) {
   // Allow creating the first SuperAdmin without auth (initial setup).
   const adminCount = await prisma.admin.count();
 
-  const cookie = req.headers.get("cookie") || "";
-  const match = cookie.match(/egov_token=([^;]+)/);
-  const token = match?.[1];
-  const payload = verifyToken(token as string);
-
   // If admins exist, require SuperAdmin auth for creating admins or organizations
   if (adminCount > 0) {
-    if (!payload || (payload as any).role !== "SuperAdmin")
-      return NextResponse.json({ ok: false }, { status: 403 });
+    const guard = requireSuperadmin(req);
+    if (guard instanceof NextResponse) return guard;
   }
 
   const body = await req.json();
@@ -29,7 +25,6 @@ export async function POST(req: Request) {
     superiorId,
   } = body;
 
-  // For initial creation, force role to SuperAdmin; if a SuperAdmin already exists, disallow creating another SuperAdmin
   let finalRole = role;
   if (adminCount === 0) {
     finalRole = "SuperAdmin";

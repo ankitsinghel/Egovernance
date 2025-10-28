@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/db";
-import { verifyToken } from "../../../lib/auth";
+import { requireSuperadmin } from "../../../lib/api_middleware/auth";
 
 export async function GET() {
   const departments = await prisma.department.findMany();
@@ -13,12 +13,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   // Only SuperAdmin allowed - token in cookie
-  const cookie = req.headers.get("cookie") || "";
-  const match = cookie.match(/egov_token=([^;]+)/);
-  const token = match?.[1];
-  const payload = verifyToken(token as string);
-  if (!payload || (payload as any).role !== "Superadmin")
-    return NextResponse.json({ ok: false }, { status: 403 });
+  const guard = requireSuperadmin(req);
+  if (guard instanceof NextResponse) return guard;
 
   const body = await req.json();
   const { name } = body;

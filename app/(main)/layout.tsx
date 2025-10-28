@@ -26,6 +26,7 @@ export default async function RootLayout({
         id: String((admin as any).id),
         name: (admin as any).name || (admin as any).email || "",
         role: (admin as any).role || "Admin",
+        permissions: (admin as any).permissions || [],
       }
     : null;
 

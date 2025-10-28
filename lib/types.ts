@@ -1,14 +1,21 @@
 // Centralized type definitions for the project
 
+import { ReactNode } from "react";
+
 export interface User {
   id: string;
   name: string;
-  role: number;
+  role: number|string;
+  permissions: Permission[];
 }
+export type RouteItem = { name: string; href: string; icon: ReactNode, permission:string };
+
 export interface Role {
   id: number;
   name: string;
+  permissions?:Permission[]
 }
+
 export type Permission = { id: number; name: string; description?: string };
 export type Department = { id: number; name: string };
 export type StateT = { id: number; name: string };
@@ -54,6 +61,8 @@ export type Report = {
 
 // Context shape exported so other files can reference it
 export type contextType = {
+  setPermissions:(permissions:Permission[])=>void;
+  dashboardRoutes: RouteItem[];
   loading: boolean;
   setLoading: (b: boolean) => void;
   user: User | null;

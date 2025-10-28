@@ -23,32 +23,14 @@ import {
   BarChart3,
   Download,
 } from "lucide-react";
+import { context } from "@/context/context";
 
 export default function SuperAdminDashboardPage() {
-  const [orgs, setOrgs] = useState<any[]>([]);
-  const [cities, setCities] = useState<any[]>([]);
+  const {departments, states} =  context();
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  async function load() {
-    setLoading(true);
-    try {
-      const [o, c] = await Promise.all([
-        fetch("/api/departments").then((r) => r.json()),
-        fetch("/api/cities").then((r) => r.json()),
-      ]);
-      setOrgs(o.departments || []);
-      setCities(c.list || []);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  useEffect(() => {
-    load();
-  }, []);
 
   async function createOrg(e: any) {
     e.preventDefault();
@@ -59,19 +41,17 @@ export default function SuperAdminDashboardPage() {
       headers: { "Content-Type": "application/json" },
     });
     e.target.reset();
-    load();
   }
 
   async function createCity(e: any) {
     e.preventDefault();
     const name = e.target.name.value;
-    await fetch("/api/cities", {
+    await fetch("/api/states", {
       method: "POST",
       body: JSON.stringify({ name }),
       headers: { "Content-Type": "application/json" },
     });
     e.target.reset();
-    load();
   }
 
   async function createAdmin(e: any) {
@@ -96,7 +76,6 @@ export default function SuperAdminDashboardPage() {
     else {
       toast.success("Admin created successfully!");
       e.target.reset();
-      load();
     }
   }
 
@@ -119,10 +98,9 @@ export default function SuperAdminDashboardPage() {
           method: "DELETE",
         });
       } else {
-        await fetch(`/api/cities/${deleteTarget.id}`, { method: "DELETE" });
+        await fetch(`/api/states/${deleteTarget.id}`, { method: "DELETE" });
       }
       toast.success("Deleted");
-      load();
     } catch (e) {
       toast.error("Delete failed");
     } finally {
@@ -131,10 +109,10 @@ export default function SuperAdminDashboardPage() {
     }
   }
 
-  const filteredOrgs = orgs.filter((org) =>
+  const filteredOrgs = departments.filter((org) =>
     org.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const filteredCities = cities.filter((city) =>
+  const filteredCities = states.filter((city) =>
     city.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -149,7 +127,7 @@ export default function SuperAdminDashboardPage() {
           </h1>
         </div>
         <p className="text-slate-600">
-          Manage organizations, cities, and administrator accounts
+          Manage organizations, states, and administrator accounts
         </p>
       </div>
 
@@ -161,7 +139,7 @@ export default function SuperAdminDashboardPage() {
               <p className="text-sm font-medium text-slate-600">
                 Organizations
               </p>
-              <p className="text-2xl font-bold text-slate-900">{orgs.length}</p>
+              <p className="text-2xl font-bold text-slate-900">{departments.length}</p>
             </div>
             <Building className="w-8 h-8 text-blue-500" />
           </div>
@@ -172,7 +150,7 @@ export default function SuperAdminDashboardPage() {
             <div>
               <p className="text-sm font-medium text-slate-600">Cities</p>
               <p className="text-2xl font-bold text-slate-900">
-                {cities.length}
+                {states.length}
               </p>
             </div>
             <MapPin className="w-8 h-8 text-green-500" />
@@ -186,7 +164,7 @@ export default function SuperAdminDashboardPage() {
                 Total Coverage
               </p>
               <p className="text-2xl font-bold text-slate-900">
-                {orgs.length + cities.length}
+                {departments.length + states.length}
               </p>
             </div>
             <BarChart3 className="w-8 h-8 text-purple-500" />
@@ -200,7 +178,7 @@ export default function SuperAdminDashboardPage() {
           <Search className="w-5 h-5 text-slate-400" />
           <input
             type="text"
-            placeholder="Search organizations or cities..."
+            placeholder="Search organizations or states..."
             className="flex-1 p-2 border-0 focus:ring-0 bg-transparent"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -228,7 +206,7 @@ export default function SuperAdminDashboardPage() {
               </h2>
             </div>
             <span className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
-              {orgs.length} total
+              {departments.length} total
             </span>
           </div>
 
@@ -289,7 +267,7 @@ export default function SuperAdminDashboardPage() {
               <h2 className="text-xl font-bold text-slate-900">Cities</h2>
             </div>
             <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-              {cities.length} total
+              {states.length} total
             </span>
           </div>
 
@@ -320,7 +298,7 @@ export default function SuperAdminDashboardPage() {
               ))}
               {filteredCities.length === 0 && (
                 <div className="text-center py-8 text-slate-500">
-                  {searchTerm ? "No cities match your search" : "No cities yet"}
+                  {searchTerm ? "No states match your search" : "No states yet"}
                 </div>
               )}
             </div>
@@ -403,7 +381,7 @@ export default function SuperAdminDashboardPage() {
                 required
               >
                 <option value="">Select an organization</option>
-                {orgs.map((o) => (
+                {departments.map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.name}
                   </option>

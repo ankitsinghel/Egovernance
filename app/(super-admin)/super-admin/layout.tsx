@@ -4,6 +4,8 @@ import Spinner from "@/components/loader";
 import { Toaster } from "sonner";
 import { cookies } from "next/headers";
 import { getAdminFromToken } from "../../../lib/auth";
+import { User } from "@/lib/types";
+
 
 export const metadata = {
   title: "Super Admin Dashboard",
@@ -19,9 +21,10 @@ export default async function SuperAdminLayout({
   const admin = token ? await getAdminFromToken(token) : null;
   const initialUser = admin
     ? {
-        id: String((admin as any).id),
-        name: (admin as any).name || (admin as any).email || "",
-        role: (admin as any).role 
+        id: String((admin as User).id),
+        name: (admin as User).name || "",
+        role: (admin as User).role,
+        permissions: (admin as User).permissions,
       }
     : null;
 

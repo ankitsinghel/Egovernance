@@ -48,11 +48,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Permission } from "@/lib/types";
 
 export default function PermissionMaster() {
-  const [list, setList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const { setLoading: setGlobalLoading } = context();
+  const { setLoading: setGlobalLoading, permissions, refreshPermissions, setPermissions } = context();
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState<any | null>(null);
   const [query, setQuery] = useState("");
@@ -68,26 +68,9 @@ export default function PermissionMaster() {
     defaultValues: { name: "", description: "" },
   });
 
-  async function fetchList() {
-    try {
-      setLoading(true);
-      setGlobalLoading(true);
-      const res = await fetch("/api/super-admin/permissions");
-      const j = await res.json();
-      if (j.ok) setList(j.list || []);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-      setGlobalLoading(false);
-    }
-  }
 
-  useEffect(() => {
-    fetchList();
-  }, []);
 
-  async function handleCreate(data: any) {
+  async function handleCreate(data: Permission) {
     try {
       setLoading(true);
       setGlobalLoading(true);
@@ -101,7 +84,7 @@ export default function PermissionMaster() {
       if (j.ok) {
         setShowCreate(false);
         createForm.reset();
-        fetchList();
+        setPermissions([...permissions, j.perm]);
         toast.success(j.message || "Permission created");
       } else toast.error(j.message || "Create failed");
     } catch (e) {
@@ -112,10 +95,9 @@ export default function PermissionMaster() {
     }
   }
 
-  async function handleEdit(data: any) {
+  async function handleEdit(data: Permission) {
     if (!showEdit) return;
     try {
-      setLoading(true);
       setGlobalLoading(true);
       const res = await fetch(`/api/super-admin/permissions/${showEdit.id}`, {
         method: "PUT",
@@ -127,13 +109,14 @@ export default function PermissionMaster() {
       if (j.ok) {
         setShowEdit(null);
         editForm.reset();
-        fetchList();
+        setPermissions(
+          permissions.map((p) => (p.id === j.perm.id ? j.perm : p))
+        );
         toast.success(j.message || "Permission updated");
       } else toast.error(j.message || "Update failed");
     } catch (e) {
       toast.error("Network error");
     } finally {
-      setLoading(false);
       setGlobalLoading(false);
     }
   }
@@ -148,7 +131,7 @@ export default function PermissionMaster() {
       });
       const j = await res.json();
       if (j.ok) {
-        fetchList();
+        setPermissions(permissions.filter((p) => p.id !== id));
         toast.success(j.message || "Permission deleted");
       } else toast.error(j.message || "Delete failed");
     } catch (e) {
@@ -166,7 +149,7 @@ export default function PermissionMaster() {
     setShowDeleteDialog(true);
   }
 
-  const filtered = list.filter((p) =>
+  const filtered = permissions.filter((p) =>
     (p.name || "").toString().toLowerCase().includes(query.toLowerCase().trim())
   );
 
@@ -185,11 +168,10 @@ export default function PermissionMaster() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => fetchList()}
-                disabled={loading}
+                onClick={() => refreshPermissions()}
               >
                 <RefreshCw
-                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                  className={`w-4 h-4 `}
                 />
               </Button>
               <Button size="sm" onClick={() => setShowCreate(true)}>

@@ -18,8 +18,28 @@ export async function POST(req: Request) {
       { ok: false, message: "Invalid credentials" },
       { status: 401 }
     );
-  const token = signToken({ id: admin.id, role: admin.role, name: admin.name });
-  const user = { id: admin.id, role: admin.role, name: admin.name };
+const role = await prisma.role.findUnique({
+  where: { id: admin.role },
+  include: {
+    RolePermission: {
+      include: {
+        permission: true, 
+      },
+    },
+  },
+});
+
+
+const permissions = role.RolePermission.map((rp) => rp.permission);
+
+  const token = signToken({
+    id: admin.id,
+    role: role.name,
+    name: admin.name,
+    permissions,
+  });
+  const user = { id: admin.id, role: role.name, name: admin.name, permissions };
+  
   const res = NextResponse.json({ ok: true, user, message: "Logged in" });
   res.headers.set("Set-Cookie", setAuthCookie(token));
 

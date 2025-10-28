@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/db";
-import { verifyToken } from "../../../lib/auth";
+import { requireSuperadmin } from "../../../lib/api_middleware/auth";
 import { hashPassword } from "../../../lib/hash";
 
 export async function GET(req: Request) {
-  const cookie = req.headers.get("cookie") || "";
-  const match = cookie.match(/egov_token=([^;]+)/);
-  const token = match?.[1];
-  const payload = verifyToken(token as string);
-  console.log(payload);
-  if (!payload || (payload as any).role !== "Superadmin")
-    return NextResponse.json({ ok: false, message: "Error" }, { status: 403 });
+  const guard = requireSuperadmin(req);
+  if (guard instanceof NextResponse) return guard;
 
   const admins = await prisma.admin.findMany({ orderBy: { id: "asc" } });
   return NextResponse.json({ ok: true, admins, message: "Admins loaded" });
@@ -18,11 +13,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const cookie = req.headers.get("cookie") || "";
-    const match = cookie.match(/egov_token=([^;]+)/);
-    const token = match?.[1];
-    const payload = verifyToken(token as string);
-    // if (!payload || (payload as any).role !== 'SuperAdmin') return NextResponse.json({ ok: false }, { status: 403 })
+    // creation allowed (no auth required) or can be restricted elsewhere
 
     const body = await req.json();
     const {

@@ -11,19 +11,10 @@ export default function MastersLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { fetchMasters, loading } = context();
+  const { fetchMasters, loading, dashboardRoutes } = context();
 
-  type RouteItem = { name: string; href: string; icon: ReactNode };
-
-  const routes: RouteItem[] = [
-    {
-      name: "Complaints",
-      href: "/admin/dashboard/complaints",
-      icon: <Boxes className="mr-2 size-3" />,
-    },
-  ];
   return (
-    <SuperAdminDashboard routes={routes}>
+    <SuperAdminDashboard routes={dashboardRoutes}>
       <SuperAdminNavbar />
       <main>{children}</main>
     </SuperAdminDashboard>
