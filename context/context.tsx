@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { ThemeProvider } from "next-themes";
 import { toast } from "sonner";
 import type {
   User,
@@ -13,6 +14,7 @@ import type {
 } from "@/lib/types";
 import type { Permission } from "@/lib/types";
 import { Boxes, Key, MapPin, Settings, Shield, Users } from "lucide-react";
+import { headers } from "next/headers";
 
 const globalCOntext = createContext<contextType | undefined>(undefined);
 
@@ -32,58 +34,64 @@ export function contextProvider({
   const [states, setStates] = useState<StateT[]>([]);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
-  
+
   // Initialize known roles once (avoid calling setState during render)
   const [roles, setRoles] = useState<Role[]>([
     { id: 1, name: "SuperAdmin" },
     { id: 2, name: "CentralAdmin" },
     { id: 3, name: "StateAdmin" },
   ]);
-    const dashboardRoutes: RouteItem[] = [
-      {
-        name: "Departments",
-        href: "/super-admin/sa-dash/departments",
-        icon: <Boxes className="mr-2 size-3" />,
-        permission: "view_depmartments",
-      },
-      {
-        name: "States",
-        href: "/super-admin/sa-dash/states",
-        icon: <MapPin className="mr-2 size-3" />,
-        permission: "view_states",
-      },
-      {
-        name: "Admins",
-        href: "/super-admin/sa-dash/admins",
-        icon: <Users className="mr-2 size-3" />,
-        permission: "view_admins",
-      },
-      {
-        name: "Roles",
-        href: "/super-admin/sa-dash/roles",
-        icon: <Shield className="mr-2 size-3" />,
-        permission: "view_roles",
-      },
-      {
-        name: "Permissions",
-        href: "/super-admin/sa-dash/permissions",
-        icon: <Key className="mr-2 size-3" />,
-        permission: "view_permissions",
-      },
-      {
-        name: "Settings",
-        href: "/super-admin/sa-dash/settings",
-        icon: <Settings className="mr-2 size-3" />,
-        permission: "view_super_settings",
-      },
-      {
-        name: "Complaints",
-        href: "/admin/dashboard/complaints",
-        icon: <Boxes className="mr-2 size-3" />,
-        permission: "view_complaints",
-      },
-    ];
-    
+  const dashboardRoutes: RouteItem[] = [
+    {
+      name: "Departments",
+      href: "/super-admin/sa-dash/departments",
+      icon: <Boxes className="mr-2 size-3" />,
+      permission: "view_depmartments",
+    },
+    {
+      name: "States",
+      href: "/super-admin/sa-dash/states",
+      icon: <MapPin className="mr-2 size-3" />,
+      permission: "view_states",
+    },
+    {
+      name: "Admins",
+      href: "/super-admin/sa-dash/admins",
+      icon: <Users className="mr-2 size-3" />,
+      permission: "view_admins",
+    },
+    {
+      name: "Roles",
+      href: "/super-admin/sa-dash/roles",
+      icon: <Shield className="mr-2 size-3" />,
+      permission: "view_roles",
+    },
+    {
+      name: "Permissions",
+      href: "/super-admin/sa-dash/permissions",
+      icon: <Key className="mr-2 size-3" />,
+      permission: "view_permissions",
+    },
+    {
+      name: "Settings",
+      href: "/super-admin/sa-dash/settings",
+      icon: <Settings className="mr-2 size-3" />,
+      permission: "view_super_settings",
+    },
+    {
+      name: "Complaints",
+      href: "/admin/dashboard/complaints",
+      icon: <Boxes className="mr-2 size-3" />,
+      permission: "view_complaints",
+    },
+    {
+      name: "State Admins",
+      href: "/admin/dashboard/state-admins",
+      icon: <Users className="mr-2 size-3" />,
+      permission: "view_state_admins",
+    },
+  ];
+
   async function fetchAdminMasters() {
     setLoading(true);
     await Promise.all([fetchUserReports()]);
@@ -138,8 +146,16 @@ export function contextProvider({
 
   async function fetchAdmins() {
     try {
-      const res = await fetch("/api/admins");
+      const res = await fetch("/api/admins", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          role: String(user?.role ?? ""),
+        },
+      });
+
       const j = await res.json();
+
       if (j.ok) {
         setAdmins(j.admins || []);
         if (j.message) toast.success(j.message);
@@ -147,7 +163,6 @@ export function contextProvider({
         if (j.message) toast.error(j.message);
       }
     } catch (e) {
-      // If admins endpoint doesn't exist, ignore
       console.warn("fetchAdmins failed", e);
     }
   }
@@ -183,6 +198,12 @@ export function contextProvider({
   }
   async function fetchUserMasters() {
     try {
+      if (
+        (departments && departments.length > 0) ||
+        (states && states.length > 0)
+      )
+        return;
+
       setLoading(true);
       await Promise.all([fetchDepartments(), fetchStates()]);
     } finally {
@@ -203,49 +224,48 @@ export function contextProvider({
   const refreshPermissions = async () => fetchPermissions();
 
   useEffect(() => {
-    console.log("context mounted, user:", user);
+    // console.log("context mounted, user:", user);
     fetchUserMasters();
-    // fetch roles and permissions for everyone (super-admin or normal)
-
   }, []);
 
   useEffect(() => {
     if (user) {
       fetchAdminMasters();
-
     }
   }, [user]);
   return (
-    <globalCOntext.Provider
-      value={{
-        dashboardRoutes,
-        roles,
-        setRoles,
-        permissions,
-        setPermissions,
-        fetchUserMasters,
-        userReports,
-        refreshUserReports,
-        fetchAdminMasters,
-        user,
-        setUser,
-        loading,
-        setLoading,
-        superAdminDrawerOpen,
-        setSuperAdminDrawerOpen,
-        departments,
-        states,
-        admins,
-        refreshPermissions,
-        refreshRoles,
-        fetchMasters,
-        refreshDepartments,
-        refreshStates,
-        refreshAdmins,
-      }}
-    >
-      {children}
-    </globalCOntext.Provider>
+    <ThemeProvider attribute="class" defaultTheme="system">
+      <globalCOntext.Provider
+        value={{
+          dashboardRoutes,
+          roles,
+          setRoles,
+          permissions,
+          setPermissions,
+          fetchUserMasters,
+          userReports,
+          refreshUserReports,
+          fetchAdminMasters,
+          user,
+          setUser,
+          loading,
+          setLoading,
+          superAdminDrawerOpen,
+          setSuperAdminDrawerOpen,
+          departments,
+          states,
+          admins,
+          refreshPermissions,
+          refreshRoles,
+          fetchMasters,
+          refreshDepartments,
+          refreshStates,
+          refreshAdmins,
+        }}
+      >
+        {children}
+      </globalCOntext.Provider>
+    </ThemeProvider>
   );
 }
 

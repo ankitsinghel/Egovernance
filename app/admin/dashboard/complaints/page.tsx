@@ -273,7 +273,7 @@ export default function ComplaintsMaster() {
   }, []);
 
   return (
-    <div className="space-y-4">
+    <div className="bg-white shadow rounded-lg min-h-screen p-8">
       <Card>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">

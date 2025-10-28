@@ -22,33 +22,7 @@ import {
 import { useRouter } from "next/navigation";
 import { context } from "@/context/context";
 import type { Report } from "@/lib/types";
-
-// function PriorityBadge({ priority }: { priority: string }) {
-//   const getPriorityConfig = (priority: string) => {
-//     switch (priority) {
-//       case "critical":
-//         return { color: "bg-red-100 text-red-800 border-red-200", icon: AlertTriangle };
-//       case "high":
-//         return { color: "bg-orange-100 text-orange-800 border-orange-200", icon: AlertTriangle };
-//       case "medium":
-//         return { color: "bg-yellow-100 text-yellow-800 border-yellow-200", icon: Clock };
-//       case "low":
-//         return { color: "bg-blue-100 text-blue-800 border-blue-200", icon: Clock };
-//       default:
-//         return { color: "bg-gray-100 text-gray-800 border-gray-200", icon: FileText };
-//     }
-//   };
-
-//   const config = getPriorityConfig(priority);
-//   const IconComponent = config.icon;
-
-//   return (
-//     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-sm font-medium ${config.color}`}>
-//       <IconComponent className="w-3 h-3" />
-//       {priority && priority.charAt(0).toUpperCase() + priority.slice(1)}
-//     </span>
-//   );
-// }
+import { Badge } from "@/components/ui/badge";
 
 function StatusBadge({ status }: { status: string }) {
   const getStatusConfig = (status: string) => {
@@ -169,7 +143,7 @@ function DonutChart({
 
 export default function AdminDashboard() {
   // const [userReports, setuserReports] = useState<Report[]>([]);
-  const { loading, setLoading, userReports, departments, states } = context();
+  const { loading, setLoading, userReports, departments, user } = context();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [error, setError] = useState<string | null>(null);
@@ -466,6 +440,42 @@ export default function AdminDashboard() {
                 <Button variant="outline">View All userReports</Button>
               </div>
             )}
+          </Card>
+          <Card className="p-6 shadow-lg">
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">
+                My permissions
+              </h2>
+              <h3>{user?.role}</h3>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {user.permissions.map((perm) => {
+                  let variant:
+                    | "default"
+                    | "destructive"
+                    | "secondary"
+                    | "outline" = "secondary";
+
+                  if (perm.name.toLowerCase().includes("view"))
+                    variant = "outline";
+                  else if (perm.name.toLowerCase().includes("create"))
+                    variant = "default";
+                  else if (perm.name.toLowerCase().includes("delete"))
+                    variant = "destructive";
+                  else if (perm.name.toLowerCase().includes("manage"))
+                    variant = "secondary";
+
+                  return (
+                    <Badge
+                      key={perm.id || perm.name}
+                      variant={variant}
+                      className="text-xs"
+                    >
+                      {perm.name}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
           </Card>
         </div>
 

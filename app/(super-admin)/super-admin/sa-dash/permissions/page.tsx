@@ -1,4 +1,4 @@
-import PermissionMaster from "../../../../../components/superAdmin/masters/PermissionMaster";
+import PermissionMaster from "../../../../../components/masters/PermissionMaster";
 
 export default function SuperAdminPermissionsPage() {
   return (

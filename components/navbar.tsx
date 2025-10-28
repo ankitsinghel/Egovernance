@@ -25,7 +25,7 @@ export default function Navbar() {
   const { setLoading } = context();
 
   // Hide global navbar inside super-admin pages
-  if (pathname?.startsWith("/super-admin")) return null;
+  // if (pathname?.startsWith("/super-admin")) return null;
 
   useEffect(() => {
     let mounted = true;

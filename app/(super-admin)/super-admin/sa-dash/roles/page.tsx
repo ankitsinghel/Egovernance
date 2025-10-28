@@ -1,4 +1,4 @@
-import RoleMaster from "../../../../../components/superAdmin/masters/RoleMaster";
+import RoleMaster from "../../../../../components/masters/RoleMaster";
 
 export default function SuperAdminRolesPage() {
   return (

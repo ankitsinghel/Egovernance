@@ -1,4 +1,4 @@
-import StateMaster from "../../../../../components/superAdmin/masters/StateMaster";
+import StateMaster from "../../../../../components/masters/StateMaster";
 
 export default function SuperAdminStatesPage() {
   return (

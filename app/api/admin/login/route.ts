@@ -32,13 +32,14 @@ const role = await prisma.role.findUnique({
 
 const permissions = role.RolePermission.map((rp) => rp.permission);
 
-  const token = signToken({
-    id: admin.id,
-    role: role.name,
-    name: admin.name,
-    permissions,
-  });
-  const user = { id: admin.id, role: role.name, name: admin.name, permissions };
+const user = {
+  id: admin.id,
+  role: role.name,
+  name: admin.name,
+  departmentId: admin.departmentId,
+  permissions,
+};
+  const token = signToken(user);
   
   const res = NextResponse.json({ ok: true, user, message: "Logged in" });
   res.headers.set("Set-Cookie", setAuthCookie(token));

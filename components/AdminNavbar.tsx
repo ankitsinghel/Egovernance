@@ -1,10 +1,11 @@
 "use client";
 
-import { LogOut, Menu } from "lucide-react";
+import { LogOut, Menu, Sun, Moon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { context } from "../context/context";
 import { Button } from "./ui/button";
 import { startTransition, useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
 export function SuperAdminNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -26,21 +27,29 @@ export function SuperAdminNavbar() {
   }, []);
   const router = useRouter();
 
+  const { theme, setTheme, systemTheme } = useTheme();
+  const resolvedTheme = theme === "system" ? systemTheme : theme;
+  function toggleTheme() {
+    const next = resolvedTheme === "dark" ? "light" : "dark";
+    setTheme(next);
+  }
+
   async function handleLogout() {
     startTransition(async () => {
       try {
         setLoading(true);
-        console.log(user.role)
+        console.log("loading", loading);
         const role = user.role;
         await fetch("/api/logout", { method: "POST", credentials: "include" });
-        role === "Superadmin" ? router.push("/super-admin/login"): router.push("/admin/login"); 
+        role === "Superadmin"
+          ? router.push("/super-admin/login")
+          : router.push("/admin/login");
         setUser(null);
         setLoading(false);
       } catch (e) {
         setLoading(false);
         console.error("logout failed", e);
       }
-   
     });
   }
 
@@ -67,7 +76,20 @@ export function SuperAdminNavbar() {
         </div>
 
         {/* Right: Logout Button */}
-        <div>
+        <div className="flex items-center gap-2">
+          {/* <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
+          </Button> */}
+
           <Button
             variant="destructive"
             className="flex items-center gap-2"

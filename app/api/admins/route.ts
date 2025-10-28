@@ -1,32 +1,42 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../lib/db";
-import { requireSuperadmin } from "../../../lib/api_middleware/auth";
-import { hashPassword } from "../../../lib/hash";
+import { prisma } from "@/lib/db";
+import {
+  requireCentralAdmin,
+  requireSuperadmin,
+} from "@/lib/api_middleware/auth";
+import { hashPassword } from "@/lib/hash";
 
 export async function GET(req: Request) {
-  const guard = requireSuperadmin(req);
-  if (guard instanceof NextResponse) return guard;
-
-  const admins = await prisma.admin.findMany({ orderBy: { id: "asc" } });
-  return NextResponse.json({ ok: true, admins, message: "Admins loaded" });
+  const role = req.headers.get("role");
+  if (role === "Superadmin") {
+    const guard = requireSuperadmin(req);
+    if (guard instanceof NextResponse) return guard;
+    const admins = await prisma.admin.findMany({
+      where: {
+        stateId: null,
+      },
+      orderBy: { id: "asc" },
+    });
+    return NextResponse.json({ ok: true, admins, message: "Admins loaded" });
+  } else {
+    const guard = requireCentralAdmin(req);
+    if (guard instanceof NextResponse) return guard;
+    const admins = await prisma.admin.findMany({
+      where: {
+        superiorId: Number(guard.id),
+      },
+      orderBy: { id: "asc" },
+    });
+    return NextResponse.json({ ok: true, admins, message: "Admins loaded" });
+  }
 }
 
 export async function POST(req: Request) {
   try {
-    // creation allowed (no auth required) or can be restricted elsewhere
-
     const body = await req.json();
-    const {
-      name,
-      email,
-      password,
-      departmentId,
-      city = null,
-      role = "Admin",
-      superiorId = null,
-    } = body;
+    const { name, email, password, departmentId, role, stateId, superiorId } =
+      body;
 
-    // Prevent duplicate email
     const existing = await prisma.admin.findUnique({ where: { email } });
     if (existing)
       return NextResponse.json(
@@ -40,9 +50,9 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashed,
-        departmentId: (departmentId as any) || undefined,
-        city,
+        departmentId: (departmentId as number) || undefined,
         role,
+        stateId,
         superiorId,
       } as any,
     });

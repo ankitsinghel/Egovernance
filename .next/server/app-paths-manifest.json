@@ -1,13 +1,7 @@
 {
   "/api/admins/route": "app/api/admins/route.js",
-  "/api/roles/route": "app/api/roles/route.js",
-  "/api/permissions/route": "app/api/permissions/route.js",
-  "/api/departments/route": "app/api/departments/route.js",
-  "/api/states/route": "app/api/states/route.js",
-  "/api/admin/reports/route": "app/api/admin/reports/route.js",
-  "/admin/login/page": "app/admin/login/page.js",
   "/(main)/page": "app/(main)/page.js",
-  "/(super-admin)/super-admin/sa-dash/dashboard/page": "app/(super-admin)/super-admin/sa-dash/dashboard/page.js",
-  "/(super-admin)/super-admin/sa-dash/roles/page": "app/(super-admin)/super-admin/sa-dash/roles/page.js",
-  "/(super-admin)/super-admin/sa-dash/departments/page": "app/(super-admin)/super-admin/sa-dash/departments/page.js"
+  "/admin/dashboard/state-admins/page": "app/admin/dashboard/state-admins/page.js",
+  "/(super-admin)/super-admin/sa-dash/admins/page": "app/(super-admin)/super-admin/sa-dash/admins/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js"
 }

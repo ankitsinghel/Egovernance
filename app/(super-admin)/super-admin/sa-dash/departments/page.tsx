@@ -1,4 +1,4 @@
-import DepartmentMaster from "../../../../../components/superAdmin/masters/DepartmentMaster";
+import DepartmentMaster from "../../../../../components/masters/DepartmentMaster";
 
 export default function SuperAdminDepartmentsPage() {
   return (

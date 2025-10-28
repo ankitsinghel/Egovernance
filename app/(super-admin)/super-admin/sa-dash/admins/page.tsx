@@ -1,6 +1,9 @@
-import AdminsMaster from "@/components/superAdmin/masters/AdminMaster";
+import AdminsMaster from "@/components/masters/AdminMaster";
 
 export default function AdminsPage() {
-
-  return <AdminsMaster />;
+  return (
+    <div className="p-8">
+      <AdminsMaster />
+    </div>
+  );
 }

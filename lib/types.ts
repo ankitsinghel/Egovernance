@@ -7,6 +7,7 @@ export interface User {
   name: string;
   role: number|string;
   permissions: Permission[];
+  departmentId?: number;
 }
 export type RouteItem = { name: string; href: string; icon: ReactNode, permission:string };
 

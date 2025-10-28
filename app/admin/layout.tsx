@@ -24,6 +24,7 @@ export default async function AdminLayout({
         id: String((admin as User).id),
         name: (admin as User).name || "",
         role: (admin as User).role || "Admin",
+        departmentId: (admin as User).departmentId || null,
         permissions: (admin as User).permissions || [],
       }
     : null;

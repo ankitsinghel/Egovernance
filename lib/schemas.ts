@@ -47,6 +47,8 @@ export const AdminCreateSchema = z.object({
   email: z.string().email("Please provide a valid email"),
   password: z.string().min(6, "Minimum 6 characters"),
   departmentId: z.number().min(1, "Please select a department"),
+  stateId: z.number().optional(),
+  superiorId: z.number().optional(),
 });
 export type AdminCreateForm = z.infer<typeof AdminCreateSchema>;
 
