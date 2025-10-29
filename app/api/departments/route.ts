@@ -12,7 +12,6 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  // Only SuperAdmin allowed - token in cookie
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;
 

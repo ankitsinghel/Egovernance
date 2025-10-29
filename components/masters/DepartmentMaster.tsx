@@ -49,15 +49,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { set } from "zod";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { Department } from "@/lib/types";
 
-type Dept = { id: number; name: string };
 
 export default function DepartmentMaster() {
-  const { departments, refreshDepartments, loading, setLoading } = context();
+  const { departments, setDepartments, refreshDepartments, loading, setLoading } = context();
   const [showCreate, setShowCreate] = useState(false);
-  const [showEdit, setShowEdit] = useState<null | Dept>(null);
+  const [showEdit, setShowEdit] = useState<null | Department>(null);
   const [query, setQuery] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
@@ -91,7 +90,7 @@ export default function DepartmentMaster() {
         setLoading(false);
         setShowCreate(false);
         createForm.reset();
-        refreshDepartments();
+       setDepartments([...list, j.department]);
         if (j.message) toast.success(j.message);
       } else {
         setLoading(false);
@@ -118,7 +117,9 @@ export default function DepartmentMaster() {
         setLoading(false);
         setShowEdit(null);
         editForm.reset();
-        refreshDepartments();
+        setDepartments(
+          list.map((d) => (d.id === showEdit.id ? j.department : d))
+        );
         if (j.message) toast.success(j.message);
       } else toast.error(j.error || "Update failed");
     } catch (e) {
@@ -136,7 +137,7 @@ export default function DepartmentMaster() {
       });
       const j = await res.json();
       if (j.ok) {
-        refreshDepartments();
+        setDepartments(list.filter((d) => d.id !== id));
         if (j.message) toast.success(j.message);
       } else toast.error(j.message || "Delete failed");
     } catch (e) {

@@ -5,16 +5,21 @@ import { ReactNode } from "react";
 export interface User {
   id: string;
   name: string;
-  role: number|string;
+  role: number | string;
   permissions: Permission[];
   departmentId?: number;
 }
-export type RouteItem = { name: string; href: string; icon: ReactNode, permission:string };
+export type RouteItem = {
+  name: string;
+  href: string;
+  icon: ReactNode;
+  permission: string;
+};
 
 export interface Role {
   id: number;
   name: string;
-  permissions?:Permission[]
+  permissions?: Permission[];
 }
 
 export type Permission = { id: number; name: string; description?: string };
@@ -62,7 +67,6 @@ export type Report = {
 
 // Context shape exported so other files can reference it
 export type contextType = {
-  setPermissions:(permissions:Permission[])=>void;
   dashboardRoutes: RouteItem[];
   loading: boolean;
   setLoading: (b: boolean) => void;
@@ -73,13 +77,24 @@ export type contextType = {
   roles: Role[];
   setRoles: (roles: Role[]) => void;
   permissions: Permission[];
+  setPermissions: (permissions: Permission[]) => void;
   refreshPermissions: () => Promise<void>;
   refreshRoles?: () => Promise<void>;
   // Masters
   departments: Department[];
+  setDepartments: (departments: Department[]) => void;
   states: StateT[];
+  setStates: (states: StateT[]) => void;
   admins: Admin[];
+  setAdmins:(admins:Admin[])=>void;
   userReports: UserReport[];
+  setUserReports: (reports: UserReport[]) => void;
+  // Fetchers
+  fetchDepartments: () => Promise<void>;
+  fetchPermissions: () => Promise<void>;
+  fetchAdmins: () => Promise<void>;
+  fetchStates: () => Promise<void>;
+  fetchRoles: () => Promise<void>;
   fetchAdminMasters: () => Promise<void>;
   fetchMasters: () => Promise<void>;
   fetchUserMasters: () => Promise<void>;
@@ -89,8 +104,5 @@ export type contextType = {
   refreshAdmins: () => Promise<void>;
 };
 
-// Keep previous name used in codebase for compatibility
 export type LoadingContextType = contextType;
-
-// Generic alias for places where a flexible object is needed.
 export type AnyT = any;

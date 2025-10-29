@@ -94,7 +94,7 @@ export function contextProvider({
 
   async function fetchAdminMasters() {
     setLoading(true);
-    await Promise.all([fetchUserReports()]);
+    await Promise.all([fetchUserReports(), fetchAdmins()]);
     setLoading(false);
   }
   async function fetchUserReports() {
@@ -145,6 +145,7 @@ export function contextProvider({
   }
 
   async function fetchAdmins() {
+    if (user.role !== "Superadmin" && user.role !== "Central Admin") return;
     try {
       const res = await fetch("/api/admins", {
         method: "GET",
@@ -242,19 +243,28 @@ export function contextProvider({
           setRoles,
           permissions,
           setPermissions,
-          fetchUserMasters,
           userReports,
           refreshUserReports,
-          fetchAdminMasters,
           user,
           setUser,
           loading,
-          setLoading,
           superAdminDrawerOpen,
-          setSuperAdminDrawerOpen,
           departments,
           states,
           admins,
+          setLoading,
+          setUserReports,
+          setSuperAdminDrawerOpen,
+          setAdmins,
+          setDepartments,
+          setStates,
+          fetchAdminMasters,
+          fetchUserMasters,
+          fetchAdmins,
+          fetchDepartments,
+          fetchStates,
+          fetchRoles,
+          fetchPermissions,
           refreshPermissions,
           refreshRoles,
           fetchMasters,

@@ -7,22 +7,17 @@ export async function PUT(req: Request, props: any) {
   const params = await props.params;
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;
-
+  
   const id = Number(params.id);
   const body = await req.json();
   const {
     name,
     email,
-    password,
-    departmentId,
-    city = null,
-    role = "Admin",
-    superiorId = null,
   } = body;
 
-  const data: any = { name, email, city, role, superiorId };
-  if (departmentId !== undefined) data.departmentId = departmentId;
-  if (password) data.password = await hashPassword(password);
+  const data: any = { name, email,};
+  // if (departmentId !== undefined) data.departmentId = departmentId;
+  // if (password) data.password = await hashPassword(password);
 
   const admin = await prisma.admin.update({ where: { id }, data });
   return NextResponse.json({ ok: true, admin });

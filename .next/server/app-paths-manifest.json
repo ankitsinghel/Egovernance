@@ -1,7 +1,11 @@
 {
+  "/api/departments/route": "app/api/departments/route.js",
+  "/api/states/route": "app/api/states/route.js",
   "/api/admins/route": "app/api/admins/route.js",
+  "/api/admin/reports/route": "app/api/admin/reports/route.js",
   "/(main)/page": "app/(main)/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
   "/admin/dashboard/state-admins/page": "app/admin/dashboard/state-admins/page.js",
   "/(super-admin)/super-admin/sa-dash/admins/page": "app/(super-admin)/super-admin/sa-dash/admins/page.js",
-  "/admin/dashboard/page": "app/admin/dashboard/page.js"
+  "/(super-admin)/super-admin/sa-dash/departments/page": "app/(super-admin)/super-admin/sa-dash/departments/page.js"
 }

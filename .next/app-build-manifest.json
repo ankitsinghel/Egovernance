@@ -87,6 +87,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/permissions/route.js"
+    ],
+    "/(super-admin)/super-admin/sa-dash/departments/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(super-admin)/super-admin/sa-dash/departments/page.js"
     ]
   }
 }

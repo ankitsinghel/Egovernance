@@ -54,7 +54,7 @@ import Pagination from "@/components/ui/pagination";
 import type { StateT } from "@/lib/types";
 
 export default function StateMaster() {
-  const { states, refreshStates, setLoading } = context();
+  const { states, setStates, refreshStates, setLoading } = context();
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState<null | StateT>(null);
   const [query, setQuery] = useState("");
@@ -89,7 +89,7 @@ export default function StateMaster() {
       if (j.ok) {
         setShowCreate(false);
         createForm.reset();
-        refreshStates();
+        setStates([...list, j.state]);
         if (j.message) toast.success(j.message);
       } else toast.error(j.error || "Create failed");
     } catch (e) {
@@ -113,7 +113,7 @@ export default function StateMaster() {
       if (j.ok) {
         setShowEdit(null);
         editForm.reset();
-        refreshStates();
+        setStates(list.map((s) => (s.id === showEdit.id ? j.state : s)));
         if (j.message) toast.success(j.message);
       } else toast.error(j.error || "Update failed");
     } catch (e) {
@@ -132,7 +132,7 @@ export default function StateMaster() {
       });
       const j = await res.json();
       if (j.ok) {
-        refreshStates();
+        setStates(list.filter((s) => s.id !== id));
         if (j.message) toast.success(j.message);
       } else toast.error(j.message || "Delete failed");
     } catch (e) {
@@ -143,7 +143,6 @@ export default function StateMaster() {
       setLoading(false);
     }
   }
-
   const filtered = list.filter((s: any) =>
     (s.name || "").toString().toLowerCase().includes(query.toLowerCase().trim())
   );

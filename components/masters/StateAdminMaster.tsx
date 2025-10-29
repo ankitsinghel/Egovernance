@@ -59,7 +59,7 @@ import type { Admin, AnyT, StateT } from "@/lib/types";
 import Pagination from "@/components/ui/pagination";
 
 export default function StateAdminsMaster() {
-  const { admins, refreshAdmins, states, loading, setLoading, user } =
+  const { admins, setAdmins, refreshAdmins, states, loading, setLoading, user } =
     context();
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState<Admin | null>(null);
@@ -100,7 +100,6 @@ export default function StateAdminsMaster() {
     }
   }, [user]);
 
-  // filter only state admins (role === 3)
   const { stateAdmins, filteredAdmins } = useMemo(() => {
     const list = (admins || []).filter((a: any) => {
       const r = a.role;
@@ -157,7 +156,7 @@ export default function StateAdminsMaster() {
         if (j.ok) {
           setShowCreate(false);
           createForm.reset();
-          refreshAdmins();
+          setAdmins(([...admins, j.admin]));
           if (j.message) toast.success(j.message);
         } else {
           toast.error(j.message || j.error || "Create failed");
@@ -191,7 +190,7 @@ export default function StateAdminsMaster() {
         if (j.ok) {
           setShowEdit(null);
           editForm.reset();
-          refreshAdmins();
+          setAdmins(admins.map(a=>a.id===showEdit.id?j.admin:a));
           if (j.message) toast.success(j.message);
         } else {
           toast.error(j.message || j.error || "Update failed");
@@ -215,7 +214,9 @@ export default function StateAdminsMaster() {
         });
         const j = await res.json();
         if (j.ok) {
-          refreshAdmins();
+          setAdmins(admins.filter((a) => a.id !== id));
+          setShowDeleteDialog(false);
+          setDeleteTargetId(null);
           if (j.message) toast.success(j.message);
         } else {
           toast.error(j.message || "Delete failed");
