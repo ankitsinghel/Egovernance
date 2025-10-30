@@ -2,11 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { requireSuperadmin } from "../../../../lib/api_middleware/auth";
 
-export async function PUT(
-  req: Request,
-  props: { params: Record<string, string> | Promise<Record<string, string>> }
-) {
-  const params = await props.params;
+export async function PUT(req: Request, context: { params: { id: string } }) {
+  const params = context.params;
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;
 
@@ -24,9 +21,9 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  props: { params: Record<string, string> | Promise<Record<string, string>> }
+  context: { params: { id: string } }
 ) {
-  const params = await props.params;
+  const params = context.params;
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;
 
