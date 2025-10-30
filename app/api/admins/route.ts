@@ -5,7 +5,6 @@ import {
   requireSuperadmin,
 } from "@/lib/api_middleware/auth";
 import { hashPassword } from "@/lib/hash";
-import { type } from "node:os";
 
 export async function GET(req: Request) {
   const role = req.headers.get("role");

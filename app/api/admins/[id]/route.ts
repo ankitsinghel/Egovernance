@@ -19,11 +19,8 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
   return NextResponse.json({ ok: true, admin });
 }
 
-export async function DELETE(
-  req: Request,
-  context: { params: { id: string } }
-) {
-  const params = context.params;
+export async function DELETE(req: Request, context: RouteContext<"/api/admins/[id]">) {
+  const params = await context.params;
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;
 
