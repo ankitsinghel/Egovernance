@@ -26,40 +26,41 @@ import {
 import { context } from "@/context/context";
 
 export default function SuperAdminDashboardPage() {
-  const {departments, states} =  context();
+  const { departments, states } = context();
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-
-
-  async function createOrg(e: any) {
+  async function createOrg(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const name = e.target.name.value;
+    const fd = new FormData(e.currentTarget as HTMLFormElement);
+    const name = String(fd.get("name") || "");
     await fetch("/api/departments", {
       method: "POST",
       body: JSON.stringify({ name }),
       headers: { "Content-Type": "application/json" },
     });
-    e.target.reset();
+    (e.currentTarget as HTMLFormElement).reset();
   }
 
-  async function createCity(e: any) {
+  async function createCity(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const name = e.target.name.value;
+    const fd = new FormData(e.currentTarget as HTMLFormElement);
+    const name = String(fd.get("name") || "");
     await fetch("/api/states", {
       method: "POST",
       body: JSON.stringify({ name }),
       headers: { "Content-Type": "application/json" },
     });
-    e.target.reset();
+    (e.currentTarget as HTMLFormElement).reset();
   }
 
-  async function createAdmin(e: any) {
+  async function createAdmin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    const name = e.target.name.value;
-    const departmentId = Number(e.target.departmentId.value);
+    const fd = new FormData(e.currentTarget as HTMLFormElement);
+    const email = String(fd.get("email") || "");
+    const password = String(fd.get("password") || "");
+    const name = String(fd.get("name") || "");
+    const departmentId = Number(fd.get("departmentId") || 0);
     const res = await fetch("/api/admin/create", {
       method: "POST",
       body: JSON.stringify({
@@ -75,7 +76,7 @@ export default function SuperAdminDashboardPage() {
     if (!j.ok) toast.error(j.error || "Create failed");
     else {
       toast.success("Admin created successfully!");
-      e.target.reset();
+      (e.currentTarget as HTMLFormElement).reset();
     }
   }
 
@@ -139,7 +140,9 @@ export default function SuperAdminDashboardPage() {
               <p className="text-sm font-medium text-slate-600">
                 Organizations
               </p>
-              <p className="text-2xl font-bold text-slate-900">{departments.length}</p>
+              <p className="text-2xl font-bold text-slate-900">
+                {departments.length}
+              </p>
             </div>
             <Building className="w-8 h-8 text-blue-500" />
           </div>

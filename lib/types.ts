@@ -8,6 +8,7 @@ export interface User {
   role: number | string;
   permissions: Permission[];
   departmentId?: number;
+  organization?: string;
 }
 export type RouteItem = {
   name: string;
@@ -32,6 +33,7 @@ export type Admin = {
   email: string;
   departmentId: number;
   city: string | null;
+  stateId?: number | null;
 };
 
 export type UserReport = {
@@ -86,7 +88,7 @@ export type contextType = {
   states: StateT[];
   setStates: (states: StateT[]) => void;
   admins: Admin[];
-  setAdmins:(admins:Admin[])=>void;
+  setAdmins: (admins: Admin[]) => void;
   userReports: UserReport[];
   setUserReports: (reports: UserReport[]) => void;
   // Fetchers
@@ -105,4 +107,36 @@ export type contextType = {
 };
 
 export type LoadingContextType = contextType;
-export type AnyT = any;
+// JSON value type used for arbitrary JSON/meta payloads stored in DB
+export type JSONValueT =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JSONValueT }
+  | JSONValueT[];
+
+// Uploaded file shape produced by `parseForm` and used across the app
+export type UploadedFileT = {
+  filepath: string;
+  originalFilename: string;
+  mimetype?: string | null;
+};
+
+export type FieldsT = Record<string, string | string[]>;
+export type FilesT = Record<string, UploadedFileT | UploadedFileT[]>;
+
+// A loose file-like shape that may be returned by different runtimes/libs
+export type FileLikeT = Partial<UploadedFileT> & { path?: string };
+
+export type UserReportDetailT = UserReport & {
+  actions?: ActionLog[];
+  department?: Department | null;
+};
+
+// Minimal token payload shape used by auth utilities
+export type TokenPayloadT = {
+  id?: string | number;
+  role?: string;
+  [key: string]: JSONValueT | undefined;
+};

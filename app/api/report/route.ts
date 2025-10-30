@@ -6,13 +6,32 @@ import { sendNewReportNotification } from "../../../lib/email";
 
 export async function POST(req: Request) {
   try {
-    const { fields, files } = await parseForm(req as any);
+    const { fields, files } = await parseForm(req);
 
-    const deptId = Number(fields.department) || null;
-    const designation = fields.designation || null;
-    const accusedName = fields.accusedName || null;
-    const stateIdRaw = Number(fields.state);
-    const description = fields.description || "";
+    const deptId =
+      Number(
+        Array.isArray(fields.department)
+          ? fields.department[0]
+          : fields.department
+      ) || null;
+    const designation = fields.designation
+      ? Array.isArray(fields.designation)
+        ? String(fields.designation[0])
+        : String(fields.designation)
+      : null;
+    const accusedName = fields.accusedName
+      ? Array.isArray(fields.accusedName)
+        ? String(fields.accusedName[0])
+        : String(fields.accusedName)
+      : null;
+    const stateIdRaw =
+      Number(Array.isArray(fields.state) ? fields.state[0] : fields.state) ||
+      null;
+    const description = fields.description
+      ? Array.isArray(fields.description)
+        ? String(fields.description[0])
+        : String(fields.description)
+      : "";
 
     const trackingId = await generateTrackingId();
 

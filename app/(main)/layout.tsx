@@ -5,6 +5,7 @@ import { contextProvider as ContextProvider } from "../../context/context";
 import { Spinner } from "@/components/loader";
 import { cookies } from "next/headers";
 import { getAdminFromToken } from "../../lib/auth";
+import type { TokenPayloadT, Permission } from "../../lib/types";
 import { Toaster } from "sonner";
 
 export const metadata = {
@@ -21,12 +22,15 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const token = cookieStore.get("egov_token")?.value || null;
   const admin = token ? await getAdminFromToken(token) : null;
-  const initialUser = admin
+  const tokenAdmin = admin as unknown as TokenPayloadT | null;
+  const initialUser = tokenAdmin
     ? {
-        id: String((admin as any).id),
-        name: (admin as any).name || (admin as any).email || "",
-        role: (admin as any).role || "Admin",
-        permissions: (admin as any).permissions || [],
+        id: String(tokenAdmin.id ?? ""),
+        name: String(tokenAdmin.name ?? tokenAdmin.email ?? ""),
+        role: (tokenAdmin.role as string) || "Admin",
+        permissions: Array.isArray(tokenAdmin.permissions)
+          ? (tokenAdmin.permissions as unknown as Permission[])
+          : [],
       }
     : null;
 

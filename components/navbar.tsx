@@ -15,11 +15,11 @@ import {
   X,
   ChevronDown,
 } from "lucide-react";
-
+import type { User as UserT } from "@/lib/types";
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<UserT | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { setLoading } = context();

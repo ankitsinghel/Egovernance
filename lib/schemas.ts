@@ -58,7 +58,11 @@ export const AdminUpdateSchema = z.object({
   password: z.string().min(6, "Minimum 6 characters").optional(),
   departmentId: z.number().min(1, "Please select a department"),
 });
-
+export const StateAdminUpdateSchema = z.object({
+  name: z.string().min(2, "Minimum 2 characters"),
+  email: z.string().email("Please provide a valid email"),
+});
+export type StateAdminUpdateForm = z.infer<typeof StateAdminUpdateSchema>;
 export const UserReportCreateSchema = z.object({
   departmentId: z.number().min(1, "Department is required"),
   designation: z.string().min(1, "Designation is required").max(255),

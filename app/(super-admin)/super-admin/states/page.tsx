@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import type { StateT } from "@/lib/types";
 import { Card } from "../../../../components/ui/card";
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
@@ -16,7 +17,7 @@ function useDebounced(value: string, delay = 300) {
 }
 
 export default function StatesMaster() {
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<StateT[]>([]);
   const [total, setTotal] = useState(0);
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
@@ -88,7 +89,7 @@ export default function StatesMaster() {
           <Input
             placeholder="Search states"
             value={q}
-            onChange={(e: any) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setQ(e.target.value);
               setOffset(0);
             }}
@@ -170,7 +171,7 @@ export default function StatesMaster() {
                   </td>
                 </tr>
               ) : (
-                items.map((it: any, i: number) => (
+                items.map((it: StateT, i: number) => (
                   <tr key={it.id} className="border-t">
                     <td className="p-2">{offset + i + 1}</td>
                     <td className="p-2">{it.name}</td>

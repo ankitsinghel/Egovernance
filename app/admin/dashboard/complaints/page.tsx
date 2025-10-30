@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserReportCreateSchema, UserReportUpdateSchema } from "@/lib/schemas";
+import type { UserReportCreateForm, UserReportUpdateForm } from "@/lib/schemas";
 import {
   Table,
   TableBody,
@@ -58,13 +59,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import type {
-  UserReport,
-  ActionLog,
-  Department,
-  Admin,
-  AnyT,
-} from "@/lib/types";
+import type { UserReport, ActionLog, Department, Admin } from "@/lib/types";
 
 export default function ComplaintsMaster() {
   const {
@@ -88,7 +83,7 @@ export default function ComplaintsMaster() {
     setShowDeleteDialog(true);
   }
 
-  const createForm = useForm({
+  const createForm = useForm<UserReportCreateForm>({
     resolver: zodResolver(UserReportCreateSchema),
     defaultValues: {
       departmentId: 0,
@@ -99,7 +94,7 @@ export default function ComplaintsMaster() {
     },
   });
 
-  const editForm = useForm({
+  const editForm = useForm<UserReportUpdateForm>({
     resolver: zodResolver(UserReportUpdateSchema),
     defaultValues: {
       departmentId: 0,
@@ -147,7 +142,7 @@ export default function ComplaintsMaster() {
 
   // Handler functions
   const handleCreate = useCallback(
-    async (data: AnyT) => {
+    async (data: UserReportCreateForm) => {
       try {
         setLoading(true);
         const res = await fetch("/api/user-reports", {
@@ -171,8 +166,8 @@ export default function ComplaintsMaster() {
         } else {
           toast.error(j.message || j.error || "Create failed");
         }
-      } catch (e) {
-        toast.error("Network error");
+      } catch (e: unknown) {
+        toast.error((e as Error)?.message || "Network error");
       } finally {
         setLoading(false);
       }
@@ -181,7 +176,7 @@ export default function ComplaintsMaster() {
   );
 
   const handleEdit = useCallback(
-    async (data: AnyT) => {
+    async (data: UserReportUpdateForm) => {
       if (!showEdit) return;
       try {
         setLoading(true);
@@ -208,8 +203,8 @@ export default function ComplaintsMaster() {
         } else {
           toast.error(j.message || j.error || "Update failed");
         }
-      } catch (e) {
-        toast.error("Network error");
+      } catch (e: unknown) {
+        toast.error((e as Error)?.message || "Network error");
       } finally {
         setLoading(false);
       }
@@ -232,8 +227,8 @@ export default function ComplaintsMaster() {
         } else {
           toast.error(j.message || "Delete failed");
         }
-      } catch (e) {
-        toast.error("Network error");
+      } catch (e: unknown) {
+        toast.error((e as Error)?.message || "Network error");
       } finally {
         setLoading(false);
         setShowDeleteDialog(false);
@@ -486,9 +481,9 @@ export default function ComplaintsMaster() {
                     ))}
                   </SelectContent>
                 </Select>
-                {createForm.formState.errors.departmentId && (
+                {createForm.formState.errors.departmentId?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.departmentId as AnyT).message}
+                    {String(createForm.formState.errors.departmentId?.message)}
                   </p>
                 )}
               </div>
@@ -501,9 +496,9 @@ export default function ComplaintsMaster() {
                   placeholder="Enter designation"
                   {...createForm.register("designation")}
                 />
-                {createForm.formState.errors.designation && (
+                {createForm.formState.errors.designation?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.designation as AnyT).message}
+                    {String(createForm.formState.errors.designation?.message)}
                   </p>
                 )}
               </div>
@@ -516,9 +511,9 @@ export default function ComplaintsMaster() {
                   placeholder="Enter accused person's name"
                   {...createForm.register("accusedName")}
                 />
-                {createForm.formState.errors.accusedName && (
+                {createForm.formState.errors.accusedName?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.accusedName as AnyT).message}
+                    {String(createForm.formState.errors.accusedName?.message)}
                   </p>
                 )}
               </div>
@@ -531,9 +526,9 @@ export default function ComplaintsMaster() {
                   placeholder="Enter complaint description"
                   {...createForm.register("description")}
                 />
-                {createForm.formState.errors.description && (
+                {createForm.formState.errors.description?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.description as AnyT).message}
+                    {String(createForm.formState.errors.description?.message)}
                   </p>
                 )}
               </div>
@@ -546,9 +541,9 @@ export default function ComplaintsMaster() {
                   placeholder="Enter file URLs separated by commas"
                   {...createForm.register("files")}
                 />
-                {createForm.formState.errors.files && (
+                {createForm.formState.errors.files?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.files as AnyT).message}
+                    {String(createForm.formState.errors.files?.message)}
                   </p>
                 )}
               </div>
@@ -638,9 +633,9 @@ export default function ComplaintsMaster() {
                     ))}
                   </SelectContent>
                 </Select>
-                {editForm.formState.errors.departmentId && (
+                {editForm.formState.errors.departmentId?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.departmentId as AnyT).message}
+                    {String(editForm.formState.errors.departmentId?.message)}
                   </p>
                 )}
               </div>
@@ -656,9 +651,9 @@ export default function ComplaintsMaster() {
                   placeholder="Enter designation"
                   {...editForm.register("designation")}
                 />
-                {editForm.formState.errors.designation && (
+                {editForm.formState.errors.designation?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.designation as AnyT).message}
+                    {String(editForm.formState.errors.designation?.message)}
                   </p>
                 )}
               </div>
@@ -674,9 +669,9 @@ export default function ComplaintsMaster() {
                   placeholder="Enter accused person's name"
                   {...editForm.register("accusedName")}
                 />
-                {editForm.formState.errors.accusedName && (
+                {editForm.formState.errors.accusedName?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.accusedName as AnyT).message}
+                    {String(editForm.formState.errors.accusedName?.message)}
                   </p>
                 )}
               </div>
@@ -692,9 +687,9 @@ export default function ComplaintsMaster() {
                   placeholder="Enter complaint description"
                   {...editForm.register("description")}
                 />
-                {editForm.formState.errors.description && (
+                {editForm.formState.errors.description?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.description as AnyT).message}
+                    {String(editForm.formState.errors.description?.message)}
                   </p>
                 )}
               </div>
@@ -707,9 +702,9 @@ export default function ComplaintsMaster() {
                   placeholder="Enter file URLs separated by commas"
                   {...editForm.register("files")}
                 />
-                {editForm.formState.errors.files && (
+                {editForm.formState.errors.files?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.files as AnyT).message}
+                    {String(editForm.formState.errors.files?.message)}
                   </p>
                 )}
               </div>

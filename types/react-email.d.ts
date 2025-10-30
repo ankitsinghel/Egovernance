@@ -1,15 +1,20 @@
 declare module "@react-email/components" {
   import * as React from "react";
-  export const Html: React.FC<any>;
-  export const Head: React.FC<any>;
-  export const Preview: React.FC<any>;
-  export const Section: React.FC<any>;
-  export const Row: React.FC<any>;
-  export const Heading: React.FC<any>;
-  export const Text: React.FC<any>;
-  export default {} as any;
+  export type ComponentPropsT = Record<string, unknown>;
+  export const Html: React.FC<ComponentPropsT>;
+  export const Head: React.FC<ComponentPropsT>;
+  export const Preview: React.FC<ComponentPropsT>;
+  export const Section: React.FC<ComponentPropsT>;
+  export const Row: React.FC<ComponentPropsT>;
+  export const Heading: React.FC<ComponentPropsT>;
+  export const Text: React.FC<ComponentPropsT>;
+  const _default: unknown;
+  export default _default;
 }
 
 declare module "@react-email/render" {
-  export function render(component: any): string;
+  import * as React from "react";
+  export function render(
+    component: React.ReactElement | React.ComponentType<Record<string, unknown>>
+  ): string;
 }

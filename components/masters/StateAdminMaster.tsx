@@ -15,7 +15,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AdminCreateSchema, AdminUpdateSchema } from "@/lib/schemas";
+import {
+  AdminCreateSchema,
+  StateAdminUpdateForm,
+  StateAdminUpdateSchema,
+} from "@/lib/schemas";
+import type { AdminCreateForm, AdminUpdateForm } from "@/lib/schemas";
 import {
   Table,
   TableBody,
@@ -55,12 +60,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Admin, AnyT, StateT } from "@/lib/types";
+import type { Admin, StateT } from "@/lib/types";
 import Pagination from "@/components/ui/pagination";
 
 export default function StateAdminsMaster() {
-  const { admins, setAdmins, refreshAdmins, states, loading, setLoading, user } =
-    context();
+  const {
+    admins,
+    setAdmins,
+    refreshAdmins,
+    states,
+    loading,
+    setLoading,
+    user,
+  } = context();
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState<Admin | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,7 +84,7 @@ export default function StateAdminsMaster() {
     setShowDeleteDialog(true);
   }
 
-  const createForm = useForm({
+  const createForm = useForm<AdminCreateForm>({
     resolver: zodResolver(AdminCreateSchema),
     defaultValues: {
       name: "",
@@ -82,41 +94,30 @@ export default function StateAdminsMaster() {
       stateId: 0,
     },
   });
-  const editForm = useForm<any>({
-    resolver: zodResolver(AdminUpdateSchema),
+  const editForm = useForm<StateAdminUpdateForm>({
+    resolver: zodResolver(StateAdminUpdateSchema),
     defaultValues: {
       name: "",
       email: "",
-      password: "",
-      departmentId: user?.departmentId || 0,
-      stateId: 0,
     },
   });
 
   useEffect(() => {
     if (user?.departmentId) {
       createForm.setValue("departmentId", user.departmentId as number);
-      editForm.setValue("departmentId", user.departmentId as number);
     }
   }, [user]);
 
   const { stateAdmins, filteredAdmins } = useMemo(() => {
-    const list = (admins || []).filter((a: any) => {
-      const r = a.role;
-      return (
-        r === 3 ||
-        r === "3" ||
-        (typeof r === "string" && r.toLowerCase().includes("state"))
-      );
-    });
 
-    const filtered = list.filter(
+
+    const filtered = admins.filter(
       (admin: Admin) =>
         admin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         admin.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    return { stateAdmins: list, filteredAdmins: filtered };
+    return { stateAdmins: admins, filteredAdmins: filtered };
   }, [admins, searchQuery]);
 
   // pagination
@@ -131,7 +132,7 @@ export default function StateAdminsMaster() {
   useEffect(() => setPage(1), [searchQuery]);
 
   const handleCreate = useCallback(
-    async (data: AnyT) => {
+    async (data: AdminCreateForm) => {
       try {
         setLoading(true);
         if (!user?.departmentId) {
@@ -156,7 +157,7 @@ export default function StateAdminsMaster() {
         if (j.ok) {
           setShowCreate(false);
           createForm.reset();
-          setAdmins(([...admins, j.admin]));
+          setAdmins([...admins, j.admin]);
           if (j.message) toast.success(j.message);
         } else {
           toast.error(j.message || j.error || "Create failed");
@@ -171,7 +172,7 @@ export default function StateAdminsMaster() {
   );
 
   const handleEdit = useCallback(
-    async (data: AnyT) => {
+    async (data: StateAdminUpdateForm) => {
       if (!showEdit) return;
       try {
         setLoading(true);
@@ -182,15 +183,13 @@ export default function StateAdminsMaster() {
           body: JSON.stringify({
             name: data.name,
             email: data.email,
-            password: data.password,
-            stateId: data.stateId || null,
           }),
         });
         const j = await res.json();
         if (j.ok) {
           setShowEdit(null);
           editForm.reset();
-          setAdmins(admins.map(a=>a.id===showEdit.id?j.admin:a));
+          setAdmins(admins.map((a) => (a.id === showEdit.id ? j.admin : a)));
           if (j.message) toast.success(j.message);
         } else {
           toast.error(j.message || j.error || "Update failed");
@@ -245,12 +244,7 @@ export default function StateAdminsMaster() {
       editForm.reset({
         name: admin.name,
         email: admin.email,
-        password: "",
-        departmentId: admin.departmentId || user?.departmentId || 0,
       });
-      // set state if available
-      if ((admin as any).stateId)
-        editForm.setValue("stateId", (admin as any).stateId);
     },
     [editForm, user]
   );
@@ -317,9 +311,8 @@ export default function StateAdminsMaster() {
                       <TableCell>{admin.name}</TableCell>
                       <TableCell className="lowercase">{admin.email}</TableCell>
                       <TableCell>
-                        {states.find(
-                          (s: StateT) => s.id === (admin as any).stateId
-                        )?.name || "-"}
+                        {states.find((s: StateT) => s.id === admin.stateId)
+                          ?.name || "-"}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
@@ -413,11 +406,11 @@ export default function StateAdminsMaster() {
                 <Input
                   id="name"
                   placeholder="Enter admin name"
-                  {...createForm.register("name" as any)}
+                  {...createForm.register("name")}
                 />
-                {createForm.formState.errors.name && (
+                {createForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.name as any).message}
+                    {String(createForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>
@@ -429,11 +422,11 @@ export default function StateAdminsMaster() {
                   id="email"
                   type="email"
                   placeholder="Enter email address"
-                  {...createForm.register("email" as any)}
+                  {...createForm.register("email")}
                 />
-                {createForm.formState.errors.email && (
+                {createForm.formState.errors.email?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.email as any).message}
+                    {String(createForm.formState.errors.email?.message)}
                   </p>
                 )}
               </div>
@@ -445,11 +438,11 @@ export default function StateAdminsMaster() {
                   id="password"
                   type="password"
                   placeholder="Enter password"
-                  {...createForm.register("password" as any)}
+                  {...createForm.register("password")}
                 />
-                {createForm.formState.errors.password && (
+                {createForm.formState.errors.password?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.password as any).message}
+                    {String(createForm.formState.errors.password?.message)}
                   </p>
                 )}
               </div>
@@ -476,9 +469,9 @@ export default function StateAdminsMaster() {
                     ))}
                   </SelectContent>
                 </Select>
-                {createForm.formState.errors.stateId && (
+                {createForm.formState.errors.stateId?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.stateId as any).message}
+                    {String(createForm.formState.errors.stateId?.message)}
                   </p>
                 )}
               </div>
@@ -518,12 +511,12 @@ export default function StateAdminsMaster() {
                 <Input
                   id="edit-name"
                   placeholder="Enter admin name"
-                  {...editForm.register("name" as any)}
+                  {...editForm.register("name")}
                   defaultValue={showEdit?.name}
                 />
-                {editForm.formState.errors.name && (
+                {editForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.name as any).message}
+                    {String(editForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>
@@ -535,58 +528,14 @@ export default function StateAdminsMaster() {
                   id="edit-email"
                   type="email"
                   placeholder="Enter email address"
-                  {...editForm.register("email" as any)}
+                  {...editForm.register("email")}
                   defaultValue={showEdit?.email}
                 />
-                {editForm.formState.errors.email && (
+                {editForm.formState.errors.email?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.email as any).message}
+                    {String(editForm.formState.errors.email?.message)}
                   </p>
                 )}
-              </div>
-              <div className="grid gap-2">
-                <label htmlFor="edit-password" className="text-sm font-medium">
-                  Password
-                </label>
-                <Input
-                  id="edit-password"
-                  type="password"
-                  placeholder="Leave blank to keep current password"
-                  {...editForm.register("password" as any)}
-                />
-                {editForm.formState.errors.password && (
-                  <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.password as any).message}
-                  </p>
-                )}
-              </div>
-
-              <div className="grid gap-2">
-                <label htmlFor="edit-state" className="text-sm font-medium">
-                  State
-                </label>
-                <Select
-                  onValueChange={(value) =>
-                    editForm.setValue("stateId", parseInt(value))
-                  }
-                  defaultValue={
-                    (
-                      (showEdit as any)?.stateId || editForm.watch("stateId")
-                    )?.toString() || "0"
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select state" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">Select State</SelectItem>
-                    {states.map((s: StateT) => (
-                      <SelectItem key={s.id} value={s.id.toString()}>
-                        {s.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             <DialogFooter>

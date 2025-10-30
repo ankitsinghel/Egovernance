@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { context } from "@/context/context";
+import type { UserReportDetailT } from "@/lib/types";
 import { useRouter } from "next/navigation";
 
 export default function ReportTrackPage() {
   const params = useParams();
   const rawTrackId = params?.trackId;
   const trackId = Array.isArray(rawTrackId) ? rawTrackId[0] : rawTrackId;
-  const [report, setReport] = useState<any>(null);
+  const [report, setReport] = useState<UserReportDetailT | null>(null);
   const { loading, setLoading } = context();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -27,9 +28,15 @@ export default function ReportTrackPage() {
           setReport(json.report);
           setLoading(false);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         setLoading(false);
-        setError(err?.message || "Network error");
+        // Safely extract message from unknown error without using `any`
+        let msg: string | null = null;
+        if (err instanceof Error) msg = err.message;
+        else if (err && typeof err === "object" && "message" in err)
+          msg = String((err as Record<string, unknown>).message ?? null);
+        else msg = String(err ?? "Network error");
+        setError(msg || "Network error");
         router.push("/track");
       } finally {
         setLoading(false);

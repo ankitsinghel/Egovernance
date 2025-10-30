@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 
-export async function PUT(req: Request, { params }: any) {
+export async function PUT(
+  req: Request,
+  props: { params: Record<string, string> | Promise<Record<string, string>> }
+) {
+  const params = await props.params;
   const id = Number(params.id);
   const body = await req.json();
   const { name } = body;
@@ -17,7 +21,11 @@ export async function PUT(req: Request, { params }: any) {
   return NextResponse.json({ ok: true, dept });
 }
 
-export async function DELETE(req: Request, { params }: any) {
+export async function DELETE(
+  req: Request,
+  props: { params: Record<string, string> | Promise<Record<string, string>> }
+) {
+  const params = await props.params;
   const id = Number(params.id);
   await prisma.department.delete({ where: { id } });
   return NextResponse.json({ ok: true });

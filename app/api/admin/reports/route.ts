@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { requireAuth } from "../../../../lib/api_middleware/auth";
+import type { TokenPayloadT } from "../../../../lib/types";
 
 export async function GET(req: Request) {
   const maybe = requireAuth(req);
   if (maybe instanceof NextResponse) return maybe;
-  const payload = maybe;
-  const role = (payload as any).role;
-  const adminId = (payload as any).id;
+  const payload = maybe as unknown as TokenPayloadT;
+  const role = payload.role as string | undefined;
+  const adminId = payload.id;
 
   // Admin sees dept/city assigned reports
   if (role === "SuperAdmin") {

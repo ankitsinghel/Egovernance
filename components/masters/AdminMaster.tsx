@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AdminCreateSchema, AdminUpdateSchema } from "@/lib/schemas";
+import type { AdminCreateForm, AdminUpdateForm } from "@/lib/schemas";
 import {
   Table,
   TableBody,
@@ -55,7 +56,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Admin, Department, AnyT } from "@/lib/types";
+import type { Admin, Department } from "@/lib/types";
 import Pagination from "@/components/ui/pagination";
 import { ButtonGroup } from "@/components/ui/button-group";
 
@@ -72,11 +73,11 @@ export default function AdminsMaster() {
     setShowDeleteDialog(true);
   }
 
-  const createForm = useForm({
+  const createForm = useForm<AdminCreateForm>({
     resolver: zodResolver(AdminCreateSchema),
     defaultValues: { name: "", email: "", password: "", departmentId: 0 },
   });
-  const editForm = useForm({
+  const editForm = useForm<AdminUpdateForm>({
     resolver: zodResolver(AdminUpdateSchema),
     defaultValues: { name: "", email: "", password: "", departmentId: 0 },
   });
@@ -104,7 +105,7 @@ export default function AdminsMaster() {
 
   // Memoized handlers to prevent unnecessary re-renders
   const handleCreate = useCallback(
-    async (data: AnyT) => {
+    async (data: AdminCreateForm) => {
       try {
         setLoading(true);
         const res = await fetch("/api/admins", {
@@ -117,7 +118,7 @@ export default function AdminsMaster() {
             password: data.password,
             departmentId: data.departmentId,
             role: 2,
-            stateId:null,
+            stateId: null,
             superiorId: null,
           }),
         });
@@ -140,7 +141,7 @@ export default function AdminsMaster() {
   );
 
   const handleEdit = useCallback(
-    async (data: AnyT) => {
+    async (data: AdminUpdateForm) => {
       if (!showEdit) return;
       try {
         setLoading(true);
@@ -289,7 +290,7 @@ export default function AdminsMaster() {
                       <TableCell className="lowercase">{admin.email}</TableCell>
                       <TableCell>
                         {departments.find(
-                          (d: any) => d.id === admin.departmentId
+                          (d: Department) => d.id === admin.departmentId
                         )?.name || "-"}
                       </TableCell>
                       <TableCell className="text-right">
@@ -387,9 +388,9 @@ export default function AdminsMaster() {
                   placeholder="Enter admin name"
                   {...createForm.register("name")}
                 />
-                {createForm.formState.errors.name && (
+                {createForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.name as any).message}
+                    {String(createForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>
@@ -403,9 +404,9 @@ export default function AdminsMaster() {
                   placeholder="Enter email address"
                   {...createForm.register("email")}
                 />
-                {createForm.formState.errors.email && (
+                {createForm.formState.errors.email?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.email as any).message}
+                    {String(createForm.formState.errors.email?.message)}
                   </p>
                 )}
               </div>
@@ -419,9 +420,9 @@ export default function AdminsMaster() {
                   placeholder="Enter password"
                   {...createForm.register("password")}
                 />
-                {createForm.formState.errors.password && (
+                {createForm.formState.errors.password?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.password as any).message}
+                    {String(createForm.formState.errors.password?.message)}
                   </p>
                 )}
               </div>
@@ -442,16 +443,16 @@ export default function AdminsMaster() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="0">Select Department</SelectItem>
-                    {departments.map((d: any) => (
+                    {departments.map((d: Department) => (
                       <SelectItem key={d.id} value={d.id.toString()}>
                         {d.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {createForm.formState.errors.departmentId && (
+                {createForm.formState.errors.departmentId?.message && (
                   <p className="text-xs text-destructive">
-                    {(createForm.formState.errors.departmentId as any).message}
+                    {String(createForm.formState.errors.departmentId?.message)}
                   </p>
                 )}
               </div>
@@ -494,9 +495,9 @@ export default function AdminsMaster() {
                   {...editForm.register("name")}
                   defaultValue={showEdit?.name}
                 />
-                {editForm.formState.errors.name && (
+                {editForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.name as any).message}
+                    {String(editForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>
@@ -511,9 +512,9 @@ export default function AdminsMaster() {
                   {...editForm.register("email")}
                   defaultValue={showEdit?.email}
                 />
-                {editForm.formState.errors.email && (
+                {editForm.formState.errors.email?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.email as any).message}
+                    {String(editForm.formState.errors.email?.message)}
                   </p>
                 )}
               </div>
@@ -527,9 +528,9 @@ export default function AdminsMaster() {
                   placeholder="Leave blank to keep current password"
                   {...editForm.register("password")}
                 />
-                {editForm.formState.errors.password && (
+                {editForm.formState.errors.password?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.password as any).message}
+                    {String(editForm.formState.errors.password?.message)}
                   </p>
                 )}
               </div>
@@ -551,16 +552,16 @@ export default function AdminsMaster() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="0">Select Department</SelectItem>
-                    {departments.map((d: any) => (
+                    {departments.map((d: Department) => (
                       <SelectItem key={d.id} value={d.id.toString()}>
                         {d.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {editForm.formState.errors.departmentId && (
+                {editForm.formState.errors.departmentId?.message && (
                   <p className="text-xs text-destructive">
-                    {(editForm.formState.errors.departmentId as any).message}
+                    {String(editForm.formState.errors.departmentId?.message)}
                   </p>
                 )}
               </div>

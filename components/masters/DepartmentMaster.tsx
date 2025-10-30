@@ -52,9 +52,14 @@ import {
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Department } from "@/lib/types";
 
-
 export default function DepartmentMaster() {
-  const { departments, setDepartments, refreshDepartments, loading, setLoading } = context();
+  const {
+    departments,
+    setDepartments,
+    refreshDepartments,
+    loading,
+    setLoading,
+  } = context();
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState<null | Department>(null);
   const [query, setQuery] = useState("");
@@ -67,16 +72,16 @@ export default function DepartmentMaster() {
   }
   const list = departments || [];
 
-  const createForm = useForm({
+  const createForm = useForm<{ name: string }>({
     resolver: zodResolver(DepartmentSchema),
     defaultValues: { name: "" },
   });
-  const editForm = useForm({
+  const editForm = useForm<{ name: string }>({
     resolver: zodResolver(DepartmentSchema),
     defaultValues: { name: "" },
   });
 
-  async function handleCreate(data: any) {
+  async function handleCreate(data: { name: string }) {
     try {
       setLoading(true);
       const res = await fetch("/api/departments", {
@@ -90,7 +95,7 @@ export default function DepartmentMaster() {
         setLoading(false);
         setShowCreate(false);
         createForm.reset();
-       setDepartments([...list, j.department]);
+        setDepartments([...list, j.department]);
         if (j.message) toast.success(j.message);
       } else {
         setLoading(false);
@@ -102,7 +107,7 @@ export default function DepartmentMaster() {
     }
   }
 
-  async function handleEdit(data: any) {
+  async function handleEdit(data: { name: string }) {
     if (!showEdit) return;
     try {
       setLoading(true);
@@ -158,7 +163,7 @@ export default function DepartmentMaster() {
     }
   }
 
-  const filtered = list.filter((d: any) =>
+  const filtered = list.filter((d: Department) =>
     (d.name || "").toString().toLowerCase().includes(query.toLowerCase().trim())
   );
   const [page, setPage] = useState(1);
@@ -237,7 +242,7 @@ export default function DepartmentMaster() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paged.map((d: any) => (
+                  paged.map((d: Department) => (
                     <TableRow key={d.id}>
                       <TableCell className="font-medium">{d.id}</TableCell>
                       <TableCell>{d.name}</TableCell>
@@ -337,9 +342,9 @@ export default function DepartmentMaster() {
                   {...createForm.register("name")}
                   placeholder="Enter department name"
                 />
-                {createForm.formState.errors.name && (
+                {createForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive mt-1">
-                    {(createForm.formState.errors.name as any).message}
+                    {String(createForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>
@@ -382,9 +387,9 @@ export default function DepartmentMaster() {
                   defaultValue={showEdit?.name}
                   placeholder="Enter department name"
                 />
-                {editForm.formState.errors.name && (
+                {editForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive mt-1">
-                    {(editForm.formState.errors.name as any).message}
+                    {String(editForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>

@@ -12,6 +12,8 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import type { ControllerRenderProps } from "react-hook-form";
+import type { Department, StateT } from "@/lib/types";
 import { Input, Textarea } from "@/components/ui/input";
 import {
   Select,
@@ -46,7 +48,10 @@ export default function ReportPage() {
   const [submitted, setSubmitted] = useState(false);
   const [trackingId, setTrackingId] = useState("");
 
-  async function onSubmit(data: ReportForm, event?: any) {
+  async function onSubmit(
+    data: ReportForm,
+    event?: React.FormEvent<HTMLFormElement>
+  ) {
     setLoading(true);
     try {
       const body = new FormData();
@@ -181,12 +186,12 @@ export default function ReportPage() {
         </div>
 
         <Card className="p-8 shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-          <Form {...(form as any)}>
+          <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="department"
-                render={({ field, fieldState }: any) => {
+                render={({ field, fieldState }) => {
                   return (
                     <FormItem>
                       <div className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
@@ -204,7 +209,7 @@ export default function ReportPage() {
                             <SelectValue placeholder="Select department" />
                           </SelectTrigger>
                           <SelectContent>
-                            {departments.map((d: any) => (
+                            {departments.map((d: Department) => (
                               <SelectItem key={d.id} value={String(d.id)}>
                                 {d.name}
                               </SelectItem>
@@ -222,7 +227,7 @@ export default function ReportPage() {
               <FormField
                 control={form.control}
                 name="designation"
-                render={({ field, fieldState }: any) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <div className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                       <User className="w-4 h-4" />
@@ -244,7 +249,7 @@ export default function ReportPage() {
               <FormField
                 control={form.control}
                 name="accusedName"
-                render={({ field, fieldState }: any) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <div className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                       <AlertTriangle className="w-4 h-4" />
@@ -266,7 +271,7 @@ export default function ReportPage() {
               <FormField
                 control={form.control}
                 name="state"
-                render={({ field, fieldState }: any) => {
+                render={({ field, fieldState }) => {
                   const { states } = context();
                   return (
                     <FormItem>
@@ -285,7 +290,7 @@ export default function ReportPage() {
                             <SelectValue placeholder="Select state (optional)" />
                           </SelectTrigger>
                           <SelectContent>
-                            {states.map((s: any) => (
+                            {states.map((s: StateT) => (
                               <SelectItem key={s.id} value={String(s.id)}>
                                 {s.name}
                               </SelectItem>
@@ -301,7 +306,7 @@ export default function ReportPage() {
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field, fieldState }: any) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <div className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                       <FileText className="w-4 h-4" />

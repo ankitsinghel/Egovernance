@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { requireSuperadmin } from "../../../../lib/api_middleware/auth";
-import { hashPassword } from "../../../../lib/hash";
 
-export async function PUT(req: Request, props: any) {
+export async function PUT(
+  req: Request,
+  props: { params: Record<string, string> | Promise<Record<string, string>> }
+) {
   const params = await props.params;
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;
-  
+
   const id = Number(params.id);
   const body = await req.json();
-  const {
-    name,
-    email,
-  } = body;
+  const { name, email } = body;
 
-  const data: any = { name, email,};
+  const data: { name?: string; email?: string } = { name, email };
   // if (departmentId !== undefined) data.departmentId = departmentId;
   // if (password) data.password = await hashPassword(password);
 
@@ -23,7 +22,10 @@ export async function PUT(req: Request, props: any) {
   return NextResponse.json({ ok: true, admin });
 }
 
-export async function DELETE(req: Request, props: any) {
+export async function DELETE(
+  req: Request,
+  props: { params: Record<string, string> | Promise<Record<string, string>> }
+) {
   const params = await props.params;
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;

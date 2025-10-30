@@ -52,6 +52,7 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import Pagination from "@/components/ui/pagination";
 
 import type { StateT } from "@/lib/types";
+import { S } from "react-loader-spinner/dist/type-BnSIpOnX";
 
 export default function StateMaster() {
   const { states, setStates, refreshStates, setLoading } = context();
@@ -67,16 +68,16 @@ export default function StateMaster() {
   }
   const list = states || [];
 
-  const createForm = useForm({
+  const createForm = useForm<{ name: string }>({
     resolver: zodResolver(StateSchema),
     defaultValues: { name: "" },
   });
-  const editForm = useForm({
+  const editForm = useForm<{ name: string }>({
     resolver: zodResolver(StateSchema),
     defaultValues: { name: "" },
   });
 
-  async function handleCreate(data: any) {
+  async function handleCreate(data: { name: string }) {
     try {
       setLoading(true);
       const res = await fetch("/api/states", {
@@ -99,7 +100,7 @@ export default function StateMaster() {
     }
   }
 
-  async function handleEdit(data: any) {
+  async function handleEdit(data: { name: string }) {
     if (!showEdit) return;
     try {
       setLoading(true);
@@ -143,7 +144,7 @@ export default function StateMaster() {
       setLoading(false);
     }
   }
-  const filtered = list.filter((s: any) =>
+  const filtered = list.filter((s: StateT) =>
     (s.name || "").toString().toLowerCase().includes(query.toLowerCase().trim())
   );
   const [page, setPage] = useState(1);
@@ -216,7 +217,7 @@ export default function StateMaster() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paged.map((s: any) => (
+                  paged.map((s: StateT) => (
                     <TableRow key={s.id}>
                       <TableCell className="font-medium">{s.name}</TableCell>
                       <TableCell className="text-right">
@@ -312,9 +313,9 @@ export default function StateMaster() {
                   {...createForm.register("name")}
                   placeholder="Enter state name"
                 />
-                {createForm.formState.errors.name && (
+                {createForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive mt-1">
-                    {(createForm.formState.errors.name as any).message}
+                    {String(createForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>
@@ -357,9 +358,9 @@ export default function StateMaster() {
                   defaultValue={showEdit?.name}
                   placeholder="Enter state name"
                 />
-                {editForm.formState.errors.name && (
+                {editForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive mt-1">
-                    {(editForm.formState.errors.name as any).message}
+                    {String(editForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>

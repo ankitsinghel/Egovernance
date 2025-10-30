@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyTokenEdge } from "./lib/edgeAuth";
 import type { User } from "@/lib/types";
+import type { JWTPayload } from "jose";
 
 const protectedRoutes = ["/super-admin/sa-dash"];
 const adminProtectedRoutes = ["/admin/dashboard"];
@@ -12,7 +13,30 @@ export async function middleware(req: NextRequest) {
 
   let user: User | null = null;
   try {
-    if (token) user = (await verifyTokenEdge(token)) as User;
+    if (token) {
+      const payload = await verifyTokenEdge(token);
+      if (payload) {
+        const idRaw =
+          (payload as JWTPayload)["id"] ?? (payload as JWTPayload).sub;
+        const id =
+          typeof idRaw === "string" || typeof idRaw === "number"
+            ? String(idRaw)
+            : "";
+        if (id) {
+          const nameRaw = (payload as JWTPayload)["name"];
+          const roleRaw = (payload as JWTPayload)["role"];
+          user = {
+            id,
+            name: typeof nameRaw === "string" ? nameRaw : "",
+            role:
+              typeof roleRaw === "string" || typeof roleRaw === "number"
+                ? roleRaw
+                : "Admin",
+            permissions: [],
+          };
+        }
+      }
+    }
   } catch {
     user = null;
   }

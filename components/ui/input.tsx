@@ -2,15 +2,15 @@
 import React from "react";
 
 // Normalize value to avoid uncontrolled -> controlled warnings from React.
-function normalizeValue(value: any) {
+function normalizeValue(value: unknown) {
   if (value === undefined || value === null) return "";
-  return value;
+  return String(value);
 }
 
-export const Input = React.forwardRef<HTMLInputElement, any>(function Input(
-  props,
-  ref
-) {
+export const Input = React.forwardRef<
+  HTMLInputElement,
+  React.InputHTMLAttributes<HTMLInputElement>
+>(function Input(props, ref) {
   const { value, defaultValue, onChange, className, ...rest } = props;
 
   const baseClass = className || "w-full p-2 border rounded";
@@ -42,22 +42,23 @@ export const Input = React.forwardRef<HTMLInputElement, any>(function Input(
 
 Input.displayName = "Input";
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, any>(
-  function Textarea(props, ref) {
-    const { value, defaultValue, onChange, className, ...rest } = props;
-    const baseClass = className || "w-full p-2 border rounded";
-    const effective = value !== undefined ? value : defaultValue;
+export const Textarea = React.forwardRef<
+  HTMLTextAreaElement,
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>
+>(function Textarea(props, ref) {
+  const { value, defaultValue, onChange, className, ...rest } = props;
+  const baseClass = className || "w-full p-2 border rounded";
+  const effective = value !== undefined ? value : defaultValue;
 
-    return (
-      <textarea
-        ref={ref}
-        className={baseClass}
-        value={normalizeValue(effective)}
-        onChange={onChange}
-        {...rest}
-      />
-    );
-  }
-);
+  return (
+    <textarea
+      ref={ref}
+      className={baseClass}
+      value={normalizeValue(effective)}
+      onChange={onChange}
+      {...rest}
+    />
+  );
+});
 
 Textarea.displayName = "Textarea";

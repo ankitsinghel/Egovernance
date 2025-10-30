@@ -6,6 +6,7 @@ import { context } from "../context/context";
 import { Button } from "./ui/button";
 import { startTransition, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 
 export function SuperAdminNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -89,7 +90,16 @@ export function SuperAdminNavbar() {
               <Moon className="h-4 w-4" />
             )}
           </Button> */}
-
+          <Link
+            href={
+              user.role === "Superadmin"
+                ? "/super-admin/sa-dash/dashboard"
+                : "/admin/dashboard"
+            }
+          >
+      
+            <Button variant="outline"> Dashboard</Button>
+          </Link>
           <Button
             variant="destructive"
             className="flex items-center gap-2"

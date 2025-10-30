@@ -61,7 +61,7 @@ export default function PermissionMaster() {
     setPermissions,
   } = context();
   const [showCreate, setShowCreate] = useState(false);
-  const [showEdit, setShowEdit] = useState<any | null>(null);
+  const [showEdit, setShowEdit] = useState<Permission | null>(null);
   const [query, setQuery] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
@@ -225,7 +225,7 @@ export default function PermissionMaster() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paged.map((p: any) => (
+                  paged.map((p: Permission) => (
                     <TableRow key={p.id}>
                       <TableCell className="font-medium">{p.name}</TableCell>
                       <TableCell className="text-right">
@@ -313,12 +313,12 @@ export default function PermissionMaster() {
                 </label>
                 <Input
                   id="name"
-                  {...(createForm.register("name") as any)}
+                  {...createForm.register("name")}
                   placeholder="Enter permission name"
                 />
-                {createForm.formState.errors.name && (
+                {createForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive mt-1">
-                    {(createForm.formState.errors.name as any).message}
+                    {String(createForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>
@@ -328,7 +328,7 @@ export default function PermissionMaster() {
                 </label>
                 <Input
                   id="desc"
-                  {...(createForm.register("description") as any)}
+                  {...createForm.register("description")}
                   placeholder="Short description (optional)"
                 />
               </div>
@@ -380,13 +380,13 @@ export default function PermissionMaster() {
                 </label>
                 <Input
                   id="edit-name"
-                  {...(editForm.register("name") as any)}
+                  {...editForm.register("name")}
                   defaultValue={showEdit?.name}
                   placeholder="Enter permission name"
                 />
-                {editForm.formState.errors.name && (
+                {editForm.formState.errors.name?.message && (
                   <p className="text-xs text-destructive mt-1">
-                    {(editForm.formState.errors.name as any).message}
+                    {String(editForm.formState.errors.name?.message)}
                   </p>
                 )}
               </div>
@@ -396,7 +396,7 @@ export default function PermissionMaster() {
                 </label>
                 <Input
                   id="edit-desc"
-                  {...(editForm.register("description") as any)}
+                  {...editForm.register("description")}
                   defaultValue={showEdit?.description}
                   placeholder="Short description (optional)"
                 />

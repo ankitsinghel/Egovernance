@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../../../lib/db";
 import { requireSuperadmin } from "../../../../../../lib/api_middleware/auth";
 
-export async function PUT(req: Request, props: any) {
+export async function PUT(
+  req: Request,
+  props: { params: Record<string, string> | Promise<Record<string, string>> }
+) {
   const params = await props.params;
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;

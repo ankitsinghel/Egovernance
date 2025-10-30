@@ -80,16 +80,16 @@ export default function RoleMaster() {
   const [query, setQuery] = useState("");
   const [selectedPerms, setSelectedPerms] = useState<number[]>([]);
 
-  const createForm = useForm({
+  const createForm = useForm<{ name: string }>({
     resolver: zodResolver(RoleSchema),
     defaultValues: { name: "" },
   });
-  const editForm = useForm({
+  const editForm = useForm<{ name: string }>({
     resolver: zodResolver(RoleSchema),
     defaultValues: { name: "" },
   });
 
-  async function handleCreate(data: any) {
+  async function handleCreate(data: { name: string }) {
     try {
       setLoading(true);
       const res = await fetch("/api/super-admin/roles", {
@@ -111,7 +111,7 @@ export default function RoleMaster() {
     }
   }
 
-  async function handleEdit(data: any) {
+  async function handleEdit(data: { name: string }) {
     if (!showEdit) return;
     try {
       setLoading(true);
@@ -162,9 +162,8 @@ export default function RoleMaster() {
 
   function openManagePerms(role: Role) {
     console.log("openManagePerms", role);
-    set;
     setShowPerms(role);
-    const ids = (role.permissions || []).map((p: any) => p.id);
+    const ids = (role.permissions || []).map((p) => p.id);
     setSelectedPerms(ids);
   }
 
@@ -199,7 +198,7 @@ export default function RoleMaster() {
     }
   }
 
-  const filtered = roles.filter((r: any) =>
+  const filtered = roles.filter((r: Role) =>
     (r.name || "").toString().toLowerCase().includes(query.toLowerCase().trim())
   );
   const [page, setPage] = useState(1);
@@ -275,7 +274,7 @@ export default function RoleMaster() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paged.map((r: any) => (
+                  paged.map((r: Role) => (
                     <TableRow key={r.id}>
                       <TableCell className="font-medium">{r.id}</TableCell>
                       <TableCell>
@@ -370,7 +369,7 @@ export default function RoleMaster() {
                 </label>
                 <Input
                   id="name"
-                  {...(createForm.register("name") as any)}
+                  {...createForm.register("name")}
                   placeholder="Enter role name"
                 />
               </div>
@@ -422,7 +421,7 @@ export default function RoleMaster() {
                 </label>
                 <Input
                   id="edit-name"
-                  {...(editForm.register("name") as any)}
+                  {...editForm.register("name")}
                   defaultValue={showEdit?.name}
                   placeholder="Enter role name"
                 />

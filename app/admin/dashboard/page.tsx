@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { context } from "@/context/context";
-import type { Report } from "@/lib/types";
+import type { Report, UserReport } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 
 function StatusBadge({ status }: { status: string }) {
@@ -151,9 +151,8 @@ export default function AdminDashboard() {
 
   // Map raw userReports (backend shape) into a display-friendly Report shape
   const displayReports = useMemo(() => {
-    return (userReports || []).map((r) => {
-      const dept =
-        departments.find((d) => d.id === (r as any).departmentId)?.name || "";
+    return (userReports || []).map((r: UserReport) => {
+      const dept = departments.find((d) => d.id === r.departmentId)?.name || "";
       // state is optional — backend may not provide a direct state id on reports
       const stateName = undefined as string | undefined;
       return {
@@ -468,7 +467,7 @@ export default function AdminDashboard() {
                     <Badge
                       key={perm.id || perm.name}
                       variant={variant}
-                      className="text-xs"
+                      // className="text-xs"
                     >
                       {perm.name}
                     </Badge>

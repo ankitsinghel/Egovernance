@@ -5,6 +5,7 @@ import {
   requireSuperadmin,
 } from "@/lib/api_middleware/auth";
 import { hashPassword } from "@/lib/hash";
+import { type } from "node:os";
 
 export async function GET(req: Request) {
   const role = req.headers.get("role");
@@ -54,13 +55,12 @@ export async function POST(req: Request) {
         role,
         stateId,
         superiorId,
-      } as any,
+      },
     });
     return NextResponse.json({ ok: true, admin, message: "Admin created" });
-  } catch (err: any) {
-    return NextResponse.json(
-      { ok: false, message: err?.message || "Server error" },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    const msg =
+      err instanceof Error ? err.message : String(err ?? "Server error");
+    return NextResponse.json({ ok: false, message: msg }, { status: 500 });
   }
 }

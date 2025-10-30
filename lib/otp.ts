@@ -1,5 +1,6 @@
 import { prisma } from "./db";
 import crypto from "crypto";
+import type { JSONValueT } from "./types";
 
 function getHash(input: string) {
   return crypto.createHash("sha256").update(input).digest("hex");
@@ -10,7 +11,7 @@ export async function createOtp(
   email: string,
   purpose: string,
   ttlMinutes = 10,
-  meta?: any
+  meta?: JSONValueT
 ) {
   const token = Math.floor(100000 + Math.random() * 900000).toString();
   const tokenHash = await getHash(token);

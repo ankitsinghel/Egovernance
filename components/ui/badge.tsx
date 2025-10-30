@@ -1,4 +1,12 @@
-export function Badge({ children, variant = "gray" }: any) {
+import React from "react";
+
+type BadgePropsT = {
+  children?: React.ReactNode;
+  variant?: "gray" | "red" | "orange" | string;
+  classname?: string;
+};
+
+export function Badge({ children, variant = "gray" }: BadgePropsT) {
   const cls =
     variant === "red"
       ? "bg-red-600"
