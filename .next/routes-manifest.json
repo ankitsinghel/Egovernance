@@ -1,1 +1,220 @@
-{"version":3,"caseSensitive":false,"basePath":"","rewrites":{"beforeFiles":[],"afterFiles":[],"fallback":[]},"redirects":[{"source":"/:path+/","destination":"/:path+","permanent":true,"internal":true,"regex":"^(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))\\/$"}],"headers":[]}
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/api/admins/[id]",
+      "regex": "^/api/admins/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admins/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/departments/[id]",
+      "regex": "^/api/departments/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/departments/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/report/[trackingId]",
+      "regex": "^/api/report/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtrackingId": "nxtPtrackingId"
+      },
+      "namedRegex": "^/api/report/(?<nxtPtrackingId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/states/[id]",
+      "regex": "^/api/states/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/states/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/super-admin/permissions/[id]",
+      "regex": "^/api/super\\-admin/permissions/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/super\\-admin/permissions/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/super-admin/roles/[id]",
+      "regex": "^/api/super\\-admin/roles/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/super\\-admin/roles/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/super-admin/roles/[id]/permissions",
+      "regex": "^/api/super\\-admin/roles/([^/]+?)/permissions(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/super\\-admin/roles/(?<nxtPid>[^/]+?)/permissions(?:/)?$"
+    },
+    {
+      "page": "/report/[trackId]",
+      "regex": "^/report/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtrackId": "nxtPtrackId"
+      },
+      "namedRegex": "^/report/(?<nxtPtrackId>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin/dashboard",
+      "regex": "^/admin/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/dashboard(?:/)?$"
+    },
+    {
+      "page": "/admin/dashboard/complaints",
+      "regex": "^/admin/dashboard/complaints(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/dashboard/complaints(?:/)?$"
+    },
+    {
+      "page": "/admin/dashboard/state-admins",
+      "regex": "^/admin/dashboard/state\\-admins(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/dashboard/state\\-admins(?:/)?$"
+    },
+    {
+      "page": "/admin/login",
+      "regex": "^/admin/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/login(?:/)?$"
+    },
+    {
+      "page": "/admin/signup",
+      "regex": "^/admin/signup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/signup(?:/)?$"
+    },
+    {
+      "page": "/report",
+      "regex": "^/report(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/report(?:/)?$"
+    },
+    {
+      "page": "/super-admin/login",
+      "regex": "^/super\\-admin/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/login(?:/)?$"
+    },
+    {
+      "page": "/super-admin/sa-dash/admins",
+      "regex": "^/super\\-admin/sa\\-dash/admins(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/sa\\-dash/admins(?:/)?$"
+    },
+    {
+      "page": "/super-admin/sa-dash/dashboard",
+      "regex": "^/super\\-admin/sa\\-dash/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/sa\\-dash/dashboard(?:/)?$"
+    },
+    {
+      "page": "/super-admin/sa-dash/departments",
+      "regex": "^/super\\-admin/sa\\-dash/departments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/sa\\-dash/departments(?:/)?$"
+    },
+    {
+      "page": "/super-admin/sa-dash/permissions",
+      "regex": "^/super\\-admin/sa\\-dash/permissions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/sa\\-dash/permissions(?:/)?$"
+    },
+    {
+      "page": "/super-admin/sa-dash/roles",
+      "regex": "^/super\\-admin/sa\\-dash/roles(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/sa\\-dash/roles(?:/)?$"
+    },
+    {
+      "page": "/super-admin/sa-dash/settings",
+      "regex": "^/super\\-admin/sa\\-dash/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/sa\\-dash/settings(?:/)?$"
+    },
+    {
+      "page": "/super-admin/sa-dash/states",
+      "regex": "^/super\\-admin/sa\\-dash/states(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/sa\\-dash/states(?:/)?$"
+    },
+    {
+      "page": "/super-admin/signup",
+      "regex": "^/super\\-admin/signup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/signup(?:/)?$"
+    },
+    {
+      "page": "/super-admin/states",
+      "regex": "^/super\\-admin/states(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin/states(?:/)?$"
+    },
+    {
+      "page": "/track",
+      "regex": "^/track(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/track(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

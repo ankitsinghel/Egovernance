@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../../lib/db";
-import { requireAuth } from "../../../../lib/api_middleware/auth";
-import { parseForm, moveAndEncryptFile } from "../../../../lib/upload";
-import type { TokenPayloadT } from "../../../../lib/types";
+import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/api_middleware/auth";
+import { parseForm, moveAndEncryptFile } from "@/lib/upload";
+import type { TokenPayloadT } from "@/lib/types";
 
 export async function POST(req: Request) {
   const maybe = requireAuth(req);
