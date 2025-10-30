@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { requireSuperadmin } from "../../../../lib/api_middleware/auth";
 
-export async function PUT(req: Request, context: RouteContext<"/api/admins/[id]">) {
+export async function PUT(
+  req: Request,
+  context: RouteContext<"/api/admins/[id]">
+) {
   const params = await context.params;
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;
@@ -19,7 +22,10 @@ export async function PUT(req: Request, context: RouteContext<"/api/admins/[id]"
   return NextResponse.json({ ok: true, admin });
 }
 
-export async function DELETE(req: Request, context: RouteContext<"/api/admins/[id]">) {
+export async function DELETE(
+  req: Request,
+  context: RouteContext<"/api/admins/[id]">
+) {
   const params = await context.params;
   const guard = requireSuperadmin(req);
   if (guard instanceof NextResponse) return guard;
