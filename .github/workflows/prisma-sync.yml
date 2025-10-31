@@ -26,10 +26,7 @@ jobs:
       - name: Generate Prisma Client
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
         run: npx prisma generate
 
-      - name: Push schema to database (prisma db push)
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: |
-          npx prisma db push --schema=prisma/schema.prisma
+
