@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-
+  provider = "postgresql"
+  // Use DATABASE_URL environment variable. Set this in GitHub Secrets and in
+  // Vercel (Production). Example: postgresql://user:password@host:5432/dbname
   url      = env("DATABASE_URL")
 }
 

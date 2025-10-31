@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "prisma:push": "prisma db push"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
