@@ -6,7 +6,8 @@ datasource db {
   provider = "postgresql"
   // Use DATABASE_URL environment variable. Set this in GitHub Secrets and in
   // Vercel (Production). Example: postgresql://user:password@host:5432/dbname
-  url      = env("DATABASE_URL")
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Department {

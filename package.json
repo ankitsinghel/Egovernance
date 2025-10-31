@@ -8,6 +8,8 @@
     "start": "next start",
     "prisma": "prisma",
     "prisma:push": "prisma db push"
+    ,
+    "migrate:sqlite-to-supabase": "node scripts/migrate-sqlite-to-supabase.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
