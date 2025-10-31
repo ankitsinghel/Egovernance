@@ -14,7 +14,6 @@ import type {
 } from "@/lib/types";
 import type { Permission } from "@/lib/types";
 import { Boxes, Key, MapPin, Settings, Shield, Users } from "lucide-react";
-import { headers } from "next/headers";
 
 const globalCOntext = createContext<contextType | undefined>(undefined);
 
@@ -235,7 +234,7 @@ export function contextProvider({
     }
   }, [user]);
   return (
-    <ThemeProvider attribute="class" defaultTheme="system">
+    <ThemeProvider attribute="class" defaultTheme="light">
       <globalCOntext.Provider
         value={{
           dashboardRoutes,
