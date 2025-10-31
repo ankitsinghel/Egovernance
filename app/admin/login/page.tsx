@@ -6,17 +6,26 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { LoginSchema, LoginForm } from "@/lib/schemas";
-import { 
-  Building, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Building,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
   ArrowRight,
   AlertCircle,
   Shield,
-  CheckCircle2
-} from 'lucide-react';
+  CheckCircle2,
+} from "lucide-react";
 import { context } from "@/context/context";
 import { useRouter } from "next/navigation";
 
@@ -26,9 +35,16 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
   const { setUser } = context();
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+
+  const form = useForm<LoginForm>({
     resolver: zodResolver(LoginSchema),
+    defaultValues: { email: "", password: "" },
   });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = form;
 
   async function onSubmit(data: LoginForm) {
     setLoading(true);
@@ -41,12 +57,9 @@ export default function AdminLogin() {
         credentials: "include",
       });
       const j = await res.json();
-      console.log("Login successful:", j.user);
       if (j.ok) {
         setUser(j.user);
-        setTimeout(() => {
-          router.push("/admin/dashboard");
-        }, 1000);
+        setTimeout(() => router.push("/admin/dashboard"), 1000);
       } else {
         setLoginError(j.error || "Invalid credentials. Please try again.");
       }
@@ -75,9 +88,7 @@ export default function AdminLogin() {
           <h1 className="text-3xl font-bold text-slate-900 mb-2">
             Admin Portal
           </h1>
-          <p className="text-slate-600">
-            Access your organization's dashboard
-          </p>
+          <p className="text-slate-600">Access your organization's dashboard</p>
         </div>
 
         {/* Login Card */}
@@ -90,118 +101,129 @@ export default function AdminLogin() {
             </span>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email Field */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                Agency Email
-              </label>
-              <div className="relative">
-                <input
-                  {...register("email")}
-                  placeholder="admin@agency.gov"
-                  className={`w-full p-4 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                    errors.email ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"
-                  }`}
-                />
-                {errors.email && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <AlertCircle className="w-5 h-5 text-red-500" />
+          <Form {...form}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Mail className="w-4 h-4" /> Agency Email
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input placeholder="admin@agency.gov" {...field} />
+                        {errors.email && (
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <AlertCircle className="w-5 h-5 text-red-500" />
+                          </div>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Lock className="w-4 h-4" /> Password
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          placeholder="Enter your password"
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="w-5 h-5" />
+                          ) : (
+                            <Eye className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                    <div className="flex justify-end">
+                      <Link
+                        href="/admin/login/forgot"
+                        className="text-sm text-blue-600 hover:text-blue-700"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              {/* Error Message */}
+              {loginError && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                  <p className="text-red-800 text-sm">{loginError}</p>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Signing In...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    Access Dashboard
+                    <ArrowRight className="w-5 h-5" />
                   </div>
                 )}
+              </Button>
+
+              {/* Divider */}
+              <div className="relative flex items-center py-4">
+                <div className="flex-grow border-t border-slate-300"></div>
+                <span className="flex-shrink mx-4 text-slate-500 text-sm">
+                  or
+                </span>
+                <div className="flex-grow border-t border-slate-300"></div>
               </div>
-              {errors.email && (
-                <p className="text-red-600 text-sm flex items-center gap-1">
-                  <AlertCircle className="w-4 h-4" />
-                  {errors.email.message}
+
+              {/* Signup Link */}
+              <div className="text-center">
+                <p className="text-slate-600 text-sm">
+                  Need an admin account?{" "}
+                  <Link
+                    href="/admin/signup"
+                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors inline-flex items-center gap-1 group"
+                  >
+                    Request access
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
                 </p>
-              )}
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                <Lock className="w-4 h-4" />
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  {...register("password")}
-                  placeholder="Enter your password"
-                  type={showPassword ? "text" : "password"}
-                  className={`w-full p-4 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                    errors.password ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"
-                  }`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
               </div>
-              {errors.password && (
-                <p className="text-red-600 text-sm flex items-center gap-1">
-                  <AlertCircle className="w-4 h-4" />
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-
-            {/* Error Message */}
-            {loginError && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-                <p className="text-red-800 text-sm">{loginError}</p>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Signing In...
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  Access Dashboard
-                  <ArrowRight className="w-5 h-5" />
-                </div>
-              )}
-            </Button>
-
-            {/* Divider */}
-            <div className="relative flex items-center py-4">
-              <div className="flex-grow border-t border-slate-300"></div>
-              <span className="flex-shrink mx-4 text-slate-500 text-sm">or</span>
-              <div className="flex-grow border-t border-slate-300"></div>
-            </div>
-
-            {/* Signup Link */}
-            <div className="text-center">
-              <p className="text-slate-600 text-sm">
-                Need an admin account?{" "}
-                <Link
-                  href="/admin/signup"
-                  className="text-blue-600 hover:text-blue-700 font-medium transition-colors inline-flex items-center gap-1 group"
-                >
-                  Request access
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </p>
-            </div>
-          </form>
+            </form>
+          </Form>
 
           {/* Security Features */}
           <div className="mt-8 pt-6 border-t border-slate-200">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Security Features</h3>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">
+              Security Features
+            </h3>
             <div className="grid grid-cols-2 gap-3 text-xs text-slate-600">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -226,11 +248,17 @@ export default function AdminLogin() {
         {/* Footer Links */}
         <div className="text-center mt-6">
           <div className="flex justify-center gap-4">
-            <Link href="/" className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
+            <Link
+              href="/"
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+            >
               Back to Home
             </Link>
             <span className="text-slate-300">•</span>
-            <Link href="/super-admin/login" className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
+            <Link
+              href="/super-admin/login"
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+            >
               Super Admin Login
             </Link>
           </div>

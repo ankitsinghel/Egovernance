@@ -131,3 +131,39 @@ export const PermissionSchema = z.object({
   description: z.string().max(255).optional(),
 });
 export type PermissionForm = z.infer<typeof PermissionSchema>;
+
+export const ChangePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(6, "Current password is required"),
+    newPassword: z
+      .string()
+      .min(6, "New password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Please confirm your new password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ChangePasswordForm = z.infer<typeof ChangePasswordSchema>;
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email("Please provide a valid email"),
+});
+export type ForgotPasswordForm = z.infer<typeof ForgotPasswordSchema>;
+
+export const ResetPasswordSchema = z
+  .object({
+    email: z.string().email("Please provide a valid email"),
+    token: z.string().min(1, "OTP is required"),
+    newPassword: z
+      .string()
+      .min(6, "New password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Please confirm your new password"),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordForm = z.infer<typeof ResetPasswordSchema>;

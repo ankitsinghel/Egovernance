@@ -22,7 +22,7 @@ export default function Navbar() {
   const [user, setUser] = useState<UserT | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { setLoading } = context();
+  const { setLoading, departments } = context();
 
   // Hide global navbar inside super-admin pages
   // if (pathname?.startsWith("/super-admin")) return null;
@@ -137,7 +137,7 @@ export default function Navbar() {
                   <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg">
                     <Building className="w-4 h-4 text-slate-600" />
                     <span className="text-sm font-medium text-slate-700">
-                      {user.organization || "Admin"}
+                      {user && user.departmentId ? departments.find(d=>d.id===user.departmentId).name : "Admin"}
                     </span>
                   </div>
                   <button
@@ -208,7 +208,7 @@ export default function Navbar() {
                           {user.name}
                         </p>
                         <p className="text-sm text-slate-600">
-                          {user.organization}
+                          {user.departmentId ? departments.find(d => d.id === user.departmentId).name : "Admin"}
                         </p>
                       </div>
                     </div>

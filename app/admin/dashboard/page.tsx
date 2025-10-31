@@ -447,32 +447,33 @@ export default function AdminDashboard() {
               </h2>
               <h3>{user?.role}</h3>
               <div className="flex flex-wrap gap-2 mt-1">
-                {user.permissions.map((perm) => {
-                  let variant:
-                    | "default"
-                    | "destructive"
-                    | "secondary"
-                    | "outline" = "secondary";
+                {user &&
+                  user.permissions.map((perm) => {
+                    let variant:
+                      | "default"
+                      | "destructive"
+                      | "secondary"
+                      | "outline" = "secondary";
 
-                  if (perm.name.toLowerCase().includes("view"))
-                    variant = "outline";
-                  else if (perm.name.toLowerCase().includes("create"))
-                    variant = "default";
-                  else if (perm.name.toLowerCase().includes("delete"))
-                    variant = "destructive";
-                  else if (perm.name.toLowerCase().includes("manage"))
-                    variant = "secondary";
+                    if (perm.name.toLowerCase().includes("view"))
+                      variant = "outline";
+                    else if (perm.name.toLowerCase().includes("create"))
+                      variant = "default";
+                    else if (perm.name.toLowerCase().includes("delete"))
+                      variant = "destructive";
+                    else if (perm.name.toLowerCase().includes("manage"))
+                      variant = "secondary";
 
-                  return (
-                    <Badge
-                      key={perm.id || perm.name}
-                      variant={variant}
-                      // className="text-xs"
-                    >
-                      {perm.name}
-                    </Badge>
-                  );
-                })}
+                    return (
+                      <Badge
+                        key={perm.id || perm.name}
+                        variant={variant}
+                        // className="text-xs"
+                      >
+                        {perm.name}
+                      </Badge>
+                    );
+                  })}
               </div>
             </div>
           </Card>
