@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../../../lib/db";
-import { requireSuperadmin } from "../../../../../lib/api_middleware/auth";
+import { prisma } from "@/lib/db";
+import { requireSuperadmin } from "@/lib/api_middleware/auth";
 
 export async function PUT(
   req: Request,

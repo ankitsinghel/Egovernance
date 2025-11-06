@@ -17,13 +17,21 @@ export async function GET(req: Request) {
     });
     return NextResponse.json({ ok: true, reports, message: "Reports loaded" });
   }
-
   const admin = await prisma.admin.findUnique({
     where: { id: Number(adminId) },
   });
   if (!admin) return NextResponse.json({ ok: false }, { status: 401 });
+
+  if (role === "Central admin") {
+    const reports = await prisma.userReport.findMany({
+      where: { departmentId: admin.departmentId },
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json({ ok: true, reports, message: "Reports loaded" });
+  }
+  
   const reports = await prisma.userReport.findMany({
-    where: { departmentId: admin.departmentId },
+    where: { stateId: admin.stateId, departmentId: admin.departmentId },
     orderBy: { createdAt: "desc" },
   });
   return NextResponse.json({ ok: true, reports, message: "Reports loaded" });

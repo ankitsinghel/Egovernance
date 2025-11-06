@@ -62,6 +62,7 @@ import {
 } from "@/components/ui/select";
 import type { Admin, StateT } from "@/lib/types";
 import Pagination from "@/components/ui/pagination";
+import { ButtonGroup } from "../ui/button-group";
 
 export default function StateAdminsMaster() {
   const {
@@ -109,8 +110,6 @@ export default function StateAdminsMaster() {
   }, [user]);
 
   const { stateAdmins, filteredAdmins } = useMemo(() => {
-
-
     const filtered = admins.filter(
       (admin: Admin) =>
         admin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -261,19 +260,21 @@ export default function StateAdminsMaster() {
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={loading}
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
-                />
-              </Button>
-              <Button size="sm" onClick={() => setShowCreate(true)}>
-                <Plus className="w-4 h-4" />
-              </Button>
+              <ButtonGroup>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRefresh}
+                  disabled={loading}
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                  />
+                </Button>
+                <Button size="sm" onClick={() => setShowCreate(true)}>
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </ButtonGroup>
             </div>
           </div>
         </CardHeader>

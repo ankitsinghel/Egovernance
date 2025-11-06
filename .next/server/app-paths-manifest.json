@@ -1,7 +1,9 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/admin/reports/route": "app/api/admin/reports/route.js",
   "/admin/login/page": "app/admin/login/page.js",
-  "/admin/signup/page": "app/admin/signup/page.js",
-  "/admin/login/forgot/page": "app/admin/login/forgot/page.js",
-  "/admin/login/reset/page": "app/admin/login/reset/page.js",
+  "/(main)/report/page": "app/(main)/report/page.js",
+  "/(main)/page": "app/(main)/page.js",
+  "/admin/dashboard/complaints/page": "app/admin/dashboard/complaints/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js"
 }

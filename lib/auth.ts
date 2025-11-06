@@ -35,7 +35,7 @@ export function setAuthCookie(token: string) {
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
-}
+};
 
 export function clearAuthCookie() {
   return serialize(COOKIE_NAME, "", { maxAge: -1, path: "/" });

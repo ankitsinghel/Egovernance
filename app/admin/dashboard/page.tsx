@@ -223,7 +223,9 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-3 mb-2">
               <Building className="w-8 h-8 text-blue-600" />
               <h1 className="text-3xl font-bold text-slate-900">
-                Admin Dashboard
+                {user && user.departmentId
+                  ? departments.find((d) => d.id === user.departmentId)?.name
+                  : "Admin Dashboard"}
               </h1>
             </div>
             <p className="text-slate-600">
