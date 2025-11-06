@@ -1,9 +1,10 @@
-import StateMaster from "../../../../../components/masters/StateMaster";
+import MasterContainer from "@/components/mastersContainer";
+import StateMaster from "@/components/masters/StateMaster";
 
 export default function SuperAdminStatesPage() {
   return (
-    <div className="p-8">
+    <MasterContainer>
       <StateMaster />
-    </div>
+    </MasterContainer>
   );
 }

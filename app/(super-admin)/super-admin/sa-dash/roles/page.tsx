@@ -1,9 +1,10 @@
-import RoleMaster from "../../../../../components/masters/RoleMaster";
+import MasterContainer from "@/components/mastersContainer";
+import RoleMaster from "@/components/masters/RoleMaster";
 
 export default function SuperAdminRolesPage() {
   return (
-    <div className="p-8">
+    <MasterContainer>
       <RoleMaster />
-    </div>
+    </MasterContainer>
   );
 }

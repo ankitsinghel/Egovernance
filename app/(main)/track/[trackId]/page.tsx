@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { context } from "@/context/context";
-import type { UserReportDetailT } from "@/lib/types";
+import type { ReportFiles, UserReportDetailT } from "@/lib/types";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import MediaDialog from "@/components/MediaDialog";
 
 export default function ReportTrackPage() {
   const params = useParams();
@@ -64,6 +66,20 @@ export default function ReportTrackPage() {
         <p>
           <strong>Description:</strong> {report.description}
         </p>
+        {report.files && report.files.length > 0 && (
+          <div>
+            <strong>Attached Files:</strong>
+            <ul>
+              {report.files.map((file: ReportFiles) => (
+                <li key={file.id}>
+                  <MediaDialog src={`${trackId}/${file.name}`} alt="Report File">
+                    <Button>Image</Button>
+                  </MediaDialog>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -34,7 +34,7 @@ export default async function AdminLayout({
         return { id, name, role, departmentId, permissions };
       })()
     : null;
-   console.log("Admin Layout admin",initialUser);
+  //  console.log("Admin Layout admin",initialUser);
   return (
     <html lang="en">
       <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">

@@ -1,9 +1,10 @@
 import AdminsMaster from "@/components/masters/AdminMaster";
+import MasterContainer from "@/components/mastersContainer";
 
 export default function AdminsPage() {
   return (
-    <div className="p-8">
+    <MasterContainer>
       <AdminsMaster />
-    </div>
+    </MasterContainer>
   );
 }

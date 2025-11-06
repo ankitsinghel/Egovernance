@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "prisma": "prisma",
-    "prisma:push": "prisma db push"
-    ,
+    "prisma:push": "prisma db push",
     "migrate:sqlite-to-supabase": "node scripts/migrate-sqlite-to-supabase.js"
   },
   "dependencies": {
@@ -22,6 +21,7 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@supabase/supabase-js": "^2.80.0",
     "@tanstack/react-table": "^8.21.3",
     "bcrypt": "^5.1.0",
     "class-variance-authority": "^0.7.1",

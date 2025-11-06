@@ -1,9 +1,10 @@
-import PermissionMaster from "../../../../../components/masters/PermissionMaster";
+import MasterContainer from "@/components/mastersContainer";
+import PermissionMaster from "@/components/masters/PermissionMaster";
 
 export default function SuperAdminPermissionsPage() {
   return (
-    <div className="p-8">
+    <MasterContainer>
       <PermissionMaster />
-    </div>
+    </MasterContainer>
   );
 }

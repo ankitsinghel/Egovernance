@@ -57,7 +57,7 @@ export default function TrackPage() {
               const fd = new FormData(form);
               const trackingId = (fd.get("trackingId") || "").toString().trim();
               if (!trackingId) return;
-              router.push(`/report/${encodeURIComponent(trackingId)}`);
+              router.push(`/track/${encodeURIComponent(trackingId)}`);
             }}
             className="space-y-6"
           >

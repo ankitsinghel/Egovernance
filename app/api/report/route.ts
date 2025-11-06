@@ -3,50 +3,24 @@ import { parseForm, moveAndEncryptFile } from "../../../lib/upload";
 import { prisma } from "../../../lib/db";
 import { generateTrackingId } from "../../../lib/hash";
 import { sendNewReportNotification } from "../../../lib/email";
+import { uploadFile } from "@/lib/fileUpload";
 
 export async function POST(req: Request) {
   try {
-    const { fields, files } = await parseForm(req);
-
-    const deptId =
-      Number(
-        Array.isArray(fields.department)
-          ? fields.department[0]
-          : fields.department
-      ) || null;
-    const designation = fields.designation
-      ? Array.isArray(fields.designation)
-        ? String(fields.designation[0])
-        : String(fields.designation)
-      : null;
-    const accusedName = fields.accusedName
-      ? Array.isArray(fields.accusedName)
-        ? String(fields.accusedName[0])
-        : String(fields.accusedName)
-      : null;
-    const stateIdRaw =
-      Number(Array.isArray(fields.state) ? fields.state[0] : fields.state) ||
-      null;
-    const description = fields.description
-      ? Array.isArray(fields.description)
-        ? String(fields.description[0])
-        : String(fields.description)
-      : "";
-
+    const formData = await req.formData();
+    const files = formData.getAll("file") as File[];
+    const department = Number(formData.get("department"));
+    const state = Number(formData.get("state"));
+    const designation = String(formData.get("designation"));
+    const description = String(formData.get("description"));
+    const accusedName = String(formData.get("accusedName"));
+    formData.forEach((i) => console.log(i));
     const trackingId = await generateTrackingId();
 
-    const savedFiles: string[] = [];
-    if (files && Object.keys(files).length) {
-      const fileEntries = Array.isArray(files.file) ? files.file : [files.file];
-      for (const f of fileEntries) {
-        if (!f) continue;
-        try {
-          const dest = moveAndEncryptFile(f);
-          savedFiles.push(dest);
-        } catch (e) {
-          console.error("file save error", e);
-        }
-      }
+    for (const file of files) {
+      const cleanName = file.name.replace(/\s+/g, "_"); 
+      const renamedFile = new File([file], cleanName, { type: file.type });
+      await uploadFile(renamedFile, trackingId);
     }
 
     let priority = "normal";
@@ -60,10 +34,10 @@ export async function POST(req: Request) {
     }
 
     const dept = await prisma.department.findUnique({
-      where: { id: deptId },
+      where: { id: department },
     });
-    const stateRec = stateIdRaw
-      ? await prisma.state.findUnique({ where: { id: Number(stateIdRaw) } })
+    const stateRec = state
+      ? await prisma.state.findUnique({ where: { id: state } })
       : null;
 
     let assignedAdmin = null;
@@ -104,10 +78,18 @@ export async function POST(req: Request) {
         accusedName,
         stateId: stateRec ? stateRec.id : null,
         description,
-        files: savedFiles.length ? JSON.stringify(savedFiles) : null,
+        // files: savedFiles.length ? JSON.stringify(savedFiles) : null,
         assignedToId: assignedAdmin?.id || null,
       },
     });
+    for (const file of files) {
+      await prisma.reportfiles.create({
+        data: {
+          reportId: trackingId,
+          filePath: file.name,
+        },
+      });
+    }
 
     if (assignedAdmin && assignedAdmin.email) {
       await sendNewReportNotification(

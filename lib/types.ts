@@ -35,7 +35,11 @@ export type Admin = {
   city: string | null;
   stateId?: number | null;
 };
-
+export interface ReportFiles {
+  id: number;
+  name: string;
+  filePath: string;
+}
 export type UserReport = {
   id: number;
   trackingId: string;
@@ -43,7 +47,7 @@ export type UserReport = {
   designation: string | null;
   accusedName: string | null;
   description: string;
-  files: string | null;
+  files: ReportFiles[] | [];
   status: "pending" | "in_progress" | "resolved" | "closed";
   assignedToId: number | null;
   createdAt: string;
