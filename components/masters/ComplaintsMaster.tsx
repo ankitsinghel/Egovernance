@@ -251,7 +251,7 @@ export default function ComplaintsMaster() {
         designation: report.designation || "",
         accusedName: report.accusedName || "",
         description: report.description,
-        files: report.files || "",
+        // files: report.files || "",
         status: report.status,
         assignedToId: report.assignedToId || 0,
       });
@@ -410,14 +410,14 @@ export default function ComplaintsMaster() {
                                 <Edit className="w-4 h-4 mr-2" />
                                 Edit
                               </DropdownMenuItem>
-                              {report.files && (
+                              {/* {report.files && (
                                 <DropdownMenuItem
                                   onClick={() => downloadFile(report.files!)}
                                 >
                                   <Download className="w-4 h-4 mr-2" />
                                   Download Files
                                 </DropdownMenuItem>
-                              )}
+                              )} */}
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
                                 onClick={() => promptDelete(report.id)}
@@ -869,14 +869,14 @@ export default function ComplaintsMaster() {
                     Files
                   </label>
                   <div className="mt-2">
-                    <Button
+                    {/* <Button
                       variant="outline"
                       size="sm"
                       onClick={() => downloadFile(showDetails.files!)}
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Download Files
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
               )}
