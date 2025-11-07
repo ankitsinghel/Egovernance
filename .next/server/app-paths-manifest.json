@@ -1,8 +1,4 @@
 {
-  "/api/report/[trackingId]/route": "app/api/report/[trackingId]/route.js",
-  "/api/me/route": "app/api/me/route.js",
-  "/api/departments/route": "app/api/departments/route.js",
-  "/api/states/route": "app/api/states/route.js",
   "/(main)/track/[trackId]/page": "app/(main)/track/[trackId]/page.js",
   "/(main)/track/page": "app/(main)/track/page.js",
   "/(main)/report/page": "app/(main)/report/page.js",

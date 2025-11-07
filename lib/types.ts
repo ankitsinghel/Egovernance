@@ -34,6 +34,7 @@ export type Admin = {
   departmentId: number;
   city: string | null;
   stateId?: number | null;
+  adminId: number;
 };
 export interface ReportFiles {
   id: number;
@@ -59,6 +60,7 @@ export interface ActionForDrawerT {
   note: string;
   proofFile: string | null;
   createdAt: string;
+  adminId?: number;
 }
 export type ActionLog = {
   id: number;
@@ -84,6 +86,20 @@ export type Report = {
   status: number;
   createdAt: string;
 };
+
+// Timeline entry used by TrackTimeline component
+export interface TimelineEntry {
+  key: string;
+  title: string;
+  date: string;
+  body?: string | null;
+  // attachments for report (list) or undefined
+  attachments?: ReportFiles[];
+  // status and single attachment for action entries
+  status?: number;
+  attachment?: string | null;
+  type?: "report" | "action";
+}
 
 // Context shape exported so other files can reference it
 export type contextType = {

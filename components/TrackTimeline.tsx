@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import type { ActionForDrawerT, UserReportDetailT } from "@/lib/types";
+import type {
+  ActionForDrawerT,
+  UserReportDetailT,
+  TimelineEntry,
+} from "@/lib/types";
 import { statusLabel } from "@/lib/statuses";
 
 // MUI Timeline components
@@ -25,7 +29,7 @@ interface Props {
 
 export default function TrackTimeline({ report }: Props) {
   // Build timeline entries: report creation + actions
-  const entries: Array<any> = [
+  const entries: TimelineEntry[] = [
     {
       key: `report-${report.id}`,
       title: "Report submitted",
@@ -33,7 +37,7 @@ export default function TrackTimeline({ report }: Props) {
       body: report.description,
       attachments: report.files ?? [],
     },
-    ...(report.actions || []).map((a) => ({
+    ...((report.actions as unknown as ActionForDrawerT[]) || []).map((a) => ({
       key: `action-${a.id}`,
       title: `Action by admin ${a.adminId}`,
       date: a.createdAt,
@@ -241,11 +245,11 @@ export default function TrackTimeline({ report }: Props) {
                       Attachments:
                     </Typography>
                     <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                      {e.attachments?.map((f: any) => (
+                      {e.attachments?.map((f) => (
                         <Chip
                           key={f.id}
                           icon={<OpenInNewIcon />}
-                          label={ "View File"}
+                          label={"View File"}
                           variant="outlined"
                           size="small"
                           clickable
