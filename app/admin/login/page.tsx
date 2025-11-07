@@ -203,17 +203,11 @@ export default function AdminLogin() {
                 <div className="flex-grow border-t border-slate-300"></div>
               </div>
 
-              {/* Signup Link */}
+              {/* Signup info (admin accounts managed by Super Admin) */}
               <div className="text-center">
                 <p className="text-slate-600 text-sm">
-                  Need an admin account?{" "}
-                  <Link
-                    href="/admin/signup"
-                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors inline-flex items-center gap-1 group"
-                  >
-                    Request access
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  Need an admin account? Contact your Super Admin to request
+                  access.
                 </p>
               </div>
             </form>

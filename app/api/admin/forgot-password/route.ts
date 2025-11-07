@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     });
     // fire-and-forget email send
     try {
-      await sendOtpEmail(email, token, "forgot_password");
+      await sendOtpEmail(email, token);
     } catch (e) {
       console.error("sendOtpEmail error", e);
     }

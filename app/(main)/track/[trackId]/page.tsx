@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { context } from "@/context/context";
-import type { Department, ReportFiles, UserReportDetailT } from "@/lib/types";
+import type {  ReportFiles, UserReportDetailT } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import MediaDialog from "@/components/MediaDialog";

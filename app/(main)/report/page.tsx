@@ -12,9 +12,10 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import type { ControllerRenderProps } from "react-hook-form";
+
 import type { Department, StateT } from "@/lib/types";
-import { Input, Textarea } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectTrigger,

@@ -393,10 +393,6 @@ export default function SuperSignup() {
             <Link href="/" className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
               Back to Home
             </Link>
-            <span className="text-slate-300">•</span>
-            <Link href="/admin/signup" className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
-              Admin Signup
-            </Link>
           </div>
         </div>
       </div>

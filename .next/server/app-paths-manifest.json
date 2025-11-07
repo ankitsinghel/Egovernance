@@ -1,7 +1,8 @@
 {
-  "/(main)/report/page": "app/(main)/report/page.js",
-  "/(main)/track/page": "app/(main)/track/page.js",
-  "/(main)/track/[trackId]/page": "app/(main)/track/[trackId]/page.js",
   "/(main)/page": "app/(main)/page.js",
-  "/admin/dashboard/complaints/page": "app/admin/dashboard/complaints/page.js"
+  "/(main)/report/page": "app/(main)/report/page.js",
+  "/admin/login/forgot/page": "app/admin/login/forgot/page.js",
+  "/admin/login/reset/page": "app/admin/login/reset/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/admin/dashboard/state-admins/page": "app/admin/dashboard/state-admins/page.js"
 }
