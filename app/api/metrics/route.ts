@@ -1,4 +1,4 @@
-import { prisma } from "../../../../lib/db";
+import { prisma } from "@/lib/db";
 import { performance } from "perf_hooks";
 
 export async function GET() {
