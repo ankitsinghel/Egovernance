@@ -237,7 +237,7 @@ export default function ReportPage() {
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="Your position or role"
+                        placeholder="Position or role"
                         className="w-full p-4 border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                       />
                     </FormControl>
