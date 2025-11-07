@@ -5,7 +5,6 @@ import { Card } from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 import Link from "next/link";
 import { Spinner } from "../../../components/loader";
-import { useLoading } from "../../../lib/ui-context";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignupSchema, SignupForm } from "../../../lib/schemas";
@@ -32,14 +31,14 @@ import {
   Users,
   ArrowLeft,
 } from "lucide-react";
+import { context } from "@/context/context";
 
 export default function AdminSignup() {
   const [exists, setExists] = useState<boolean | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [signupError, setSignupError] = useState("");
   const [loadingLocal, setLoadingLocal] = useState(false);
-  const { loading, setLoading } = useLoading();
-
+  const { loading, setLoading } = context();
   const form = useForm<SignupForm>({
     resolver: zodResolver(SignupSchema),
     defaultValues: { name: "", email: "", password: "", organization: "" },

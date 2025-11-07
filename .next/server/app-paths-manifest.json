@@ -1,7 +1,7 @@
 {
-  "/(main)/track/[trackId]/page": "app/(main)/track/[trackId]/page.js",
-  "/(main)/track/page": "app/(main)/track/page.js",
   "/(main)/report/page": "app/(main)/report/page.js",
+  "/(main)/track/page": "app/(main)/track/page.js",
+  "/(main)/track/[trackId]/page": "app/(main)/track/[trackId]/page.js",
   "/(main)/page": "app/(main)/page.js",
   "/admin/dashboard/complaints/page": "app/admin/dashboard/complaints/page.js"
 }
