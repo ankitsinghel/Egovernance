@@ -8,6 +8,6 @@ export async function POST(req: Request) {
   if (!email) return NextResponse.json({ ok: false, error: "missing_email" }, { status: 400 });
   const { otp, token } = await createOtp(email, purpose);
   // send email (fire and forget)
-  sendOtpEmail(email, token, purpose).catch((e) => console.error("sendOtpEmail failed", e));
+  sendOtpEmail(email, token).catch((e) => console.error("sendOtpEmail failed", e));
   return NextResponse.json({ ok: true });
 }
