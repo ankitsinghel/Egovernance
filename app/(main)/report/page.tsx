@@ -231,7 +231,7 @@ export default function ReportPage() {
                   <FormItem>
                     <div className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                       <User className="w-4 h-4" />
-                      <FormLabel>Your Designation (Optional)</FormLabel>
+                      <FormLabel>Designation</FormLabel>
                     </div>
                     <FormControl>
                       <Input
@@ -253,7 +253,7 @@ export default function ReportPage() {
                   <FormItem>
                     <div className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                       <AlertTriangle className="w-4 h-4" />
-                      <FormLabel>Name of Accused (Optional)</FormLabel>
+                      <FormLabel>Name of Accused</FormLabel>
                     </div>
                     <FormControl>
                       <Input
@@ -277,7 +277,7 @@ export default function ReportPage() {
                     <FormItem>
                       <div className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                         <MapPin className="w-4 h-4" />
-                        <FormLabel>State (Optional)</FormLabel>
+                        <FormLabel>State</FormLabel>
                       </div>
                       <FormControl>
                         <Select

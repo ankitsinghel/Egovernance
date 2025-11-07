@@ -2,16 +2,17 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../../lib/db";
 import { requireAuth } from "../../../../../lib/api_middleware/auth";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { User } from "@/lib/types";
 
 export async function POST(req: Request) {
   const maybe = requireAuth(req);
   if (maybe instanceof NextResponse) return maybe;
-  const payload = maybe as any;
+  const payload = maybe as User;
 
   try {
     const formData = await req.formData();
     const trackingId = String(formData.get("trackingId") || "");
-    const note = formData.get("note")?.toString() ?? null;
+    const note = formData.get("description")?.toString() ?? null;
     const statusChangeRaw = formData.get("statusChange");
     const statusChange =
       statusChangeRaw !== null && statusChangeRaw !== undefined

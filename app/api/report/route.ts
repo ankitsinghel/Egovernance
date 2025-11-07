@@ -3,7 +3,7 @@ import { parseForm, moveAndEncryptFile } from "../../../lib/upload";
 import { prisma } from "../../../lib/db";
 import { generateTrackingId } from "../../../lib/hash";
 import { sendNewReportNotification } from "../../../lib/email";
-import { uploadFile } from "@/lib/fileUpload";
+import { uploadFile } from "@/lib/fileHandle";
 
 export async function POST(req: Request) {
   try {
@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     for (const file of files) {
       const cleanName = file.name.replace(/\s+/g, "_"); 
       const renamedFile = new File([file], cleanName, { type: file.type });
+      
       await uploadFile(renamedFile, trackingId);
     }
 

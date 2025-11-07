@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { requireAuth } from "../../../../lib/api_middleware/auth";
 import type { TokenPayloadT } from "../../../../lib/types";
+import { getFiles } from "@/lib/fileHandle";
 
 export async function GET(req: Request) {
   const maybe = requireAuth(req);
@@ -15,7 +16,15 @@ export async function GET(req: Request) {
     const reports = await prisma.userReport.findMany({
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json({ ok: true, reports, message: "Reports loaded" });
+
+    const reportsWithFiles = await Promise.all(
+      reports.map(async (r) => ({ ...r, files: await getFiles(r.trackingId) }))
+    );
+    return NextResponse.json({
+      ok: true,
+      reports: reportsWithFiles,
+      message: "Reports loaded",
+    });
   }
   const admin = await prisma.admin.findUnique({
     where: { id: Number(adminId) },
@@ -28,7 +37,14 @@ export async function GET(req: Request) {
       orderBy: { createdAt: "desc" },
       include: { actions: true },
     });
-    return NextResponse.json({ ok: true, reports, message: "Reports loaded" });
+    const reportsWithFiles = await Promise.all(
+      reports.map(async (r) => ({ ...r, files: await getFiles(r.trackingId) }))
+    );
+    return NextResponse.json({
+      ok: true,
+      reports: reportsWithFiles,
+      message: "Reports loaded",
+    });
   }
 
   const reports = await prisma.userReport.findMany({
@@ -36,5 +52,14 @@ export async function GET(req: Request) {
     orderBy: { createdAt: "desc" },
     include: { actions: true },
   });
-  return NextResponse.json({ ok: true, reports, message: "Reports loaded" });
+
+  const reportsWithFiles = await Promise.all(
+    reports.map(async (r) => ({ ...r, files: await getFiles(r.trackingId) }))
+  );
+
+  return NextResponse.json({
+    ok: true,
+    reports: reportsWithFiles,
+    message: "Reports loaded",
+  });
 }

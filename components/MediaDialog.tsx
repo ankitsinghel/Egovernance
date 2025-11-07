@@ -1,5 +1,6 @@
 "use client";
 import { useState, ReactNode } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +8,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Cross } from "lucide-react";
+import { Cross, Download } from "lucide-react";
 import { Button } from "./ui/button";
 
 export interface MediaDialogProps {
@@ -18,7 +19,19 @@ export interface MediaDialogProps {
 
 export default function MediaDialog({ src, alt, children }: MediaDialogProps) {
   const [open, setOpen] = useState(false);
-
+  const downloadFile = (url: string, filename: string) => {
+    fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+  };
   // simple heuristic to detect media type
   const isImage = /\.(jpg|jpeg|png|gif|webp|avif)$/i.test(src);
   const isVideo = /\.(mp4|webm|ogg)$/i.test(src);
@@ -38,12 +51,17 @@ export default function MediaDialog({ src, alt, children }: MediaDialogProps) {
           </DialogHeader>
           <div className="my-4 flex justify-center items-center">
             {isImage && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={source}
-                alt={alt}
-                className="max-h-[60vh] object-contain"
-              />
+              <div className="relative w-full max-h-[60vh] h-[60vh]">
+                <Image
+                  src={source}
+                  alt={alt ?? "media"}
+                  fill
+                  style={{ objectFit: "contain" }}
+                  loading="lazy"
+                  unoptimized
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
             )}
             {isVideo && (
               <video controls className="max-h-[60vh]">
@@ -72,9 +90,9 @@ export default function MediaDialog({ src, alt, children }: MediaDialogProps) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={() => downloadFile(source, alt || "file")}
             >
-              <Cross />
+              <Download />
             </Button>
           </DialogFooter>
         </DialogContent>

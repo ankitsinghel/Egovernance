@@ -67,6 +67,9 @@ export type ActionLog = {
   createdAt: string;
   adminId: number;
   userReportId: number;
+  statusChange?: number | null;
+  proofFile?: string | null;
+  note?: string | null;
 };
 export type StatusItem = {
   id: number;

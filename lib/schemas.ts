@@ -90,7 +90,6 @@ export const UserReportUpdateSchema = z.object({
     .max(2000)
     .optional(),
   files: z.string().optional().nullable(),
-  // status now uses numeric ids from lib/statuses
   status: z.number().optional(),
   assignedToId: z.number().optional().nullable(),
 });

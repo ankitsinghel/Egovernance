@@ -11,6 +11,11 @@
     "migrate:sqlite-to-supabase": "node scripts/migrate-sqlite-to-supabase.js"
   },
   "dependencies": {
+    "@emotion/react": "^11.12.0",
+    "@emotion/styled": "^11.12.0",
+    "@mui/icons-material": "^5.14.0",
+    "@mui/lab": "^5.0.0-alpha.136",
+    "@mui/material": "^5.14.0",
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^5.13.0",
     "@radix-ui/react-checkbox": "^1.3.3",
