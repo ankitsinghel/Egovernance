@@ -6,7 +6,6 @@ import {
   RefreshCw,
   Plus,
   Search,
-  Edit,
   Trash2,
   MoreHorizontal,
   Eye,
@@ -17,8 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserReportCreateSchema, UserReportUpdateSchema } from "@/lib/schemas";
-import type { UserReportCreateForm, UserReportUpdateForm } from "@/lib/schemas";
+import { UserReportCreateSchema } from "@/lib/schemas";
+import type { UserReportCreateForm } from "@/lib/schemas";
 import {
   Table,
   TableBody,
@@ -43,6 +42,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ReportDrawer from "@/components/drawers/ReportDrawer";
 import {
   Card,
   CardContent,
@@ -60,6 +60,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import type { UserReport, Department, Admin } from "@/lib/types";
+import { statusKey, statusLabel } from "@/lib/statuses";
 import { ButtonGroup } from "../ui/button-group";
 
 export default function ComplaintsMaster() {
@@ -72,7 +73,6 @@ export default function ComplaintsMaster() {
     setLoading,
   } = context();
   const [showCreate, setShowCreate] = useState(false);
-  const [showEdit, setShowEdit] = useState<UserReport | null>(null);
   const [showDetails, setShowDetails] = useState<UserReport | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -95,18 +95,7 @@ export default function ComplaintsMaster() {
     },
   });
 
-  const editForm = useForm<UserReportUpdateForm>({
-    resolver: zodResolver(UserReportUpdateSchema),
-    defaultValues: {
-      departmentId: 0,
-      designation: "",
-      accusedName: "",
-      description: "",
-      files: "",
-      status: "pending",
-      assignedToId: 0,
-    },
-  });
+  const editForm = useForm({});
 
   // Memoized filtered data
   const filteredReports = useMemo(() => {
@@ -119,15 +108,19 @@ export default function ComplaintsMaster() {
         report.description.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesStatus =
-        statusFilter === "all" || report.status === statusFilter;
+        statusFilter === "all" || statusKey(report.status) === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
   }, [userReports, searchQuery, statusFilter]);
 
   // Status badge variant mapping
-  const getStatusVariant = (status: string) => {
-    switch (status) {
+  const getStatusVariant = (statusOrId: string | number) => {
+    const key =
+      typeof statusOrId === "number"
+        ? statusKey(statusOrId)
+        : String(statusOrId);
+    switch (key) {
       case "pending":
         return "secondary";
       case "in_progress":
@@ -176,42 +169,7 @@ export default function ComplaintsMaster() {
     [createForm, refreshUserReports]
   );
 
-  const handleEdit = useCallback(
-    async (data: UserReportUpdateForm) => {
-      if (!showEdit) return;
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/user-reports/${showEdit.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            departmentId: data.departmentId,
-            designation: data.designation,
-            accusedName: data.accusedName,
-            description: data.description,
-            files: data.files,
-            status: data.status,
-            assignedToId: data.assignedToId || null,
-          }),
-        });
-        const j = await res.json();
-        if (j.ok) {
-          setShowEdit(null);
-          editForm.reset();
-          refreshUserReports();
-          if (j.message) toast.success(j.message);
-        } else {
-          toast.error(j.message || j.error || "Update failed");
-        }
-      } catch (e: unknown) {
-        toast.error((e as Error)?.message || "Network error");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [showEdit, editForm, refreshUserReports]
-  );
+  // edit functionality removed
 
   const handleDelete = useCallback(
     async (id: number) => {
@@ -243,21 +201,7 @@ export default function ComplaintsMaster() {
     await refreshUserReports();
   }, [refreshUserReports]);
 
-  const handleEditClick = useCallback(
-    (report: UserReport) => {
-      setShowEdit(report);
-      editForm.reset({
-        departmentId: report.departmentId,
-        designation: report.designation || "",
-        accusedName: report.accusedName || "",
-        description: report.description,
-        // files: report.files || "",
-        status: report.status,
-        assignedToId: report.assignedToId || 0,
-      });
-    },
-    [editForm]
-  );
+  // edit click removed
 
   const handleViewDetails = useCallback((report: UserReport) => {
     setShowDetails(report);
@@ -326,7 +270,6 @@ export default function ComplaintsMaster() {
               </SelectContent>
             </Select>
           </div>
-
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -361,7 +304,7 @@ export default function ComplaintsMaster() {
                       </TableCell>
                       <TableCell>
                         <Badge variant={getStatusVariant(report.status)}>
-                          {report.status.replace("_", " ").toUpperCase()}
+                          {statusLabel(report.status)}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -404,12 +347,7 @@ export default function ComplaintsMaster() {
                                 <Eye className="w-4 h-4 mr-2" />
                                 View Details
                               </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleEditClick(report)}
-                              >
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit
-                              </DropdownMenuItem>
+                              {/* Edit removed per project requirements */}
                               {/* {report.files && (
                                 <DropdownMenuItem
                                   onClick={() => downloadFile(report.files!)}
@@ -597,315 +535,13 @@ export default function ComplaintsMaster() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Dialog */}
-      <Dialog
-        open={!!showEdit}
-        onOpenChange={(open) => !open && setShowEdit(null)}
-      >
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Edit Complaint</DialogTitle>
-            <DialogDescription>
-              Update complaint details and status.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={editForm.handleSubmit(handleEdit)}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <label
-                  htmlFor="edit-department"
-                  className="text-sm font-medium"
-                >
-                  Department
-                </label>
-                <Select
-                  onValueChange={(value) =>
-                    editForm.setValue("departmentId", parseInt(value))
-                  }
-                  defaultValue={showEdit?.departmentId?.toString() || "0"}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">Select Department</SelectItem>
-                    {departments.map((d: Department) => (
-                      <SelectItem key={d.id} value={d.id.toString()}>
-                        {d.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {editForm.formState.errors.departmentId?.message && (
-                  <p className="text-xs text-destructive">
-                    {String(editForm.formState.errors.departmentId?.message)}
-                  </p>
-                )}
-              </div>
-              <div className="grid gap-2">
-                <label
-                  htmlFor="edit-designation"
-                  className="text-sm font-medium"
-                >
-                  Designation
-                </label>
-                <Input
-                  id="edit-designation"
-                  placeholder="Enter designation"
-                  {...editForm.register("designation")}
-                />
-                {editForm.formState.errors.designation?.message && (
-                  <p className="text-xs text-destructive">
-                    {String(editForm.formState.errors.designation?.message)}
-                  </p>
-                )}
-              </div>
-              <div className="grid gap-2">
-                <label
-                  htmlFor="edit-accusedName"
-                  className="text-sm font-medium"
-                >
-                  Accused Name
-                </label>
-                <Input
-                  id="edit-accusedName"
-                  placeholder="Enter accused person's name"
-                  {...editForm.register("accusedName")}
-                />
-                {editForm.formState.errors.accusedName?.message && (
-                  <p className="text-xs text-destructive">
-                    {String(editForm.formState.errors.accusedName?.message)}
-                  </p>
-                )}
-              </div>
-              <div className="grid gap-2">
-                <label
-                  htmlFor="edit-description"
-                  className="text-sm font-medium"
-                >
-                  Description
-                </label>
-                <Textarea
-                  id="edit-description"
-                  placeholder="Enter complaint description"
-                  {...editForm.register("description")}
-                />
-                {editForm.formState.errors.description?.message && (
-                  <p className="text-xs text-destructive">
-                    {String(editForm.formState.errors.description?.message)}
-                  </p>
-                )}
-              </div>
-              <div className="grid gap-2">
-                <label htmlFor="edit-files" className="text-sm font-medium">
-                  File URLs
-                </label>
-                <Input
-                  id="edit-files"
-                  placeholder="Enter file URLs separated by commas"
-                  {...editForm.register("files")}
-                />
-                {editForm.formState.errors.files?.message && (
-                  <p className="text-xs text-destructive">
-                    {String(editForm.formState.errors.files?.message)}
-                  </p>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <label htmlFor="edit-status" className="text-sm font-medium">
-                    Status
-                  </label>
-                  <Select
-                    onValueChange={(value) =>
-                      editForm.setValue(
-                        "status",
-                        value as
-                          | "pending"
-                          | "in_progress"
-                          | "resolved"
-                          | "closed"
-                      )
-                    }
-                    defaultValue={showEdit?.status || "pending"}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="in_progress">In Progress</SelectItem>
-                      <SelectItem value="resolved">Resolved</SelectItem>
-                      <SelectItem value="closed">Closed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <label
-                    htmlFor="edit-assignedTo"
-                    className="text-sm font-medium"
-                  >
-                    Assign To
-                  </label>
-                  <Select
-                    onValueChange={(value) =>
-                      editForm.setValue(
-                        "assignedToId",
-                        value === "0" ? 0 : parseInt(value)
-                      )
-                    }
-                    defaultValue={showEdit?.assignedToId?.toString() || "0"}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Assign admin" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0">Unassigned</SelectItem>
-                      {admins.map((admin: Admin) => (
-                        <SelectItem key={admin.id} value={admin.id.toString()}>
-                          {admin.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowEdit(null)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit">Save Changes</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Details Dialog */}
-      <Dialog
+      <ReportDrawer
         open={!!showDetails}
-        onOpenChange={(open) => !open && setShowDetails(null)}
-      >
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Complaint Details</DialogTitle>
-            <DialogDescription>
-              Complete information about the complaint.
-            </DialogDescription>
-          </DialogHeader>
-          {showDetails && (
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Tracking ID
-                  </label>
-                  <p className="text-sm">{showDetails.trackingId}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Status
-                  </label>
-                  <div className="mt-1">
-                    <Badge variant={getStatusVariant(showDetails.status)}>
-                      {showDetails.status.replace("_", " ").toUpperCase()}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Department
-                  </label>
-                  <p className="text-sm">
-                    {departments.find(
-                      (d: Department) => d.id === showDetails.departmentId
-                    )?.name || "-"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Assigned To
-                  </label>
-                  <p className="text-sm">
-                    {showDetails.assignedToId
-                      ? admins.find(
-                          (a: Admin) => a.id === showDetails.assignedToId
-                        )?.name || "-"
-                      : "Unassigned"}
-                  </p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Designation
-                  </label>
-                  <p className="text-sm">{showDetails.designation || "-"}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Accused Name
-                  </label>
-                  <p className="text-sm">{showDetails.accusedName || "-"}</p>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Description
-                </label>
-                <p className="text-sm mt-1 whitespace-pre-wrap">
-                  {showDetails.description}
-                </p>
-              </div>
-              {showDetails.files && (
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Files
-                  </label>
-                  <div className="mt-2">
-                    {/* <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => downloadFile(showDetails.files!)}
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download Files
-                    </Button> */}
-                  </div>
-                </div>
-              )}
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Created Date
-                </label>
-                <p className="text-sm">
-                  {new Date(showDetails.createdAt).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowDetails(null)}
-            >
-              Close
-            </Button>
-            {showDetails && (
-              <Button onClick={() => handleEditClick(showDetails)}>
-                Edit Complaint
-              </Button>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onOpenChange={(open) => {
+          if (!open) setShowDetails(null);
+        }}
+        report={showDetails}
+      />
     </div>
   );
 }

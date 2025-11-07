@@ -68,7 +68,6 @@ export default function MediaDialog({ src, alt, children }: MediaDialogProps) {
               </a>
             )}
           </div>
-
           <DialogFooter>
             <Button
               type="button"

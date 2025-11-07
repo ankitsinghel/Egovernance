@@ -1,30 +1,25 @@
 {
   "pages": {
-    "/api/report/route": [
+    "/api/admin/reports/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/report/route.js"
+      "static/chunks/app/api/admin/reports/route.js"
     ],
-    "/(main)/layout": [
+    "/admin/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/(main)/layout.css",
-      "static/chunks/app/(main)/layout.js"
+      "static/css/app/admin/layout.css",
+      "static/chunks/app/admin/layout.js"
     ],
-    "/(main)/loading": [
+    "/admin/dashboard/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(main)/loading.js"
+      "static/chunks/app/admin/dashboard/layout.js"
     ],
-    "/(main)/track/page": [
+    "/admin/dashboard/complaints/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(main)/track/page.js"
-    ],
-    "/api/me/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/me/route.js"
+      "static/chunks/app/admin/dashboard/complaints/page.js"
     ],
     "/api/departments/route": [
       "static/chunks/webpack.js",
@@ -36,25 +31,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/states/route.js"
     ],
-    "/api/report/[trackingId]/route": [
+    "/api/admins/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/report/[trackingId]/route.js"
+      "static/chunks/app/api/admins/route.js"
     ],
-    "/(main)/track/[trackId]/page": [
+    "/api/admin/reports/actions/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(main)/track/[trackId]/page.js"
+      "static/chunks/app/api/admin/reports/actions/route.js"
     ],
-    "/(main)/report/page": [
+    "/admin/dashboard/state-admins/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(main)/report/page.js"
-    ],
-    "/(main)/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(main)/page.js"
+      "static/chunks/app/admin/dashboard/state-admins/page.js"
     ]
   }
 }

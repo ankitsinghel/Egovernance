@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   // Use DATABASE_URL environment variable. Set this in GitHub Secrets and in
   // Vercel (Production). Example: postgresql://user:password@host:5432/dbname
   url       = env("DATABASE_URL")
@@ -16,7 +16,6 @@ model Department {
   admins  Admin[]
   reports UserReport[]
 }
-
 
 model State {
   id      Int          @id @default(autoincrement())
@@ -68,26 +67,28 @@ model RolePermission {
 }
 
 model UserReport {
-  id           Int         @id @default(autoincrement())
-  trackingId   String      @unique
+  id           Int           @id @default(autoincrement())
+  trackingId   String        @unique
   departmentId Int
-  department   Department  @relation(fields: [departmentId], references: [id])
+  department   Department    @relation(fields: [departmentId], references: [id])
   designation  String?
   accusedName  String?
   stateId      Int?
-  state        State?      @relation(fields: [stateId], references: [id])
+  state        State?        @relation(fields: [stateId], references: [id])
   description  String
   files        Reportfiles[]
-  status       String      @default("pending")
+  // store status as numeric id referring to lib/statuses.ts
+  status       Int           @default(1)
   assignedToId Int?
-  assignedTo   Admin?      @relation("AssignedReports", fields: [assignedToId], references: [id])
-  createdAt    DateTime    @default(now())
+  assignedTo   Admin?        @relation("AssignedReports", fields: [assignedToId], references: [id])
+  createdAt    DateTime      @default(now())
   actions      ActionLog[]
 }
+
 model Reportfiles {
-  id Int @id @default(autoincrement())
+  id       Int        @id @default(autoincrement())
   reportId String
-  report   UserReport  @relation(fields: [reportId], references: [trackingId], onDelete: Cascade)
+  report   UserReport @relation(fields: [reportId], references: [trackingId], onDelete: Cascade)
   filePath String
 }
 
@@ -97,7 +98,7 @@ model ActionLog {
   reportId     Int
   admin        Admin?     @relation(fields: [adminId], references: [id])
   adminId      Int?
-  statusChange String
+  statusChange Int
   note         String?
   proofFile    String?
   createdAt    DateTime   @default(now())

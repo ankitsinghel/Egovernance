@@ -48,11 +48,18 @@ export type UserReport = {
   accusedName: string | null;
   description: string;
   files: ReportFiles[] | [];
-  status: "pending" | "in_progress" | "resolved" | "closed";
+  // now stored as numeric status id which maps to lib/statuses.ts
+  status: number;
   assignedToId: number | null;
   createdAt: string;
 };
-
+export interface ActionForDrawerT {
+  id: number;
+  statusChange: number | null;
+  note: string;
+  proofFile: string | null;
+  createdAt: string;
+}
 export type ActionLog = {
   id: number;
   action: string;
@@ -61,13 +68,17 @@ export type ActionLog = {
   adminId: number;
   userReportId: number;
 };
-
+export type StatusItem = {
+  id: number;
+  key: "pending" | "in_progress" | "resolved" | "closed";
+  label: string;
+};
 export type Report = {
   id: number;
   trackingId: string;
   department: string;
   state?: string;
-  status: string;
+  status: number;
   createdAt: string;
 };
 

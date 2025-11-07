@@ -22,11 +22,13 @@ import {
 import { useRouter } from "next/navigation";
 import { context } from "@/context/context";
 import type { Report, UserReport } from "@/lib/types";
+import { statusKey, statusLabel } from "@/lib/statuses";
 import { Badge } from "@/components/ui/badge";
 
-function StatusBadge({ status }: { status: string }) {
-  const getStatusConfig = (status: string) => {
-    switch (status) {
+function StatusBadge({ status }: { status: number | string }) {
+  const key = typeof status === "number" ? statusKey(status) : String(status);
+  const getStatusConfig = (k: string) => {
+    switch (k) {
       case "resolved":
         return {
           color: "bg-green-100 text-green-800 border-green-200",
@@ -52,7 +54,7 @@ function StatusBadge({ status }: { status: string }) {
     }
   };
 
-  const config = getStatusConfig(status);
+  const config = getStatusConfig(key);
   const IconComponent = config.icon;
 
   return (
@@ -60,10 +62,7 @@ function StatusBadge({ status }: { status: string }) {
       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-sm font-medium ${config.color}`}
     >
       <IconComponent className="w-3 h-3" />
-      {status
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")}
+      {statusLabel(typeof status === "number" ? status : Number(status))}
     </span>
   );
 }
@@ -168,13 +167,13 @@ export default function AdminDashboard() {
 
   const counts = useMemo(() => {
     const pending = displayReports.filter(
-      (r) => String(r.status) === "pending"
+      (r) => statusKey(r.status) === "pending"
     ).length;
     const inProgress = displayReports.filter((r) =>
-      ["in_progress", "in progress", "inProgress"].includes(String(r.status))
+      ["in_progress", "in progress", "inProgress"].includes(statusKey(r.status))
     ).length;
     const resolved = displayReports.filter(
-      (r) => String(r.status) === "resolved"
+      (r) => statusKey(r.status) === "resolved"
     ).length;
     return { pending, inProgress, resolved };
   }, [displayReports]);
@@ -187,8 +186,7 @@ export default function AdminDashboard() {
         report.state?.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus =
-        statusFilter === "all" ||
-        report.status.toLowerCase() === statusFilter.toLowerCase();
+        statusFilter === "all" || statusKey(report.status) === statusFilter;
 
       return matchesSearch && matchesStatus;
     });

@@ -15,8 +15,8 @@ export async function POST(req: Request) {
   const statusChangeRaw = fields.status;
   const noteRaw = fields.note;
   const statusChange = Array.isArray(statusChangeRaw)
-    ? String(statusChangeRaw[0])
-    : String(statusChangeRaw ?? "");
+    ? Number(statusChangeRaw[0])
+    : Number(statusChangeRaw ?? 0);
   const note = Array.isArray(noteRaw)
     ? String(noteRaw[0])
     : String(noteRaw ?? "");

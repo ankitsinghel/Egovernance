@@ -90,7 +90,8 @@ export const UserReportUpdateSchema = z.object({
     .max(2000)
     .optional(),
   files: z.string().optional().nullable(),
-  status: z.enum(["pending", "in_progress", "resolved", "closed"]).optional(),
+  // status now uses numeric ids from lib/statuses
+  status: z.number().optional(),
   assignedToId: z.number().optional().nullable(),
 });
 export type UserReportUpdateForm = z.infer<typeof UserReportUpdateSchema>;
@@ -102,7 +103,7 @@ export const UserReportAssignSchema = z.object({
 export type UserReportAssignForm = z.infer<typeof UserReportAssignSchema>;
 
 export const UserReportStatusSchema = z.object({
-  status: z.enum(["pending", "in_progress", "resolved", "closed"]),
+  status: z.number(),
 });
 export type UserReportStatusForm = z.infer<typeof UserReportStatusSchema>;
 
@@ -110,6 +111,7 @@ export const ActionLogCreateSchema = z.object({
   action: z.string().min(1, "Action is required").max(255),
   description: z.string().optional().nullable(),
   userReportId: z.number().min(1, "Report ID is required"),
+  status: z.number().min(1, "Status is required"),
 });
 export type ActionLogCreateForm = z.infer<typeof ActionLogCreateSchema>;
 
