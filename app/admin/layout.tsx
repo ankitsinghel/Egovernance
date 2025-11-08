@@ -8,7 +8,7 @@ import { permission } from "process";
 import type { TokenPayloadT, Permission } from "@/lib/types";
 
 export const metadata = {
-  title: "Admin Dashboard",
+  title: "Satark- Admin Dashboard",
   description: "Manage Complaints",
 };
 export default async function AdminLayout({

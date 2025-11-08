@@ -7,7 +7,7 @@ import { getAdminFromToken } from "../../../lib/auth";
 import type { TokenPayloadT, Permission } from "@/lib/types";
 
 export const metadata = {
-  title: "Super Admin Dashboard",
+  title: "Satark- Super Admin Dashboard",
   description: "Manage departments, states, and admins",
 };
 export default async function SuperAdminLayout({
