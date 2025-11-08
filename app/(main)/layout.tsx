@@ -7,9 +7,10 @@ import { cookies } from "next/headers";
 import { getAdminFromToken } from "../../lib/auth";
 import type { TokenPayloadT, Permission } from "../../lib/types";
 import { Toaster } from "sonner";
+import Footer from "../../components/footer";
 
 export const metadata = {
-  title: "E-Governance Whistleblower",
+  title: "Satark",
   description: "Anonymous reporting platform",
 };
 
@@ -44,6 +45,7 @@ export default async function RootLayout({
           <main className="py-8">
             <Container>{children}</Container>
           </main>
+          <Footer />
         </ContextProvider>
       </body>
     </html>
