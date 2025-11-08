@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { context } from "@/context/context";
-import type {  ReportFiles, UserReportDetailT } from "@/lib/types";
+import type { ReportFiles, UserReportDetailT } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import MediaDialog from "@/components/MediaDialog";
+import MediaDialog from "@/components/dialogs/MediaDialog";
 import TrackTimeline from "@/components/TrackTimeline";
 import { statusLabel } from "@/lib/statuses";
 import {
@@ -155,7 +155,6 @@ export default function ReportTrackPage() {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-
           <div className="space-y-6">
             {/* Report Details Card */}
             <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">

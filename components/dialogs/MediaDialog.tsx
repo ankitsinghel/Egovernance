@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Cross, Download } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 export interface MediaDialogProps {
   src: string;

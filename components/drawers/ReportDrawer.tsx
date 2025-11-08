@@ -40,9 +40,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ActionLogCreateSchema, ActionLogCreateForm } from "@/lib/schemas";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { STATUSES, defaultStatusId, statusLabel } from "@/lib/statuses";
-import { Download, File, Loader2Icon, PaperclipIcon, PlusIcon } from "lucide-react";
+import {
+  Download,
+  File,
+  Loader2Icon,
+  PaperclipIcon,
+  PlusIcon,
+} from "lucide-react";
 import { context } from "@/context/context";
-import MediaDialog from "../MediaDialog";
+import MediaDialog from "../dialogs/MediaDialog";
 
 interface Props {
   open: boolean;

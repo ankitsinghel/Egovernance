@@ -43,7 +43,7 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from "@/components/ui/drawer";
-import ConfirmDialog from "@/components/ConfirmDialog";
+import ConfirmDialog from "@/components/dialogs/ConfirmDialog";
 import {
   Card,
   CardContent,

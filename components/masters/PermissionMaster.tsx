@@ -41,7 +41,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import ConfirmDialog from "@/components/ConfirmDialog";
+import ConfirmDialog from "@/components/dialogs/ConfirmDialog";
 import {
   Card,
   CardContent,
