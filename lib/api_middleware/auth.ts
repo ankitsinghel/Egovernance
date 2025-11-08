@@ -18,7 +18,7 @@ export function requireSuperadmin(req: Request) {
   if (!payload || !isSuper) {
     return NextResponse.json({ ok: false }, { status: 403 });
   }
-  return;
+  return payload as User;
 }
 
 export function requireCentralAdmin(req: Request) {
@@ -38,5 +38,5 @@ export function requireAuth(req: Request) {
   const token = getTokenFromRequest(req);
   const payload = token ? verifyToken(token) : null;
   if (!payload) return NextResponse.json({ ok: false }, { status: 401 });
-  return payload;
+  return (payload as User);
 }

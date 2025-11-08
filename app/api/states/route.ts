@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
-import { prisma } from "../../../lib/db";
-import { requireSuperadmin } from "../../../lib/api_middleware/auth";
+import { prisma } from "@/lib/db";
+import { requireSuperadmin } from "@/lib/api_middleware/auth";
 
 export async function GET() {
   const list = await prisma.state.findMany();
-  return NextResponse.json({ ok: true, list, message: "States loaded" });
+  return NextResponse.json({
+    ok: true,
+    states: list,
+    message: "States loaded",
+  });
 }
 
 export async function POST(req: Request) {

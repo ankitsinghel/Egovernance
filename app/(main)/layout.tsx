@@ -8,6 +8,7 @@ import { getAdminFromToken } from "../../lib/auth";
 import type { TokenPayloadT, Permission } from "../../lib/types";
 import { Toaster } from "sonner";
 import Footer from "../../components/footer";
+import { getMasters } from "@/lib/getMasters/getMasters";
 
 export const metadata = {
   title: "Satark",
@@ -19,7 +20,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Read httpOnly cookie on the server and hydrate initial user for the client provider
+  const { departments, states } = await getMasters();
   const cookieStore = await cookies();
   const token = cookieStore.get("egov_token")?.value || null;
   const admin = token ? await getAdminFromToken(token) : null;
@@ -38,7 +39,11 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
-        <ContextProvider initialUser={initialUser}>
+        <ContextProvider
+          initialUser={initialUser}
+          initialDepartments={departments}
+          initialStates={states}
+        >
           <Toaster />
           <Spinner />
           <Navbar />

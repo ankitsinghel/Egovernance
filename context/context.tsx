@@ -20,17 +20,23 @@ const globalCOntext = createContext<contextType | undefined>(undefined);
 export function contextProvider({
   children,
   initialUser,
+  initialDepartments,
+  initialStates,
 }: {
   children: React.ReactNode;
   initialUser?: User | null;
+  initialDepartments?: Department[];
+  initialStates?: StateT[];
 }) {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(initialUser ?? null);
   const [superAdminDrawerOpen, setSuperAdminDrawerOpen] = useState(true);
 
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [departments, setDepartments] = useState<Department[]>(
+    initialDepartments || []
+  );
   const [userReports, setUserReports] = useState<UserReport[]>([]);
-  const [states, setStates] = useState<StateT[]>([]);
+  const [states, setStates] = useState<StateT[]>(initialStates || []);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
 
@@ -144,13 +150,11 @@ export function contextProvider({
   }
 
   async function fetchAdmins() {
-    if (user.role !== "Superadmin" && user.role !== "Central Admin") return;
     try {
       const res = await fetch("/api/admins", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          role: String(user?.role ?? ""),
         },
       });
 
@@ -197,18 +201,17 @@ export function contextProvider({
     }
   }
   async function fetchUserMasters() {
-    try {
-      if (
-        (departments && departments.length > 0) ||
-        (states && states.length > 0)
-      )
-        return;
-
-      setLoading(true);
-      await Promise.all([fetchDepartments(), fetchStates()]);
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   if (
+    //     (departments && departments.length > 0) ||
+    //     (states && states.length > 0)
+    //   )
+    //     return;
+    //   setLoading(true);
+    //   await Promise.all([fetchDepartments(), fetchStates()]);
+    // } finally {
+    //   setLoading(false);
+    // }
   }
   async function fetchMasters() {
     setLoading(true);
@@ -222,11 +225,6 @@ export function contextProvider({
   const refreshUserReports = async () => fetchUserReports();
   const refreshRoles = async () => fetchRoles();
   const refreshPermissions = async () => fetchPermissions();
-
-  useEffect(() => {
-    // console.log("context mounted, user:", user);
-    fetchUserMasters();
-  }, []);
 
   useEffect(() => {
     if (user) {

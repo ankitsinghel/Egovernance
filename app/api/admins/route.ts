@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import {
-  requireCentralAdmin,
-  requireSuperadmin,
-} from "@/lib/api_middleware/auth";
+import { requireAuth } from "@/lib/api_middleware/auth";
 import { hashPassword } from "@/lib/hash";
 
 export async function GET(req: Request) {
-  const role = req.headers.get("role");
+  const guard = requireAuth(req);
+  if (guard instanceof NextResponse) return guard;
+
+  const role = guard.role;
   if (role === "Superadmin") {
-    const guard = requireSuperadmin(req);
-    if (guard instanceof NextResponse) return guard;
     const admins = await prisma.admin.findMany({
       where: {
         stateId: null,
@@ -18,9 +16,7 @@ export async function GET(req: Request) {
       orderBy: { id: "asc" },
     });
     return NextResponse.json({ ok: true, admins, message: "Admins loaded" });
-  } else {
-    const guard = requireCentralAdmin(req);
-    if (guard instanceof NextResponse) return guard;
+  } else if (role === "central admin") {
     const admins = await prisma.admin.findMany({
       where: {
         superiorId: Number(guard.id),
