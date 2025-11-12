@@ -1,40 +1,101 @@
-# E-Governance Whistleblower Portal (Prototype)
+# E-Governance — Whistleblower Platform
 
-This repository contains a prototype implementation of an anonymous, city-aware whistleblower portal using Next.js App Router, Prisma (SQLite), JWT auth for admin, Resend for emails, and TailwindCSS for styling.
+This repository is a full-stack prototype of a secure, auditable whistleblower platform built with Next.js (App Router), TypeScript, Prisma and Supabase. The system enables anonymous report submission, secure attachment handling, per-action audit logs, and role-based admin panels for triage and investigation.
 
-Key implemented pieces:
+The project is intentionally modular and production-minded: it centralizes domain logic (statuses, types, zod schemas), enforces server-side validation, and keeps audit trails for all administrative actions.
 
-- Prisma schema (SQLite)
-- Prisma client helper
-- JWT auth helpers
-- bcrypt password hashing
-- File upload handling (formidable) with filename obfuscation
-- API routes for anonymous report submission, report fetch by tracking ID, admin login, fetching reports, admin actions and admin creation
-- Basic page skeletons for public and admin UI
+Key features
 
-Security notes:
+- Anonymous reporting with evidence uploads and metadata removal
+- Unique, unguessable tracking IDs for public report tracking pages
+- Audit-grade ActionLog entries for every admin action (actor id/role, note, optional proof file, numeric statusChange)
+- Role-based admin hierarchy: Super‑Admin, State‑Admin, Admin with server‑enforced permissions
+- Session-based authentication: OTP + short-lived JWT stored in HTTP‑only cookies and validated on the server
+- File storage using Supabase Storage with signed time-limited URLs for secure access
+- App Router server components + shadcn UI primitives; forms use react-hook-form + zod for consistent validation
 
-- Do not store IPs or other identifiable data.
-- Evidence filenames are HMAC-obfuscated before saving. For stronger security use AES encryption for file content and store keys securely (KMS/HSM).
-- JWT stored in httpOnly cookie. Ensure HTTPS in production.
-- Rate limiting and captcha should be added to `/api/report` to reduce spam.
 
-Setup (local):
+Important notes about migrations and schema
 
-1. Install dependencies: npm install
-2. Generate Prisma client: npx prisma generate
-3. Run migrations (or create DB): npx prisma db push
-4. Start dev server: npm run dev
+- Prisma schema in `prisma/schema.prisma` is the source of truth for the client. Use `npx prisma generate` after updating the schema.
 
-Env vars to set in development (optional):
+Security & privacy guidance
 
-- JWT_SECRET
-- RESEND_API_KEY
-- EVIDENCE_HMAC_KEY
+- Do not log or persist reporter-identifying data (IP addresses, device fingerprints) unless explicitly required and authorized.
+- Evidence filenames are obfuscated; for stronger protection consider encrypting file contents and storing keys in a managed KMS.
+- JWTs are stored in httpOnly cookies. Ensure HTTPS and secure cookie flags in production.
 
-Next steps / improvements:
 
-- Add tests and type definitions
-- Implement frontend admin dashboard with report filters, escalation UI, and action uploads
-- Add rate-limiting and captcha on report submissions
-- Integrate AES encryption for file contents and secure key storage
+Quickstart (local dev)
+
+1. Install dependencies
+
+```powershell
+npm install
+```
+
+2. Create / configure your database
+
+- The project targets Postgres (Supabase) for production. Set `DATABASE_URL` accordingly when running locally.
+- If you need to use SQLite for quick local dev, update `prisma/schema.prisma` and follow Prisma docs — but be careful: migrations in this repo were applied using raw SQL to preserve history.
+
+3. Generate Prisma client
+
+```powershell
+npx prisma generate
+```
+
+4. Start the dev server
+
+```powershell
+npm run dev
+```
+
+
+
+Recommended environment variables
+
+- `DATABASE_URL` — Postgres connection string (required for production / Supabase)
+- `NEXT_PUBLIC_SUPABASE_URL` — Supabase URL (if using Supabase features client-side)
+- `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key for server operations (keep secret)
+- `JWT_SECRET` — secret for signing JWTs
+- `EVIDENCE_HMAC_KEY` — key used to HMAC/obfuscate evidence filenames
+- `RESEND_API_KEY` — (optional) API key for Resend email service
+- `PRISMA_QUERY_LOG` — set to `true` to enable Prisma SQL logging in dev
+
+Notes about admin signup
+
+- The app intentionally does not expose a public admin self-signup flow. Administrator accounts are created by the Super‑Admin only. The earlier `app/admin/signup` UI has been removed; Super‑Admin signup and verification flows remain.
+
+Project layout (high level)
+
+- `app/` — Next.js App Router pages and route handlers
+  - `(main)` — public site pages (home, report, track) — the footer is injected into this layout only
+  - `admin/` — admin login & dashboards (scoped by role)
+  - `api/` — server route handlers (reports, actions, auth, metrics, etc.)
+- `components/` — UI components (shadcn primitives, footer, homeRoute pieces, drawers)
+- `lib/` — shared helpers: `db.ts` (Prisma client), `auth.ts`, `schemas.ts` (zod), `statuses.ts`, types, utils
+- `prisma/` — Prisma schema and migrations (manual SQL migration scripts included in `scripts/`)
+
+Performance notes & suggestions
+
+- Consider caching read-mostly pages (home, public tracking) with Next.js revalidate (ISR) or an HTTP cache-control header.
+- Use Redis for expensive aggregations and invalidate cache on writes that affect data.
+- Add DB indexes (trackingId, status, stateId, createdAt) and use Prisma selects to limit returned fields.
+- Dynamic import heavy admin-only components to reduce initial client bundle.
+
+How to contribute
+
+1. Fork the repo and create a feature branch.
+2. Keep changes small and focused, run type-check and tests locally:
+
+```powershell
+npx tsc --noEmit
+```
+
+3. Open a pull request with a clear description of the change and relevant screenshots / metrics.
+
+
+If you need help running the project or want consulting for production hardening, open an issue or contact the maintainer.
+
+Repository: https://github.com/ankitsinghel/Egovernance
