@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
-import { serialize, parse } from "cookie";
-import { prisma } from "./db";
+import { serialize } from "cookie";
 import type { JwtPayload, Secret, SignOptions } from "jsonwebtoken";
-import type { TokenPayloadT } from "./types";
+import type { Permission, TokenPayloadT } from "./types";
+import { cookies } from "next/headers";
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-jwt-secret";
 const COOKIE_NAME = "egov_token";
@@ -35,7 +35,7 @@ export function setAuthCookie(token: string) {
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });
-};
+}
 
 export function clearAuthCookie() {
   return serialize(COOKIE_NAME, "", { maxAge: -1, path: "/" });
@@ -54,4 +54,21 @@ export async function getAdminFromToken(token: string | undefined) {
   if (payload.role === "Superadmin") return payload;
 
   return payload;
+}
+export async function getUserFromCookie() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("egov_token")?.value || null;
+  const admin = token ? await getAdminFromToken(token) : null;
+  const tokenAdmin = admin as unknown as TokenPayloadT | null;
+  const initialUser = tokenAdmin
+    ? {
+        id: String(tokenAdmin.id ?? ""),
+        name: String(tokenAdmin.name ?? tokenAdmin.email ?? ""),
+        role: (tokenAdmin.role as string) || "Admin",
+        permissions: Array.isArray(tokenAdmin.permissions)
+          ? (tokenAdmin.permissions as unknown as Permission[])
+          : [],
+      }
+    : null;
+  return initialUser;
 }

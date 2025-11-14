@@ -4,7 +4,7 @@ import Container from "../../components/container";
 import { contextProvider as ContextProvider } from "../../context/context";
 import { Spinner } from "@/components/loader";
 import { cookies } from "next/headers";
-import { getAdminFromToken } from "../../lib/auth";
+import { getAdminFromToken, getUserFromCookie } from "../../lib/auth";
 import type { TokenPayloadT, Permission } from "../../lib/types";
 import { Toaster } from "sonner";
 import Footer from "../../components/footer";
@@ -21,23 +21,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const { departments, states } = await getMasters();
-  const cookieStore = await cookies();
-  const token = cookieStore.get("egov_token")?.value || null;
-  const admin = token ? await getAdminFromToken(token) : null;
-  const tokenAdmin = admin as unknown as TokenPayloadT | null;
-  const initialUser = tokenAdmin
-    ? {
-        id: String(tokenAdmin.id ?? ""),
-        name: String(tokenAdmin.name ?? tokenAdmin.email ?? ""),
-        role: (tokenAdmin.role as string) || "Admin",
-        permissions: Array.isArray(tokenAdmin.permissions)
-          ? (tokenAdmin.permissions as unknown as Permission[])
-          : [],
-      }
-    : null;
+  const initialUser = await getUserFromCookie();
 
   return (
-    <html lang="en">
+    <html lang="en" className="light" style={{ colorScheme: "light" }}>
       <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
         <ContextProvider
           initialUser={initialUser}
