@@ -201,17 +201,17 @@ export function contextProvider({
     }
   }
   async function fetchUserMasters() {
-    // try {
-    //   if (
-    //     (departments && departments.length > 0) ||
-    //     (states && states.length > 0)
-    //   )
-    //     return;
-    //   setLoading(true);
-    //   await Promise.all([fetchDepartments(), fetchStates()]);
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      if (
+        (departments && departments.length > 0) ||
+        (states && states.length > 0)
+      )
+        return;
+      setLoading(true);
+      await Promise.all([fetchDepartments(), fetchStates()]);
+    } finally {
+      setLoading(false);
+    }
   }
   async function fetchMasters() {
     setLoading(true);
@@ -231,6 +231,9 @@ export function contextProvider({
       fetchAdminMasters();
     }
   }, [user]);
+  // useEffect(() => {
+  //   fetchUserMasters();
+  // },[]) ;
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
       <globalCOntext.Provider
