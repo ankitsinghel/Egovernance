@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { parseForm, moveAndEncryptFile } from "../../../lib/upload";
 import { prisma } from "../../../lib/db";
 import { generateTrackingId } from "../../../lib/hash";
 import { sendNewReportNotification } from "../../../lib/email";
@@ -18,9 +17,9 @@ export async function POST(req: Request) {
     const trackingId = await generateTrackingId();
 
     for (const file of files) {
-      const cleanName = file.name.replace(/\s+/g, "_"); 
+      const cleanName = file.name.replace(/\s+/g, "_");
       const renamedFile = new File([file], cleanName, { type: file.type });
-      
+
       await uploadFile(renamedFile, trackingId);
     }
 
