@@ -32,7 +32,6 @@ export type Admin = {
   name: string;
   email: string;
   departmentId: number;
-  city: string | null;
   stateId?: number | null;
   adminId: number;
 };

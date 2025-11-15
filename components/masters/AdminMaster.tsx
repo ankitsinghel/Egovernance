@@ -85,7 +85,7 @@ export default function AdminsMaster() {
   // Memoized filtered data to prevent unnecessary re-renders
   const { centralAdmins, filteredAdmins } = useMemo(() => {
     const centralAdmins = (admins || []).filter(
-      (a: Admin) => a.city === null || a.city === undefined
+      (a: Admin) => a.stateId === null || a.stateId === undefined
     );
 
     const filteredAdmins = centralAdmins.filter(
