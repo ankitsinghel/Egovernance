@@ -4,10 +4,13 @@ import { requireAuth } from "@/lib/api_middleware/auth";
 import { hashPassword } from "@/lib/hash";
 
 export async function GET(req: Request) {
+ 
   const guard = requireAuth(req);
-  if (guard instanceof NextResponse) return guard;
-
+  if (guard instanceof NextResponse)
+    return NextResponse.json({ ok: false, message: "Unauthorized" });
+  
   const role = guard.role;
+
   if (role === "Superadmin") {
     const admins = await prisma.admin.findMany({
       where: {
@@ -16,7 +19,7 @@ export async function GET(req: Request) {
       orderBy: { id: "asc" },
     });
     return NextResponse.json({ ok: true, admins, message: "Admins loaded" });
-  } else if (role === "central admin") {
+  } else if (role === "Central Admin") {
     const admins = await prisma.admin.findMany({
       where: {
         superiorId: Number(guard.id),
@@ -24,6 +27,9 @@ export async function GET(req: Request) {
       orderBy: { id: "asc" },
     });
     return NextResponse.json({ ok: true, admins, message: "Admins loaded" });
+  }
+  else{
+    return NextResponse.json({ ok: false, role, message: "Unauthorized" });
   }
 }
 

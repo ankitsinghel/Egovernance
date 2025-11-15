@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import { Card } from "../../../../components/ui/card";
-import { Button } from "../../../../components/ui/button";
+import { Card } from "../../../components/ui/card";
+import { Button } from "../../../components/ui/button";
 import { useForm } from "react-hook-form";
-import { LoginSchema, LoginForm } from "../../../../lib/schemas";
+import { LoginSchema, LoginForm } from "../../../lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import {

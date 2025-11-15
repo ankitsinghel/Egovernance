@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Card } from "../../../components/ui/card";
-import { Button } from "../../../components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   FileText,
   AlertTriangle,
@@ -14,10 +14,8 @@ import {
   Search,
   Eye,
   BarChart3,
-  Users,
   MapPin,
   Building,
-  Shield,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { context } from "@/context/context";
@@ -53,7 +51,6 @@ function StatusBadge({ status }: { status: number | string }) {
         };
     }
   };
-
   const config = getStatusConfig(key);
   const IconComponent = config.icon;
 
@@ -141,13 +138,12 @@ function DonutChart({
 }
 
 export default function AdminDashboard() {
-  // const [userReports, setuserReports] = useState<Report[]>([]);
   const { loading, setLoading, userReports, departments, user } = context();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
+  console.log(user)
   // Map raw userReports (backend shape) into a display-friendly Report shape
   const displayReports = useMemo(() => {
     return (userReports || []).map((r: UserReport) => {
@@ -221,6 +217,7 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-3 mb-2">
               <Building className="w-8 h-8 text-blue-600" />
               <h1 className="text-3xl font-bold text-slate-900">
+                
                 {user && user.departmentId
                   ? departments.find((d) => d.id === user.departmentId)?.name
                   : "Admin Dashboard"}

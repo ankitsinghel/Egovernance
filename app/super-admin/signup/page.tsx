@@ -1,27 +1,32 @@
 "use client";
 import { useState } from "react";
-import { Card } from "../../../../components/ui/card";
-import { Button } from "../../../../components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignupSchema, SignupForm } from "../../../../lib/schemas";
+import { SignupSchema, SignupForm } from "../../../lib/schemas";
 import Link from "next/link";
-import { 
-  Shield, 
-  Mail, 
-  Lock, 
-  User, 
-  Eye, 
-  EyeOff, 
+import {
+  Shield,
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
   ArrowRight,
   CheckCircle2,
   AlertCircle,
   KeyRound,
-  ArrowLeft
-} from 'lucide-react';
+  ArrowLeft,
+} from "lucide-react";
 
 export default function SuperSignup() {
-  const { register, handleSubmit, getValues, formState: { errors } } = useForm<SignupForm>({
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm<SignupForm>({
     resolver: zodResolver(SignupSchema),
   });
   const [loading, setLoading] = useState(false);
@@ -57,7 +62,7 @@ export default function SuperSignup() {
     setLoading(true);
     try {
       const vals = getValues();
-      const token = otp.join('');
+      const token = otp.join("");
       const res = await fetch("/api/super-admin/verify", {
         method: "POST",
         body: JSON.stringify({ email: vals.email, token }),
@@ -92,7 +97,7 @@ export default function SuperSignup() {
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       const prevInput = document.getElementById(`otp-${index - 1}`);
       if (prevInput) prevInput.focus();
     }
@@ -124,17 +129,27 @@ export default function SuperSignup() {
         {/* Progress Steps */}
         <div className="flex items-center justify-center mb-8">
           <div className="flex items-center">
-            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-              step === "form" ? "bg-blue-600 text-white" : "bg-green-500 text-white"
-            }`}>
+            <div
+              className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                step === "form"
+                  ? "bg-blue-600 text-white"
+                  : "bg-green-500 text-white"
+              }`}
+            >
               {step === "form" ? "1" : <CheckCircle2 className="w-5 h-5" />}
             </div>
-            <div className={`w-16 h-1 mx-2 ${
-              step === "verify" ? "bg-green-500" : "bg-slate-300"
-            }`}></div>
-            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-              step === "form" ? "bg-slate-300 text-slate-600" : "bg-blue-600 text-white"
-            }`}>
+            <div
+              className={`w-16 h-1 mx-2 ${
+                step === "verify" ? "bg-green-500" : "bg-slate-300"
+              }`}
+            ></div>
+            <div
+              className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                step === "form"
+                  ? "bg-slate-300 text-slate-600"
+                  : "bg-blue-600 text-white"
+              }`}
+            >
               2
             </div>
           </div>
@@ -164,7 +179,9 @@ export default function SuperSignup() {
                       {...register("name")}
                       placeholder="Enter your full name"
                       className={`w-full p-4 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                        errors.name ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"
+                        errors.name
+                          ? "border-red-300 ring-2 ring-red-100"
+                          : "border-slate-300"
                       }`}
                       required
                     />
@@ -193,7 +210,9 @@ export default function SuperSignup() {
                       {...register("email")}
                       placeholder="superadmin@portal.gov"
                       className={`w-full p-4 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                        errors.email ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"
+                        errors.email
+                          ? "border-red-300 ring-2 ring-red-100"
+                          : "border-slate-300"
                       }`}
                       required
                     />
@@ -223,7 +242,9 @@ export default function SuperSignup() {
                       placeholder="Create a strong password"
                       type={showPassword ? "text" : "password"}
                       className={`w-full p-4 border rounded-xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                        errors.password ? "border-red-300 ring-2 ring-red-100" : "border-slate-300"
+                        errors.password
+                          ? "border-red-300 ring-2 ring-red-100"
+                          : "border-slate-300"
                       }`}
                       required
                     />
@@ -232,7 +253,11 @@ export default function SuperSignup() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
                   {errors.password && (
@@ -301,12 +326,14 @@ export default function SuperSignup() {
               <p className="text-slate-600 mb-2">
                 We sent a verification code to:
               </p>
-              <p className="font-semibold text-blue-600 mb-6">{getValues("email")}</p>
+              <p className="font-semibold text-blue-600 mb-6">
+                {getValues("email")}
+              </p>
 
               {/* OTP Input */}
               <div className="space-y-4">
                 <p className="text-sm text-slate-600">Enter the 6-digit code</p>
-                
+
                 <div className="flex justify-center gap-2 mb-6">
                   {otp.map((digit, index) => (
                     <input
@@ -334,7 +361,7 @@ export default function SuperSignup() {
                 {/* Verify Button */}
                 <Button
                   onClick={verifyCode}
-                  disabled={loading || otp.some(digit => digit === "")}
+                  disabled={loading || otp.some((digit) => digit === "")}
                   className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
@@ -365,7 +392,9 @@ export default function SuperSignup() {
 
           {/* Security Features */}
           <div className="mt-8 pt-6 border-t border-slate-200">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Super Admin Privileges</h3>
+            <h3 className="text-sm font-semibold text-slate-900 mb-3">
+              Super Admin Privileges
+            </h3>
             <div className="grid grid-cols-1 gap-2 text-xs text-slate-600">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
@@ -390,7 +419,10 @@ export default function SuperSignup() {
         {/* Footer */}
         <div className="text-center mt-6">
           <div className="flex justify-center gap-4">
-            <Link href="/" className="text-sm text-blue-600 hover:text-blue-700 transition-colors">
+            <Link
+              href="/"
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+            >
               Back to Home
             </Link>
           </div>

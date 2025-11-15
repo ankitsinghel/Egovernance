@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Card } from "../../../../../components/ui/card";
+import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -9,8 +9,8 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "../../../../../components/ui/dialog";
-import { Button } from "../../../../../components/ui/button";
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   Building,
   MapPin,

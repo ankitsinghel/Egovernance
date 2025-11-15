@@ -1,9 +1,8 @@
-import "../../../app/globals.css";
-import { contextProvider as ContextProvider } from "../../../context/context";
+import "@/app/globals.css";
+import { contextProvider as ContextProvider } from "@/context/context";
 import Spinner from "@/components/loader";
 import { Toaster } from "sonner";
-import { getUserFromCookie } from "../../../lib/auth";
-import type { TokenPayloadT, Permission } from "@/lib/types";
+import { getUserFromCookie } from "../../lib/auth";
 import { getAdminMasters } from "@/lib/getMasters/getAdminMasters";
 
 export const metadata = {

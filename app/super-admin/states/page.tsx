@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import type { StateT } from "@/lib/types";
-import { Card } from "../../../../components/ui/card";
-import { Button } from "../../../../components/ui/button";
-import { Input } from "../../../../components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Trash2, Edit, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 function useDebounced(value: string, delay = 300) {

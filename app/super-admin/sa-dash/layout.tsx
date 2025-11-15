@@ -1,7 +1,7 @@
 "use client";
 
-import React, {  useEffect } from "react";
-import { context } from "../../../../context/context";
+import React, { useEffect } from "react";
+import { context } from "../../../context/context";
 import { SuperAdminDashboard } from "@/components/AdminDrawer";
 import { SuperAdminNavbar } from "@/components/AdminNavbar";
 import { Boxes, MapPin, Settings, Users, Shield, Key } from "lucide-react";
@@ -16,7 +16,6 @@ export default function MastersLayout({
   useEffect(() => {
     fetchMasters();
   }, []);
-
 
   return (
     <div>

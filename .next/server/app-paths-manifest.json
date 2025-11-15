@@ -1,3 +1,9 @@
 {
-  "/(main)/page": "app/(main)/page.js"
+  "/api/admin/reports/route": "app/api/admin/reports/route.js",
+  "/api/admins/route": "app/api/admins/route.js",
+  "/admin/dashboard/complaints/page": "app/admin/dashboard/complaints/page.js",
+  "/super-admin/sa-dash/admins/page": "app/super-admin/sa-dash/admins/page.js",
+  "/super-admin/sa-dash/roles/page": "app/super-admin/sa-dash/roles/page.js",
+  "/admin/dashboard/state-admins/page": "app/admin/dashboard/state-admins/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js"
 }
