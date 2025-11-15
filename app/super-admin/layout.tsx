@@ -18,7 +18,7 @@ export default async function SuperAdminLayout({
   const initialUser = await getUserFromCookie();
 
   return (
-    <html lang="en">
+    <html lang="en" className="light" style={{ colorScheme: "light" }}>
       <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
         <ContextProvider
           initialUser={initialUser}

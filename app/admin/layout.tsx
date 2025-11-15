@@ -18,7 +18,7 @@ export default async function AdminLayout({
   const initialUser = await getUserFromCookie();
   //  console.log("Admin Layout admin",initialUser);
   return (
-    <html lang="en">
+    <html lang="en" className="light" style={{ colorScheme: "light" }}>
       <body className="bg-gray-50 text-gray-900 min-h-screen global-css-test">
         <ContextProvider initialUser={initialUser}>
           <Toaster />
