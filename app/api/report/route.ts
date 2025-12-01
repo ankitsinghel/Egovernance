@@ -3,6 +3,7 @@ import { prisma } from "../../../lib/db";
 import { generateTrackingId } from "../../../lib/hash";
 import { sendNewReportNotification } from "../../../lib/email";
 import { uploadFile } from "@/lib/fileHandle";
+import { totalReports } from "@/observability/prom-client";
 
 export async function POST(req: Request) {
   try {
@@ -99,7 +100,7 @@ export async function POST(req: Request) {
         stateRec ? stateRec.name : undefined
       );
     }
-
+    totalReports.inc({ method: "POST", route: "/api/report", code: "200" });
     return NextResponse.json({
       ok: true,
       trackingId,
@@ -107,6 +108,7 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.error("report POST error", err);
+    totalReports.inc({ method: "POST", route: "/api/report", code: "500" });
     return NextResponse.json(
       { ok: false, message: "Internal Server Error" },
       { status: 500 }

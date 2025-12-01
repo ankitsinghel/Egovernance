@@ -8,6 +8,8 @@ const protectedRoutes = ["/super-admin/sa-dash"];
 const adminProtectedRoutes = ["/admin/dashboard"];
 
 export async function middleware(req: NextRequest) {
+// /api middlewares
+
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("egov_token")?.value || null;
 

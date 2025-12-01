@@ -1,16 +1,5 @@
-services:
-  app:
-    container_name: satark
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    depends_on:
-      - prometheus
 
+services:
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
@@ -18,6 +7,16 @@ services:
       - "9090:9090"
     volumes:
       - ./config/prometheus-config.yml:/etc/prometheus/prometheus.yml
+  loki:
+    image: grafana/loki:2.9.4
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./config/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    command:
+      - "-config.file=/etc/loki/local-config.yaml"
 
 
   grafana:
@@ -27,8 +26,10 @@ services:
       - "3030:3000"
     depends_on:
       - prometheus
+      - loki
     volumes:
       - grafana-data:/var/lib/grafana
 
 volumes:
   grafana-data:
+  loki-data:

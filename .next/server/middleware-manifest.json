@@ -3,34 +3,37 @@
   "middleware": {
     "/": {
       "files": [
-        "server/edge-runtime-webpack.js",
-        "server/middleware.js"
+        "server/edge/chunks/_ab5f2aea._.js",
+        "server/edge/chunks/turbopack-edge-wrapper_34a58009.js",
+        "server/edge/chunks/_d9c12d63._.js",
+        "server/edge/chunks/[root-of-the-server]__1c352598._.js",
+        "server/edge/chunks/turbopack-edge-wrapper_e81fbb2c.js"
       ],
       "name": "middleware",
       "page": "/",
       "matchers": [
         {
-          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/super-admin(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json)?[\\/#\\?]?$",
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/super-admin(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
           "originalSource": "/super-admin/:path*"
         },
         {
-          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/admin(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json)?[\\/#\\?]?$",
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/admin(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
           "originalSource": "/admin/:path*"
         }
       ],
       "wasm": [],
       "assets": [],
       "env": {
-        "__NEXT_BUILD_ID": "qW0Rapxj4r7hAlKV-PqrQ",
+        "__NEXT_BUILD_ID": "development",
         "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "byikifVDdr9jc/jxsRMSvsg9xhvPO4nvalida7W0DDI=",
-        "__NEXT_PREVIEW_MODE_ID": "f5b93304f9566e9c4621c5eff4462856",
-        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "12a1365010787497cad159b5e4f16573965ed259ce53f011e0b4f722dfde2e2e",
-        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "a048fba980eb14185789a98bbcf5fbf7b4167ea90e9641e87179ccf21b95b65e"
+        "__NEXT_PREVIEW_MODE_ID": "9617d9c49399b4b4ca014c6cc7191f51",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "e684707cadf98dcb64611355cf0dab84c6638663d69f8d6f5bea66295c97377f",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "adb72799fa02125eb53dd5b4c6ba0f36cd635b6f481701132f4611724392e2a2"
       }
     }
   },
-  "functions": {},
   "sortedMiddleware": [
     "/"
-  ]
+  ],
+  "functions": {}
 }
