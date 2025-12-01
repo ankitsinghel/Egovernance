@@ -1,1 +1,9 @@
 node_modules
+.git
+.vscode
+# .env*
+uploads
+prisma/*.bak
+prisma/dev.db*
+.dockerignore
+.DS_Store

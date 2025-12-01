@@ -43,8 +43,7 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
-# Prisma client must be regenerated inside production container
-RUN npx prisma generate
+
 
 
 CMD ["npm", "start"]
