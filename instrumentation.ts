@@ -14,7 +14,8 @@ export async function register() {
     const pino = (await import("pino")).default;
     const pinoLoki = (await import("pino-loki")).default;
     const lokiTransport = pinoLoki({
-      host: "http://localhost:3100",
+      // host: "http://localhost:3100", //for machine localhost
+      host: "http://loki:3100", //for docker container localhost
       batching: true,
       interval: 5,
       labels: { app: "satark" },
