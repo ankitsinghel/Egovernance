@@ -7,6 +7,7 @@ declare global {
         registry: Registry;
       }
     | undefined;
+  var promRegistry: Registry | undefined;
 }
 
 export async function register() {
@@ -14,8 +15,8 @@ export async function register() {
     const pino = (await import("pino")).default;
     const pinoLoki = (await import("pino-loki")).default;
     const lokiTransport = pinoLoki({
-      // host: "http://localhost:3100", //for machine localhost
-      host: "http://loki:3100", //for docker container localhost
+     // host: "http://localhost:3100", //for machine localhost
+       host: "http://loki:3100", //for docker container localhost
       batching: true,
       interval: 5,
       labels: { app: "satark" },
@@ -24,6 +25,16 @@ export async function register() {
       // {level: process.env.LOG_LEVEL || "info",},
       lokiTransport
     );
+
     globalThis.logger = logger;
+
+//     const Registry = (await import("prom-client")).Registry;
+//  const client = (await import("prom-client")).default;
+//     if (!globalThis.promRegistry) {
+//       const registry = new Registry();
+//       client.collectDefaultMetrics({ register: registry });
+//       globalThis.promRegistry = registry;
+      // console.log("✅ Prometheus registry initialized");
+    //}
   }
 }

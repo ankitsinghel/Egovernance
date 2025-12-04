@@ -1,8 +1,21 @@
 {
+  "/(main)/page": "app/(main)/page.js",
   "/(main)/report/page": "app/(main)/report/page.js",
   "/(main)/track/[trackId]/page": "app/(main)/track/[trackId]/page.js",
   "/(main)/track/page": "app/(main)/track/page.js",
-  "/api/metrics/route": "app/api/metrics/route.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/api/admin/login/route": "app/api/admin/login/route.js",
+  "/api/admin/reports/route": "app/api/admin/reports/route.js",
+  "/api/admins/route": "app/api/admins/route.js",
+  "/api/departments/route": "app/api/departments/route.js",
+  "/api/logout/route": "app/api/logout/route.js",
+  "/api/permissions/route": "app/api/permissions/route.js",
   "/api/report/[trackingId]/route": "app/api/report/[trackingId]/route.js",
-  "/api/report/route": "app/api/report/route.js"
+  "/api/report/route": "app/api/report/route.js",
+  "/api/roles/route": "app/api/roles/route.js",
+  "/api/states/route": "app/api/states/route.js",
+  "/api/super-admin/login/route": "app/api/super-admin/login/route.js",
+  "/super-admin/login/page": "app/super-admin/login/page.js",
+  "/super-admin/sa-dash/dashboard/page": "app/super-admin/sa-dash/dashboard/page.js"
 }

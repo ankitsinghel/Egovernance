@@ -14,11 +14,6 @@ Key features
 - File storage using Supabase Storage with signed time-limited URLs for secure access
 - App Router server components + shadcn UI primitives; forms use react-hook-form + zod for consistent validation
 
-
-Important notes about migrations and schema
-
-- Prisma schema in `prisma/schema.prisma` is the source of truth for the client. Use `npx prisma generate` after updating the schema.
-
 Security & privacy guidance
 
 - Do not log or persist reporter-identifying data (IP addresses, device fingerprints) unless explicitly required and authorized.
