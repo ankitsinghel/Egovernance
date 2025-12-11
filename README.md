@@ -19,8 +19,6 @@ Security & privacy guidance
 - Do not log or persist reporter-identifying data (IP addresses, device fingerprints) unless explicitly required and authorized.
 - Evidence filenames are obfuscated; for stronger protection consider encrypting file contents and storing keys in a managed KMS.
 - JWTs are stored in httpOnly cookies. Ensure HTTPS and secure cookie flags in production.
-
-
 Quickstart (local dev)
 
 1. Install dependencies

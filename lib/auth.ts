@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-jwt-secret";
 const COOKIE_NAME = "egov_token";
+const COUNT_COOKIE_NAME = "count";
 
 export function signToken(
   payload: JwtPayload | object,
@@ -34,6 +35,15 @@ export function setAuthCookie(token: string) {
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
+  });
+}
+export function setCountCookie(count: number) {
+  return serialize(COUNT_COOKIE_NAME, String(count), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24,
   });
 }
 

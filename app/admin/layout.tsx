@@ -3,8 +3,6 @@ import { contextProvider as ContextProvider } from "../../context/context";
 import Spinner from "@/components/loader";
 import { getUserFromCookie } from "../../lib/auth";
 import { Toaster } from "sonner";
-import { permission } from "process";
-import type { TokenPayloadT, Permission } from "@/lib/types";
 
 export const metadata = {
   title: "Satark- Admin Dashboard",

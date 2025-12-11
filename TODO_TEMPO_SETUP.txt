@@ -1,0 +1,363 @@
+================================================================================
+TODO: Add Grafana Tempo Distributed Tracing to E-Governance Whistleblower Platform
+================================================================================
+
+PROJECT: E-Governance Whistleblower Platform
+OBJECTIVE: Integrate OpenTelemetry + Grafana Tempo for distributed trace collection
+TIMELINE: Estimated 2-3 hours for setup and validation
+
+================================================================================
+PHASE 1: INSTALL DEPENDENCIES
+================================================================================
+
+[ ] Step 1.1 — Install OpenTelemetry SDK packages
+    Command:
+    npm install @opentelemetry/api \
+                @opentelemetry/sdk-node \
+                @opentelemetry/auto-instrumentations-node \
+                @opentelemetry/exporter-trace-otlp-http
+    
+    Verify:
+    - Check package.json for all 4 packages listed
+    - Run: npm ls @opentelemetry/api (should show installed version)
+
+[ ] Step 1.2 — Verify installation in node_modules
+    - node_modules/@opentelemetry should exist with subdirectories
+    - Confirm no peer dependency warnings
+
+================================================================================
+PHASE 2: CREATE INSTRUMENTATION HOOK
+================================================================================
+
+[ ] Step 2.1 — Update existing instrumentation.ts (in project root)
+    Location: d:\Codes\hackathon\instrumentation.ts
+    Current: Only exports register() from observability/utils.ts
+    
+    Action: Modify to initialize OpenTelemetry tracing alongside existing logger
+    - Merge the new trace exporter initialization
+    - Keep existing logger registration intact
+    - Ensure both register() calls execute
+
+[ ] Step 2.2 — Create observability/tracing.ts
+    Location: d:\Codes\hackathon\observability\tracing.ts
+    Content:
+    - NodeSDK initialization with OTLPTraceExporter
+    - OTEL_EXPORT_URL environment variable handling (default: http://localhost:4318/v1/traces)
+    - Auto instrumentation for Node.js
+    - Export sdk instance for graceful shutdown
+
+[ ] Step 2.3 — Update instrumentation.ts to import tracing
+    - Import and initialize tracing from observability/tracing.ts
+    - Ensure it runs in NEXT_RUNTIME === 'nodejs' context
+    - Test that instrumentation.ts exports register() correctly
+
+================================================================================
+PHASE 3: UPDATE NEXT.JS CONFIGURATION
+================================================================================
+
+[ ] Step 3.1 — Update next.config.js
+    Location: d:\Codes\hackathon\next.config.js
+    Change:
+    - Add/enable: experimental.instrumentationHook = true
+    - Verify no other experimental features are broken
+    - Test build: npm run build
+
+[ ] Step 3.2 — Verify instrumentation hook is recognized
+    - Start dev server: npm run dev
+    - Check console for "instrumentation hook" messages
+    - Confirm no errors during startup
+
+================================================================================
+PHASE 4: CREATE OPENTELEMETRY COLLECTOR CONFIG
+================================================================================
+
+[ ] Step 4.1 — Create otel-collector.yaml
+    Location: d:\Codes\hackathon\otel-collector.yaml
+    Content:
+    - receivers: otlp (http + grpc)
+    - exporters: otlp to tempo:4317
+    - service pipeline: otlp → otlp
+    - Verify YAML syntax (use online YAML validator)
+
+[ ] Step 4.2 — Create tempo.yaml config
+    Location: d:\Codes\hackathon\tempo.yaml
+    Content:
+    - server.http_listen_port: 3200
+    - distributor.receivers.otlp (http + grpc)
+    - ingester.max_block_duration: 5m
+    - storage.trace.backend: local
+    - storage.trace.local.path: /tmp/tempo/traces
+
+================================================================================
+PHASE 5: UPDATE DOCKER COMPOSE FOR OBSERVABILITY STACK
+================================================================================
+
+[ ] Step 5.1 — Review current docker-compose.yml
+    Location: d:\Codes\hackathon\docker-compose.yml
+    Existing services to preserve: app, db, other services
+    Action: Take backup before modifying
+
+[ ] Step 5.2 — Add otel-collector service
+    Service name: otel-collector
+    Image: otel/opentelemetry-collector:latest
+    Volumes: ./otel-collector.yaml:/etc/otel/collector.yaml
+    Ports: 4317 (gRPC), 4318 (HTTP)
+    Command: ["--config=/etc/otel/collector.yaml"]
+    Networks: same as app service
+
+[ ] Step 5.3 — Add tempo service
+    Service name: tempo
+    Image: grafana/tempo:latest
+    Ports: 3200 (query), 4317 (gRPC), 4318 (HTTP)
+    Volumes: ./tempo.yaml:/etc/tempo.yaml
+    Command: ["-config.file=/etc/tempo.yaml"]
+    Networks: same as app service
+
+[ ] Step 5.4 — Update grafana service (if exists) or create new one
+    Service name: grafana
+    Image: grafana/grafana:latest
+    Ports: 3001:3000 (to avoid conflict with app on 3000)
+    Environment: GF_SECURITY_ADMIN_PASSWORD=admin (or use secrets)
+    Networks: same as app service
+    Depends on: tempo, prometheus, loki
+
+[ ] Step 5.5 — Configure service dependencies
+    - app service depends_on: [otel-collector]
+    - grafana depends_on: [tempo, prometheus, loki]
+    - Verify network connectivity between all services
+
+================================================================================
+PHASE 6: ENVIRONMENT VARIABLES & CONFIGURATION
+================================================================================
+
+[ ] Step 6.1 — Update .env.local for local development
+    Add:
+    OTEL_EXPORT_URL=http://localhost:4318/v1/traces
+    OTEL_SERVICE_NAME=egov-whistleblower
+    OTEL_RESOURCE_ATTRIBUTES=deployment.environment=development
+
+[ ] Step 6.2 — Update .env.docker (or equivalent) for Docker environment
+    Add:
+    OTEL_EXPORT_URL=http://otel-collector:4318/v1/traces
+    OTEL_SERVICE_NAME=egov-whistleblower
+    OTEL_RESOURCE_ATTRIBUTES=deployment.environment=production
+
+[ ] Step 6.3 — Document environment variables
+    Create docs/OBSERVABILITY.md explaining:
+    - OTEL_EXPORT_URL and when to use localhost vs service name
+    - OTEL_SERVICE_NAME for trace service identification
+    - How to enable/disable tracing
+
+================================================================================
+PHASE 7: VERIFY INSTRUMENTATION IN API ROUTES
+================================================================================
+
+[ ] Step 7.1 — Ensure key routes export runtime = "nodejs"
+    Check these files:
+    - app/api/admins/route.ts
+    - app/api/reports/route.ts (or similar submission endpoint)
+    - app/api/metrics/route.ts
+    
+    Add: export const runtime = "nodejs";
+    Reason: Traces only work in Node.js runtime, not Edge
+
+[ ] Step 7.2 — Test a sample API route manually
+    Route: /api/testapi or /api/admins
+    Command: curl http://localhost:3000/api/testapi
+    Expected: 200 response + trace generated
+
+[ ] Step 7.3 — Verify traces reach Tempo
+    - Start dev server: npm run dev
+    - Call API route
+    - Check Tempo UI: http://localhost:3200
+    - Look for new service name in service list
+
+================================================================================
+PHASE 8: INTEGRATE TEMPO WITH GRAFANA
+================================================================================
+
+[ ] Step 8.1 — Start the full stack
+    Command: docker compose up --build
+    Wait for all services to be healthy:
+    - otel-collector: ready to receive traces
+    - tempo: listening on 4317/4318
+    - grafana: ready on port 3001
+
+[ ] Step 8.2 — Access Grafana
+    URL: http://localhost:3001
+    Default credentials: admin / admin (change in production)
+
+[ ] Step 8.3 — Add Tempo as a Data Source in Grafana
+    Steps:
+    1. Configuration → Data Sources
+    2. Click "Add data source"
+    3. Select "Tempo"
+    4. URL: http://tempo:3200
+    5. Click "Save & test"
+    6. Verify: "Data source is working"
+
+[ ] Step 8.4 — View traces in Grafana
+    1. Navigate to Explore
+    2. Select Tempo data source
+    3. Search by service name: egov-whistleblower
+    4. View trace details, spans, and timing
+
+================================================================================
+PHASE 9: TESTING & VALIDATION
+================================================================================
+
+[ ] Step 9.1 — Generate test traces
+    Test API endpoints:
+    - POST /api/admins (create admin)
+    - GET /api/admins (list admins)
+    - GET /api/testapi
+    
+    Each should generate traces visible in Tempo
+
+[ ] Step 9.2 — Verify trace details
+    For each trace, check:
+    - Service name: egov-whistleblower
+    - Operation names: HTTP method and route (e.g., POST /api/admins)
+    - Span duration (should be <500ms for fast endpoints)
+    - DB query spans (if instrumented)
+
+[ ] Step 9.3 — Test Grafana Tempo UI features
+    - Filter traces by service
+    - Filter by operation name
+    - Filter by min/max duration
+    - View span waterfall
+    - View span details and tags
+
+[ ] Step 9.4 — Load testing (optional)
+    Command: npm run dev (or production server)
+    Use tool like Apache Bench or k6
+    Command: ab -n 100 -c 10 http://localhost:3000/api/testapi
+    Verify traces captured for all requests
+
+================================================================================
+PHASE 10: DOCUMENTATION & HANDOFF
+================================================================================
+
+[ ] Step 10.1 — Document setup in README.md
+    Add section: "Observability — Grafana Tempo Setup"
+    Include:
+    - Prerequisites (Docker, Node.js versions)
+    - Installation steps (npm install, docker compose up)
+    - Access URLs (Grafana, Tempo, Prometheus, Loki)
+    - How to view traces and interpret results
+
+[ ] Step 10.2 — Create docs/TRACING.md
+    Content:
+    - Architecture diagram: Next.js → OTEL Collector → Tempo
+    - How traces are captured (auto-instrumentation)
+    - Custom span examples (for future developers)
+    - Troubleshooting guide
+
+[ ] Step 10.3 — Add startup script to package.json (optional)
+    Script: "observability" or "dev:with-observability"
+    Command: docker compose up && npm run dev
+
+[ ] Step 10.4 — Create .gitignore entries
+    Add:
+    - tempo/traces/ (local Tempo data)
+    - .env.local (local env variables)
+    - otel-collector logs (if applicable)
+
+================================================================================
+PHASE 11: PRODUCTION CONSIDERATIONS
+================================================================================
+
+[ ] Step 11.1 — Configure Tempo persistence for production
+    Replace local backend with S3/GCS in tempo.yaml:
+    - storage.trace.backend: s3
+    - AWS credentials or GCP service account
+
+[ ] Step 11.2 — Set up trace retention policy
+    In tempo.yaml:
+    - retention.enabled: true
+    - retention.duration: 72h (or per compliance needs)
+
+[ ] Step 11.3 — Enable Tempo authentication in Grafana
+    - Set GF_SECURITY_ADMIN_PASSWORD via secrets
+    - Configure OAuth or reverse proxy authentication
+    - Document access procedures
+
+[ ] Step 11.4 — Monitor observability stack itself
+    Add health checks and alerts for:
+    - OTEL Collector receiver capacity
+    - Tempo ingester performance
+    - Grafana availability
+
+[ ] Step 11.5 — Document runbooks
+    Create docs/RUNBOOKS.md with:
+    - How to respond to high trace latency
+    - How to scale OTEL Collector
+    - How to troubleshoot dropped traces
+
+================================================================================
+PHASE 12: OPTIONAL ENHANCEMENTS
+================================================================================
+
+[ ] Step 12.1 — Add custom span instrumentation
+    For business logic (e.g., "report_submission", "admin_action_logged"):
+    - Import tracer from observability/tracing.ts
+    - Wrap custom operations in spans
+    - Add semantic attributes (user role, report status, etc.)
+
+[ ] Step 12.2 — Integrate with alerting
+    Set up Prometheus + Alertmanager to alert on:
+    - Trace error rates
+    - Span duration SLOs
+
+[ ] Step 12.3 — Connect Traces ↔ Logs ↔ Metrics
+    In Grafana:
+    - Enable trace to logs correlation (via Loki)
+    - Enable trace to metrics correlation (via Prometheus)
+    - Tag logs and metrics with trace IDs
+
+[ ] Step 12.4 — Export/visualization dashboards
+    Create Grafana dashboard showing:
+    - Service overview (request rate, error rate, latency)
+    - Trace volume over time
+    - Top slow endpoints
+
+================================================================================
+ROLLBACK / CLEANUP (if needed)
+================================================================================
+
+[ ] Rollback 1 — Remove instrumentation.ts changes (if issues)
+    - Revert to original observability/utils.ts export only
+    - Remove NodeSDK initialization
+
+[ ] Rollback 2 — Remove Docker services
+    Command: docker compose down -v
+    Note: -v removes volumes (local Tempo data will be lost)
+
+[ ] Rollback 3 — Remove npm packages
+    Command: npm uninstall @opentelemetry/api @opentelemetry/sdk-node @opentelemetry/auto-instrumentations-node @opentelemetry/exporter-trace-otlp-http
+
+================================================================================
+SIGN-OFF & VALIDATION
+================================================================================
+
+[ ] Final Check 1 — All services healthy
+    docker compose up && npm run dev
+    Verify: app, otel-collector, tempo, grafana all running
+
+[ ] Final Check 2 — Traces flowing end-to-end
+    Call API → Check Grafana Tempo → Traces visible
+
+[ ] Final Check 3 — Documentation complete
+    - README.md updated
+    - docs/TRACING.md created
+    - .env.example includes OTEL variables
+
+[ ] Final Check 4 — Team handoff
+    - Developers understand how to use Tempo
+    - Operations team knows how to scale/troubleshoot
+    - Links to Grafana saved in team docs
+
+================================================================================
+COMPLETED BY: ___________________  DATE: ___________________
+REVIEWED BY:  ___________________  DATE: ___________________
+================================================================================

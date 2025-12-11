@@ -73,7 +73,7 @@ export default function ReportPage() {
         setTrackingId(j.trackingId);
         setSubmitted(true);
       } else {
-        toast.error("Submit failed: " + (j.error || "Unknown error"));
+        toast.error("Submit failed: " + (j.message || "Unknown error"));
       }
     } catch (e) {
       toast.error("Network error. Please check your connection.");

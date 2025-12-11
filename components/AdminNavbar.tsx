@@ -1,10 +1,7 @@
 "use client";
 
 import {
-  LogOut,
   Menu,
-  Sun,
-  Moon,
   MenuIcon,
   LogOutIcon,
   KeyIcon,
@@ -22,7 +19,6 @@ import {
 } from "./ui/dropdown-menu";
 import PasswordResetDialog from "./PasswordResetDialog";
 import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
 
 export function SuperAdminNavbar() {
@@ -44,14 +40,6 @@ export function SuperAdminNavbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
   const router = useRouter();
-
-  const { theme, setTheme, systemTheme } = useTheme();
-  const resolvedTheme = theme === "system" ? systemTheme : theme;
-  function toggleTheme() {
-    const next = resolvedTheme === "dark" ? "light" : "dark";
-    setTheme(next);
-  }
-  const [pwOpen, setPwOpen] = useState(false);
 
   async function handleLogout() {
     try {

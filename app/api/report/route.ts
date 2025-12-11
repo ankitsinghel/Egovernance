@@ -4,9 +4,19 @@ import { generateTrackingId } from "../../../lib/hash";
 import { sendNewReportNotification } from "../../../lib/email";
 import { uploadFile } from "@/lib/fileHandle";
 import { totalReports } from "@/observability/prom-client";
+import { cookies } from "next/headers";
+import { setAuthCookie, setCountCookie } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
+    const cookieStore = await cookies();
+    const count = Number(cookieStore.get("count")?.value || 1);
+    if (count >= 3)
+      return NextResponse.json({
+        ok: false,
+        message: "You have reached threshold limit for daily reports",
+        status: 429,
+      });
     const formData = await req.formData();
     const files = formData.getAll("file") as File[];
     const department = Number(formData.get("department"));
@@ -101,11 +111,13 @@ export async function POST(req: Request) {
       );
     }
     totalReports.inc({ method: "POST", route: "/api/report", code: "200" });
-    return NextResponse.json({
+    const res = NextResponse.json({
       ok: true,
       trackingId,
       message: "Report created",
     });
+    res.headers.set("Set-Cookie", setCountCookie(count + 1));
+    return res;
   } catch (err) {
     console.error("report POST error", err);
     totalReports.inc({ method: "POST", route: "/api/report", code: "500" });
