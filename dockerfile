@@ -43,7 +43,4 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
-
-
-
 CMD ["npm", "start"]

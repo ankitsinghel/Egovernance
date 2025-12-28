@@ -27,14 +27,5 @@ export async function register() {
     );
 
     globalThis.logger = logger;
-
-//     const Registry = (await import("prom-client")).Registry;
-//  const client = (await import("prom-client")).default;
-//     if (!globalThis.promRegistry) {
-//       const registry = new Registry();
-//       client.collectDefaultMetrics({ register: registry });
-//       globalThis.promRegistry = registry;
-      // console.log("✅ Prometheus registry initialized");
-    //}
   }
 }
